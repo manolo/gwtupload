@@ -1,7 +1,0 @@
-<module>
-	<inherits name="jsupload.JsUploadLib" />
-        <stylesheet src="JsUpload.css"/>
-        <add-linker name="xs"/> 
-	<entry-point class="jsupload.client.JsUpload"/>
-	<set-property name="export" value="yes" />
-</module>
