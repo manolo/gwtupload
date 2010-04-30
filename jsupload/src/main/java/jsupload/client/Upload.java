@@ -28,8 +28,6 @@ import gwtupload.client.IUploader;
 import gwtupload.client.MultiUploader;
 import gwtupload.client.SingleUploader;
 import gwtupload.client.IFileInput.FileInputType;
-import gwtuploadsample.client.ChismesUploadProgress;
-import gwtuploadsample.client.IncubatorUploadProgress;
 
 import org.timepedia.exporter.client.Export;
 import org.timepedia.exporter.client.ExportPackage;

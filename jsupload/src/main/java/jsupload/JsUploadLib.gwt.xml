@@ -1,0 +1,6 @@
+<module>
+  <inherits name="gwtupload.GWTUpload" />
+  <inherits name="com.google.code.p.gwtchismes.GWTChismes" />
+  <inherits name="com.google.gwt.widgetideas.WidgetBase" />
+  <inherits name="org.timepedia.exporter.Exporter" />
+</module>
