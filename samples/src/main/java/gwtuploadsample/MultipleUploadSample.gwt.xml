@@ -1,4 +1,0 @@
-<module>
-  <inherits name="gwtuploadsample.Sample"/>
-  <entry-point class="gwtuploadsample.client.MultipleUploadSample"/>
-</module>
