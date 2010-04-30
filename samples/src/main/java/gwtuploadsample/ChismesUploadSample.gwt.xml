@@ -1,0 +1,5 @@
+<module>
+  <inherits name="gwtuploadsample.Sample"/>
+  <entry-point class="gwtuploadsample.client.ChismesUploadSample"/>
+  <extend-property name="locale" values="es,de" />
+</module>

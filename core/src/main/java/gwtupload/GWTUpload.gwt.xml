@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE module PUBLIC "-//Google Inc.//DTD Google Web Toolkit 1.6.4//EN" "http://google-web-toolkit.googlecode.com/svn/tags/1.6.4/distro-source/core/src/gwt-module.dtd">
+<module rename-to='gwtupload'>
+  <inherits name='com.google.gwt.user.User' />
+  <inherits name="com.google.gwt.xml.XML" />
+
+  <replace-with class="gwtupload.client.DecoratedFileUpload.DecoratedFileUploadImplClick">
+    <when-type-is class="gwtupload.client.DecoratedFileUpload.DecoratedFileUploadImpl"/>
+    <any>
+      <when-property-is name="user.agent" value="ie6"/>
+      <when-property-is name="user.agent" value="ie8" />
+      <when-property-is name="user.agent" value="safari"/>
+    </any>
+  </replace-with>
+
+  <replace-with class="gwtupload.client.DecoratedFileUpload.DecoratedFileUploadImplNoClick">
+    <when-type-is class="gwtupload.client.DecoratedFileUpload.DecoratedFileUploadImpl"/>
+    <any>
+      <when-property-is name="user.agent" value="gecko"/>
+      <when-property-is name="user.agent" value="gecko1_8" />
+      <when-property-is name="user.agent" value="opera"/>
+    </any>
+  </replace-with>
+  
+  <!-- 
+      FileUploadImplOpera has a hack to avoid firing onChange each time
+      the user push a key, this makes gwt-upload behaves bad because
+      we expect the user selects files using the browser selection box. 
+  -->
+  <replace-with class="com.google.gwt.user.client.ui.FileUpload.FileUploadImpl">
+      <when-type-is class="com.google.gwt.user.client.ui.FileUpload.FileUploadImpl"/>
+      <when-property-is name="user.agent" value="opera"/>
+  </replace-with>
+</module>
