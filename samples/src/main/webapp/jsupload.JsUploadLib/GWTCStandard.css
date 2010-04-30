@@ -1,0 +1,16 @@
+/* This page is thought to override styles in the default css of gwt 
+   which interfere gwtchismes */
+
+body, table td, select {
+	font-size: medium;
+}   
+
+.GWTCTabPanel .gwt-TabPanelBottom {
+	border: none;
+	padding: 0px;
+}
+
+.GWTCTabPanel .gwt-TabBar .gwt-TabBarItem {
+	padding: 0px;
+}
+

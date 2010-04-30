@@ -1,0 +1,234 @@
+.GWTCDatePicker {
+  font-family:  "Lucida Grande", "Trebuchet MS", Helvetica, Arial, sans-serif;
+  width: auto;
+  cursor: default;
+}
+.GWTCDatePicker *, .GWTCDatePicker-help * {
+  font-size: 8pt;
+}
+.GWTCDatePicker-help td {
+	text-align: left;
+}
+
+.GWTCDatePicker-dialog {
+  background: white;
+  border: 1px double black;
+}
+.GWTCDatePicker-embeded {
+  border: 2px ridge #a3b8cb; 
+}
+.GWTCDatePicker-box {
+  background: transparent;
+  border: none;
+}
+
+.GWTCDatePicker-no-box .Caption {
+  background: #000 url(images/gwtc-cpicker-bg-title.png) repeat-x top;
+  padding: 4px;
+  padding-bottom: 8px;
+  font-weight: bold;
+  color : #fff;
+  cursor: move;
+  text-align : center;
+}
+
+.GWTCDatePicker-box .Caption {
+	height: 16px;
+}
+
+.GWTCDatePicker-box .GWTCBox .middleCenter {
+  padding: 0px 0px;
+}
+
+.GWTCDatePicker .GWTCBtn-c {
+  width: 100%;
+}
+
+.GWTCDatePicker-help .GWTCBox {
+	font-size: 9pt;
+}
+
+.GWTCDatePicker .panelButtons {
+  vertical-align: middle;
+}
+
+.GWTCDatePicker .panelDays {
+  font: 10pt sans-serif;
+  text-align: center;
+}
+
+.GWTCDatePicker .monthSeparator {
+  background: #d0e6ff;
+  font-size: 6px;
+  padding: 0px;
+}
+
+
+.GWTCDatePicker .panelDays .weekHeader .cellDayNames,
+.GWTCDatePicker .panelDays .cellWeekNumbers div {
+  text-align : center;
+  font-weight : bold;
+  padding : 4px; 
+  background : #d0e6ff;
+  border : 1px solid #fff;
+}
+
+.GWTCDatePicker .panelDays .cellWeekNumbers div.gwt-HTML {
+  cursor: pointer;
+  text-align: right;
+}
+.GWTCDatePicker .panelDays .cellWeekNumbers div.disabled {
+  text-align: right;
+  color: grey;
+}
+
+.GWTCDatePicker .panelDays td.cellDays {
+  border: none;
+}
+
+.GWTCDatePicker .panelDays div.cellDays,
+.GWTCDatePicker .panelDays div.cellEmpty {
+  text-align: center;
+  line-height: 2em; 
+}
+
+.GWTCDatePicker .panelDays div.cellDays {
+  background: #ddd url(images/gwtc-cpicker-bg-day.png) no-repeat center center;
+  cursor: pointer;
+}
+
+
+.GWTCDatePicker .panelDays div.validDay:hover,
+.GWTCDatePicker .panelDays .validDay div.weekend:hover,
+.GWTCDatePicker .panelDays div.validDay-over {
+  background: #dfdfdf url(images/gwtc-cpicker-bg-day-over.png) no-repeat center center;
+  font-weight: bold;
+}
+
+.GWTCDatePicker .panelDays div.cellDays:active,
+.GWTCDatePicker .panelDays    .cellDays div.gwtc-Active {
+  cursor: wait; 	
+  background: pink;
+  padding : 0px;
+}
+.GWTCDatePicker .panelDays div.cellEmpty {
+}  
+.GWTCDatePicker .panelDays div.invalidDay, 
+.GWTCDatePicker .panelDays div.invalidDay:hover {
+  cursor: default;
+  text-decoration: line-through;
+  color : #999;
+  background : transparent;
+  font-weight : normal;
+} 
+
+.GWTCDatePicker .panelDays div.today {
+  background: #fff url(images/gwtc-cpicker-bg-today.png) no-repeat center center;
+}
+.GWTCDatePicker .panelDays div.today:hover {
+  background: #fff url(images/gwtc-cpicker-bg-day-over.png) no-repeat center center;
+}
+.GWTCDatePicker .panelDays div.beforeSelected {
+}
+.GWTCDatePicker .panelDays div.selectedDay,
+.GWTCDatePicker .panelDays div.selectedDay:hover,
+.GWTCDatePicker .panelDays    .selectedDay div.gwtc-Hover {
+  background: #fff url(images/gwtc-cpicker-bg-selected.png) no-repeat center center;
+  font-weight: bold;
+}
+.GWTCDatePicker .panelDays div.afterSelected {
+}
+
+
+.GWTCDatePicker .panelButtons .gwt-Button {
+	font-size: 12px;
+	text-align: center;
+}
+.GWTCDatePicker .panelButtons .gwt-Button-flat {
+	color: blue;
+	font-size: 10px;
+	border: none;	
+	background: transparent;
+}
+.GWTCDatePicker .panelButtons .GWTCBtn {
+	min-width: 20px;
+}
+
+
+.GWTCDatePicker .panelMonths .monthLabels gwt-Label {
+	padding-top: 2px;
+	text-align: center;
+	font-weight: bold;
+}
+
+.GWTCDatePicker .panelMonths .monthLabels .monthLabel {
+	min-height: 15px;
+	padding-top: 4px;
+    text-align: center;
+}
+
+.GWTCDatePicker-MenuBar {
+    font-family:  "Lucida Grande", "Trebuchet MS", Helvetica, Arial, sans-serif;
+	cursor: pointer; 
+}
+
+.GWTCDatePicker-MenuBar .gwt-MenuItem { 
+ 	font-size: 10px;
+}
+.GWTCDatePicker-MenuBar .gwt-MenuItem-selected { 
+	background: #d0e6ff; 
+}
+
+.GWTCDatePicker-MenuBar-horizontal table {
+   margin-left: auto;
+   margin-right: auto;
+}
+
+.GWTCDatePicker-MenuBar-horizontal .gwt-MenuItem {
+  text-align: center;
+  font-weight: bold;
+}
+.GWTCDatePicker-MenuBar-horizontal .gwt-MenuItem-selected {
+}
+
+.GWTCDatePicker-MenuBar-vertical .gwt-MenuItem {
+  padding: 0px 10px;
+}
+.GWTCDatePicker-MenuBar-vertical table {
+  background: white;
+  border: 2px outset #CCCCCC;
+}
+
+.gwt-MenuBarPopup {
+	z-index: 20000;
+}
+
+.GWTCDatePicker-MenuBar-horizontal .gwt-MenuItem { 
+ background: transparent url(images/select.png) no-repeat right -2px ;
+ height: 17px;
+ text-align: left;
+ padding-right: 18px;
+ padding-left: 10px;
+ border: 1px inset #f0f0f0;
+}
+
+.GWTCDatePicker-MenuBar-horizontal .gwt-MenuItem-selected { 
+ background: #d0e6ff url(images/select.png) no-repeat right -2px;
+}
+
+
+/*
+.gwt-Button {
+background:transparent url(images/hborder.png) repeat-x scroll 0 -27px;
+border:1px outset #CCCCCC;
+cursor:pointer;
+font-size:small;
+margin:0;
+padding:3px 5px;
+text-decoration:none;
+}
+*/
+
+
+
+

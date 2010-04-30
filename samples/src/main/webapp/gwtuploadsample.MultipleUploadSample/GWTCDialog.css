@@ -1,0 +1,143 @@
+/*
+* {
+	margin: 0px;
+	padding: 0px;
+}
+
+body,* {
+	font-family: Tahoma, Verdana, Geneva, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	margin: 0px;
+	padding: 0px;
+}
+
+html {
+	filter: expression (           document .      
+        execCommand("BackgroundImageCache", false, true) );
+}
+
+iframe {
+	border: none;
+}
+
+.my-no-selection {
+	-moz-user-select: none;
+	-khtml-user-select: none;
+	user-select: none;
+}
+*/
+.my-shell {
+  position: absolute;
+}
+
+.my-shell-hdr {
+  width: 100%;
+  height: 27px;
+}
+
+.my-shell-hdr-text {
+  color: white;
+  font-family: "sans serif", tahoma, verdana, helvetica;
+  font-weight: bold;
+  font-size: 12px;
+  padding-left: 4px;
+}
+
+.my-shell-hdr-l {
+  background: url(images/shell/shell.gif) no-repeat;
+}
+
+.my-shell-hdr-l div {
+  width: 4px;
+}
+
+.my-shell-hdr-c {
+  width: 100%;
+  background: url(images/shell/shell.gif) repeat-x 0px -54px;
+}
+
+.my-shell-hdr-ml,.my-shell-hdr-mr {
+  background: url(images/shell/shell.gif) repeat-x 0px -54px;
+}
+
+.my-shell-hdr-r {
+  background: url(images/shell/shell.gif) no-repeat 0px -27px;
+}
+
+.my-shell-hdr-r div {
+  width: 4px;
+}
+
+.my-shell-body {
+  background-color: #C3DAF9;
+}
+
+.my-shell-body-ml {
+  background: url(images/shell/shell-sides.gif) repeat-y;
+}
+
+.my-shell-body-mr {
+  background: url(images/shell/shell-sides.gif) repeat-y right;
+}
+
+.my-shell-body-mc {
+  height: 100%;
+  width: 100%;
+  vertical-align: top;
+}
+
+.my-shell-body-ml div,.my-shell-body-mr div {
+  width: 4px;
+}
+
+.my-shell-body-bl {
+  background: url(images/shell/shell.gif) no-repeat 0px -81px;
+}
+
+.my-shell-body-bc {
+  background: url(images/shell/shell.gif) repeat-x 0px -89px;
+}
+
+.my-shell-body-br {
+  background: url(images/shell/shell.gif) no-repeat 0px -85px;
+}
+
+.my-shell-body-bl div {
+  line-height: 1px;
+  font-size: 1px;
+  height: 4px;
+}
+
+.my-shell-close {
+  cursor: pointer;
+  background: url(images/shell/btn-sprite.gif) no-repeat left 0px;
+  width: 15px;
+  height: 13px;
+}
+
+.my-shell-min {
+  cursor: pointer;
+  background: url(images/shell/btn-sprite.gif) no-repeat 0px -13px;
+  width: 13px;
+  height: 13px;
+}
+
+.my-shell-max {
+  cursor: pointer;
+  background: url(images/shell/btn-sprite.gif) no-repeat 0px -26px;
+  width: 15px;
+  height: 13px;
+}
+
+.my-shell-min-over {
+  background: url(images/shell/btn-sprite.gif) no-repeat 0px -52px;
+}
+
+.my-shell-close-over {
+  background: url(images/shell/btn-sprite.gif) no-repeat 0px -39px;
+}
+
+.my-shell-max-over {
+  background: url(images/shell/btn-sprite.gif) no-repeat 0px -65px;
+}
+

@@ -1,0 +1,48 @@
+_JSUpload is the exported version of the GWTUpload library._
+
+_The library has been developed using java and exported to javascript using gwt-compiler and [http://code.google.com/p/gwt-exporter/ gwt-exporter] library._
+
+<wiki:toc max_depth="3" />
+
+= Goals =
+
+ * The library can be used directly, without the need of knowing anything about gwt and java.
+ * The generated javascript code is minimized, optimized, obfuscated, and doesn't depend on any other library.
+ * The library works fine in all browsers supported by gwt.
+ * The library provides a simple cgi-bin written in perl that can be used in most web servers.  
+
+= Setup instructions =
+
+ # Download last version of the library: jsupload-x.x.x.zip and uncompress it in a folder.
+ # In the server side you have to install one of the provided server programs to receive the files:
+   * CGI: put the jsupload.cgi.pl (included in jsupload-x.x.x.zip) into the cgi-bin folder of your web server, and set the action parameter in your javascript code pointing to it.
+   {{{
+   uploader = new jsu.Upload({
+      action: "/cgi-bin/jsupload.cgi.pl" 
+      [...]
+   });
+   }}}
+   * Java: You can use the servlet provided with gwtupload.jar and setup it in WEB-INF/web.xml file.
+   * Rails: I'm planning to create a rails plugin soon, in the meanwhile you can use the cgi script provided.
+   * Others: Install the provided cgi script which leaves the files and information in a temporary folder. Them, use an ajax request to inform your application that the upload process has finished. 
+   {{{
+   uploader = new jsu.Upload({
+      onFinish: function(data) {
+        [call to your application, read the cookie set by the cgi uploader to know where are the uploaded files]
+      } 
+   });
+   }}}
+ # Include javascript library in your html file.  You can use relative paths or full qualified ones because the library has been compiled using cross-site linker. The library takes care loading dynamically the needed images and css.
+ {{{
+     <script language="javascript" src="[...]/jsupload.JsUpload.nocache.js"></script>
+ }}}
+ # In your html code, define the jsuOnLoad() function wich will be called once the library is loaded.
+ {{{
+     <script language='javascript'>
+      function jsuOnLoad() {
+        [...]
+      }
+     </script>
+ }}}
+
+

@@ -1,0 +1,104 @@
+/*
+.gwtc-btn {
+	background: url(images/gwtc-button-bg.jpg) repeat-x bottom;
+}
+.gwtc-btn-over, .gwtc-btn-active {
+	background: url(images/gwtc-button-bg-over.jpg) repeat-x bottom;
+}
+.GWTCBtn-over, .GWTCBtn-active {
+	background-color: #d0e6ff;
+}
+*/
+
+.GWTCBtn {
+	cursor: pointer;
+}
+
+
+.GWTCBtn {
+   height: 21px;
+   cursor: pointer;
+   font-family:  "Lucida Grande", "Trebuchet MS", Helvetica, Arial, sans-serif;
+   font-size: 10pt;
+   text-align : center;
+   -moz-user-select: none;
+   /* user-select: none; */
+}
+
+
+div.GWTCBtn-focus:focus {
+   outline-style:  dotted;
+   outline-width: thin;
+}
+
+.GWTCBtn-ml {
+	padding-left: 3px;
+}
+
+.GWTCBtn-img {
+	width: 16px;
+	height: 16px;
+	overflow: hidden;
+}
+.GWTCBtn-text {
+	font-size: 12px;
+	white-space: nowrap;
+	text-align: center;
+	padding-left: 4px;
+	padding-right: 4px;
+}
+.GWTCBtn-mr {
+	padding-left: 5px;
+}
+
+.GWTCBtn-l {
+	height: 21px;
+	background: url(images/button/btn.gif) no-repeat;
+}
+.GWTCBtn-ml, .GWTCBtn-c, .GWTCBtn-mr {
+	background: url(images/button/btn.gif) repeat-x 0px -21px;
+}
+.GWTCBtn-r {
+	background: url(images/button/btn.gif) no-repeat top right;
+}
+
+
+.GWTCBtn-over .GWTCBtn-l {
+	background-position: 0px -42px;
+}
+.GWTCBtn-over .GWTCBtn-ml,
+.GWTCBtn-over .GWTCBtn-c,
+.GWTCBtn-over .GWTCBtn-mr {
+	background-position: 0px -63px;
+}
+.GWTCBtn-over .GWTCBtn-r {
+	background-position: right -42px;
+}
+
+.GWTCBtn-down .GWTCBtn-l {
+	background-position: 0px -84px;
+}
+.GWTCBtn-down .GWTCBtn-ml,
+.GWTCBtn-down .GWTCBtn-c,
+.GWTCBtn-down .GWTCBtn-mr {
+	background-position: 0px -105px;
+}
+.GWTCBtn-down .GWTCBtn-r {
+	background-position: right -84px;
+}
+
+.GWTCBtn-disabled {
+	cursor: default;
+	color: #707070;
+}
+.GWTCBtn-disabled .GWTCBtn-l {
+	background-position: 0px -126px;
+}
+.GWTCBtn-disabled .GWTCBtn-ml, 
+.GWTCBtn-disabled .GWTCBtn-c,  
+.GWTCBtn-disabled .GWTCBtn-mr {
+	background-position: 0px -147px;
+}
+.GWTCBtn-disabled .GWTCBtn-r {
+	background-position: right -126px;
+}

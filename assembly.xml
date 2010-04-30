@@ -1,0 +1,46 @@
+<assembly>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <baseDirectory>/gwtupload-${version}</baseDirectory>
+  <files>
+   <file>
+     <outputDirectory>/</outputDirectory>
+     <source>core/target/gwtupload-${version}.jar</source>
+   </file>
+   <file>
+     <outputDirectory>/</outputDirectory>
+     <source>gae/target/gwtupload-gae-${version}.jar</source>
+   </file>
+   <file>
+     <outputDirectory>/</outputDirectory>
+     <source>jsupload/target/jsupload-${version}.zip</source>
+   </file>
+   <file>
+     <outputDirectory>/</outputDirectory>
+     <source>samples/target/gwtupload-samples-${version}.war</source>
+   </file>
+  </files>
+  <fileSets>
+    <fileSet>
+      <directory>.</directory>
+      <outputDirectory>/</outputDirectory>
+      <includes>
+        <include>README.TXT</include>
+        <include>LICENSE</include>
+        <include>pom.xml</include>
+        <include>assembly.xml</include>
+        <include>core/src/**</include>
+        <include>core/pom.xml</include>
+        <include>gae/src/**</include>
+        <include>gae/pom.xml</include>
+        <include>jsupload/src/**</include>
+        <include>jsupload/pom.xml</include>
+        <include>jsupload/assembly.xml</include>
+        <include>samples/src/**</include>
+        <include>samples/pom.xml</include>
+      </includes>
+    </fileSet>
+  </fileSets>
+
+</assembly>

@@ -1,0 +1,45 @@
+
+div.GWTCProgress-dialog {
+  border: solid 3px pink;
+  z-index: 999;
+  font-family:  "Trebuchet MS", Helvetica, Arial, sans-serif;
+  background-color:  white;
+}
+
+.GWTCProgress .prg-title {
+      font-weight: bold;
+  }
+  
+.GWTCProgress .prg-numbers,
+.GWTCProgress .prg-time {
+      font-size: 12px;
+      font-style: italic;
+  }
+  
+.GWTCProgress .prg-bar-outer {
+      border: 1px solid grey;
+}
+  
+.GWTCProgress .prg-bar-inner {
+      border: 1px solid black;
+      margin: 1px;
+}
+  
+.GWTCProgress .prg-bar-element {
+      width: 5px;
+      height: 15px;
+      margin: 1px;
+}
+  
+.GWTCProgress .prg-bar-done {
+      background: #83ae76;
+}
+  
+.GWTCProgress .prg-bar-blank {
+      background: #eee;
+}
+
+
+.GWTCProgress .prg-numbers {
+	width: 200px;
+}

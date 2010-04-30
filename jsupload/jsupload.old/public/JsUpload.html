@@ -1,0 +1,132 @@
+<html>
+<head>
+    <title>JsUpload demo, Manolo Carrasco, 2009</title>
+    <style type="text/css">
+    body {
+        font-family:verdana,arial,helvetica,clean,sans-serif;
+        font-size: 12px;
+    }
+    h1, .jsubox, p {
+        margin-top: 5px;
+        margin-left: auto;
+        margin-right: auto;
+        width: 450px; 
+    }
+    .jsubox {
+        border: 3px groove pink;
+        padding: 5px; 
+    }
+    .jsucode {
+      font-size: 10px;
+      background: #d4e4ff;
+      background: beige;
+      border: 1px solid #999999;
+      padding-top: 4px;
+      width: 420px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    </style>
+</head>
+<body>
+   <script language="javascript" src="jsupload.JsUpload.nocache.js"></script>
+   <script id='jsexample'>
+      // Method called after the JsUpload library has been loaded
+      function jsuOnLoad() {
+        new jsu.Upload({
+          type: "incubator",
+          containerId: "uploader1",
+          multiple: true, 
+          auto: true,
+          action: "/cgi-bin/jsupload.cgi.pl",
+          onFinish: loadImage
+        });
+        
+        new jsu.Upload({
+           containerId: "uploader2",
+           multiple: true, 
+           auto: true,
+           onFinish: loadImage
+        });
+        
+        new jsu.Upload({
+          type: "basic",
+          containerId: "uploader3",
+          multiple: true, 
+          auto: true,
+          onChange: null,
+          onStart: null,
+          onFinish: loadImage,
+          maxFiles: 4,
+          action: 'servlet.upld',
+          regional: {
+              uploadStatusSuccess: "Saved in the server",
+              uploadStatusError:   "Unable to save"
+          }
+        });
+
+        new jsu.Upload({
+          type: "basic",
+          containerId: "uploader4",
+          onFinish: loadImage,
+          sendMsg: "Upload image"    
+        });
+
+        new jsu.Upload({
+          containerId: "uploader5",
+          onFinish: loadImage,
+          sendMsg: "Upload image",  
+          validExtensions: ".jpg, .gif, .png"
+        });
+        
+        // Method to show a picture using the class PreloadImage
+        // The image is not shown until it has been sucessfully downloaded
+        function loadImage(upl_data) {
+           if (upl_data && upl_data.url) {
+              var image = new jsu.PreloadImage({
+                url: upl_data.url,
+                containerId: "photos",    
+                onLoad: function(img_data) {
+                  image.setSize(100, -1);
+                }
+              });
+           }
+        }
+      }
+   </script>
+   		<div id="back" class="backPanel">
+		  <a href="../">&lt;&lt; back </a>
+		</div>
+   
+   <h1><i>JsUpload</i> examples</h1>
+   <p>
+   <ul>
+   <li>
+    JsUpload is the exported version of the <a target="_blank" href='http://code.google.com/p/gwtupload'>GwtUpload</a> library. <br/>
+    </li>
+    <li>
+    Because it is pure javascript, any user can utilize the uploaders inserting only a few lines of code in the page.<br/>
+    </li>
+    <li>
+    Take a look to the <a target="_blank" href='http://code.google.com/p/gwtupload/wiki/JsUpload_Documentation'>documentation</a> to see all the available options and how to configure the server side.
+    </li>
+    </ul>
+   </p>
+   <div id="uploader1" class="jsubox"><br><br></div>
+   <div id="uploader2" class="jsubox"><br><br></div>
+   <div id="uploader3" class="jsubox"><br><br></div>
+   <div id="uploader4" class="jsubox"><br><br></div>
+   <div id="uploader5" class="jsubox"><br><br></div>
+   <div id="photos" class="jsubox"> <br></div>
+   <script>
+       // Hack to insert each example in a div
+       var jscode = document.getElementById("jsexample").innerHTML;
+       var jsparts = jscode.split(/new\s*jsu.Upload/);
+       for (i=1; i<jsparts.length; i++) {
+         var div = document.getElementById("uploader" + i);
+         var code = "        new jsu.Upload" + jsparts[i].replace(/\n/img,'ç').replace(/(}\);).*$/im,'$1').replace(/ç/g,"\n");
+         div.innerHTML = '<pre class="jsucode">' + code + '</pre>';
+       }
+   </script>
+ </body>
+</html>

@@ -1,0 +1,62 @@
+<project
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
+        http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>gwtupload</artifactId>
+  <packaging>jar</packaging>
+  <name>GwtUpload library: client and server classes (gwt: 1.6.x,1.7.x,2.0.x)</name>
+
+  <parent>
+    <groupId>gwtupload</groupId>
+    <artifactId>gwtupload-parent</artifactId>
+    <version>0.6-SNAPSHOT</version>
+  </parent>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.google.gwt</groupId>
+      <artifactId>gwt-user</artifactId>
+      <version>${gwtVersion}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>${junitVersion}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>commons-fileupload</groupId>
+      <artifactId>commons-fileupload</artifactId>
+      <version>${commonsFileuploadVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>${log4jVersion}</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <resources>
+      <resource><directory>${basedir}/src/main/java</directory></resource>
+    </resources>
+    <plugins>
+      <plugin>
+        <groupId>org.riedelcastro</groupId>
+        <artifactId>gcupload-maven-plugin</artifactId>
+        <configuration>
+          <uploads>
+            <upload>
+              <extensions>jar</extensions>
+              <labels>${downloadLabel}</labels>
+            </upload>
+          </uploads>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>

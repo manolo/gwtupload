@@ -1,0 +1,169 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                      http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>gwtupload</groupId>
+  <artifactId>gwtupload-parent</artifactId>
+  <name>Everything: sources, .jar library, .war application, .js library</name>
+  <packaging>pom</packaging>
+  <version>0.6-SNAPSHOT</version>
+
+  <modules>
+    <module>core</module>
+    <module>gae</module>
+    <module>jsupload</module>
+    <module>samples</module>
+  </modules>
+
+  <properties>
+    <maven.compiler.source>1.5</maven.compiler.source>
+    <maven.compiler.target>1.5</maven.compiler.target>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <gwtVersion>2.0.2</gwtVersion>
+    <commonsFileuploadVersion>1.2.1</commonsFileuploadVersion>
+    <gwtChismesVersion>0.9.7</gwtChismesVersion>
+    <gwtExporterVersion>2.0.10</gwtExporterVersion>
+    <gwtIncubatorVersion>20100204-r1747</gwtIncubatorVersion>
+    <junitVersion>3.8.2</junitVersion>
+    <log4jVersion>1.2.16</log4jVersion>
+    <gaeVersion>1.2.0</gaeVersion>
+    <downloadLabel>Beta</downloadLabel>
+  </properties>
+
+  <description>
+   GWTUpload is a library for uploading files to web servers, 
+   showing a progress bar with real information about the process (file size, bytes transferred, etc). 
+   It uses ajax requests to ask the web server for the upload progress. 
+   It has two components written in java, the server side with servlet and utility classes, 
+   and the client side that is compiled into javascript using gwt. 
+
+   GWTUpload-gae is a library with aditional classes needed for using GwtUpload in Google Application Engine (GAE).
+
+   JSUpload is the client library but compiled and exported into javascript, 
+   so users without Gwt skills can use it directly in their web pages. 
+  </description>
+
+  <url>http://code.google.com/p/gwtupload/</url>
+
+  <licenses>
+    <license>
+      <name>Apache License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <id>manolo</id>
+      <name>Manuel Carrasco Moñino</name>
+      <email>manolo@apache.org</email>
+      <organization>ASF</organization>
+      <roles>
+         <role>Owner</role>
+         <role>Developer</role>
+      </roles>
+    </developer>
+  </developers>
+
+  <ciManagement></ciManagement>
+
+  <mailingLists>
+    <mailingList>
+      <name>gwtupload@googlegroups.com</name>
+      <post>gwtupload@googlegroups.com</post>
+      <archive>http://groups.google.com/group/gwtupload</archive>
+    </mailingList>
+  </mailingLists>
+
+  <prerequisites>
+    <maven>[2.1,)</maven>
+  </prerequisites>
+
+  <repositories>
+    <repository>
+      <id>repo1</id>
+      <url>http://repo1.maven.org/maven2/</url>
+    </repository>
+    <repository>
+      <id>gwtupload</id>
+      <url>http://gwtupload.googlecode.com/svn/mavenrepo/</url>
+    </repository>
+    <repository>
+      <id>gwtchismes</id>
+      <url>http://gwtchismes.googlecode.com/svn/mavenrepo/</url>
+    </repository>
+    <repository>
+      <id>hupa-repo-incubator</id>
+      <url>http://svn.apache.org/repos/asf/james/hupa/lib</url>
+      <layout>legacy</layout>
+    </repository>
+  </repositories>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>repository.riedelcastro.org</id>
+      <url>http://repository.riedelcastro.org</url>
+    </pluginRepository>
+  </pluginRepositories>
+
+  <issueManagement>
+    <system>Google Code</system>
+    <url>http://code.google.com/p/gwtupload/issues/list</url>
+  </issueManagement>
+
+  <scm>
+    <connection>scm:svn:http://gwtquery.googlecode.com/svn/trunk</connection>
+    <developerConnection>scm:svn:https://gwtupload.googlecode.com/svn/trunk</developerConnection>
+    <url>http://code.google.com/p/gwtupload/source/browse/trunk</url>
+  </scm>
+
+  <distributionManagement>
+    <repository>
+      <uniqueVersion>false</uniqueVersion>
+      <id>googlecode</id>
+      <url>svn:https://gwtupload.googlecode.com/svn/mavenrepo/</url>
+    </repository>
+    <site>
+      <id>googlecode</id>
+      <url>svn:https://gwtupload.googlecode.com/svn/site/${artifactId}</url>
+    </site>
+    <snapshotRepository>
+      <uniqueVersion>false</uniqueVersion>
+      <id>googlecode</id>
+      <url>dav:https://gwtupload.googlecode.com/svn/mavenrepo/</url>
+    </snapshotRepository>
+  </distributionManagement>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.riedelcastro</groupId>
+        <artifactId>gcupload-maven-plugin</artifactId>
+        <version>0.9</version>
+        <configuration>
+          <allowSnapshots>true</allowSnapshots>
+          <projectName>gwtupload</projectName>
+          <uploads>
+            <upload>
+              <extensions>zip</extensions>
+              <labels>${downloadLabel}</labels>
+            </upload>
+          </uploads>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <configuration>
+          <descriptors>
+            <descriptor>${basedir}/assembly.xml</descriptor>
+          </descriptors>
+        </configuration>
+      </plugin>
+
+    </plugins>
+  </build>
+</project>

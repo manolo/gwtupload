@@ -1,0 +1,245 @@
+.my-btn {
+	height: 21px;
+	cursor: pointer;
+	-moz-user-select: none;
+	/*-khtml-user-select: none; */
+	user-select: none;
+	
+   font-family:  "Lucida Grande", "Trebuchet MS", Helvetica, Arial, sans-serif;
+   font-size: 10pt;
+	
+}
+my-btn-bar-left {
+	padding-right: 6px;
+}
+
+.my-btn-bar-right {
+	padding-left: 6px;
+}
+
+.my-icon-btn {
+	width: 16px;
+	height: 16px;
+	overflow: hidden;
+}
+
+
+.my-btn-text {
+	color: black;
+	font-size: 12px;
+	white-space: nowrap;
+}
+
+.my-btn-l {
+	height: 21px;
+	background: url(images/button/btn.gif) no-repeat;
+}
+
+.my-btn-l div {
+	width: 5px;
+}
+
+.my-btn-r {
+	background: url(images/button/btn.gif) no-repeat top right;
+}
+
+.my-btn-r div {
+	width: 5px;
+}
+
+.my-btn-ml,.my-btn-mr {
+	background: url(images/button/btn.gif) repeat-x 0px -21px;
+}
+
+.my-btn-c {
+	text-align: center;
+	background: url(images/button/btn.gif) repeat-x 0px -21px;
+}
+
+.my-btn-icon .my-btn-ml {
+	padding-right: 4px;
+	padding-top: 2px;
+}
+
+.my-btn-icon .my-btn-text {
+	padding: 0px 5px 0px 2px;
+}
+
+.my-btn-over .my-btn-l {
+	background-position: 0px -42px;
+}
+
+.my-btn-over .my-btn-ml,.my-btn-over .my-btn-mr {
+	background-position: 0px -63px;
+}
+
+.my-btn-over .my-btn-c {
+	background-position: 0px -63px;
+}
+
+.my-btn-over .my-btn-r {
+	background-position: right -42px;
+}
+
+.my-btn-down .my-btn-l {
+	background-position: 0px -84px;
+}
+
+.my-btn-down .my-btn-ml,.my-btn-down .my-btn-mr {
+	background-position: 0px -105px;
+}
+
+.my-btn-down .my-btn-c {
+	background-position: 0px -105px;
+}
+
+.my-btn-down .my-btn-r {
+	background-position: right -84px;
+}
+
+.my-btn-disabled {
+	cursor: default;
+	/*color: grey;*/
+}
+
+.my-btn-disabled .my-btn-text {
+	color: #707070;
+}
+
+.my-btn-disabled .my-btn-l {
+	background-position: 0px -126px;
+}
+
+.my-btn-disabled .my-btn-ml,.my-btn-disabled .my-btn-mr {
+	background-position: 0px -147px;
+}
+
+.my-btn-disabled .my-btn-c {
+	background-position: 0px -147px;
+}
+
+.my-btn-disabled .my-btn-r {
+	background-position: right -126px;
+}
+
+.x-btn-icon .x-btn-center .x-btn-text {
+	background-position: center;
+	background-repeat: no-repeat;
+	height: 16px;
+	width: 16px;
+	cursor: pointer;
+	white-space: nowrap;
+	padding: 0;
+}
+
+.x-btn-icon .x-btn-center {
+	padding: 1px;
+}
+
+.x-btn em {
+	font-style: normal;
+	font-weight: normal;
+}
+
+.x-btn-text-icon .x-btn-center .x-btn-text {
+	background-position: 0 2px;
+	background-repeat: no-repeat;
+	padding-left: 18px;
+	padding-top: 3px;
+	padding-bottom: 3px;
+	padding-right: 0;
+}
+
+.x-btn-left,.x-btn-right {
+	font-size: 1px;
+	line-height: 1px;
+}
+
+.x-btn-left {
+	width: 3px;
+	height: 21px;
+	background: url(images/basic-dialog/btn-sprite.gif) no-repeat 0 0;
+}
+
+.x-btn-right {
+	width: 3px;
+	height: 21px;
+	background: url(images/basic-dialog/btn-sprite.gif) no-repeat 0 -21px;
+}
+
+.x-btn-left i,.x-btn-right i {
+	display: block;
+	width: 3px;
+	overflow: hidden;
+	font-size: 1px;
+	line-height: 1px;
+}
+
+.x-btn-center {
+	background: url(images/basic-dialog/btn-sprite.gif) repeat-x 0 -42px;
+	vertical-align: middle;
+	text-align: center;
+	padding: 0 5px;
+	cursor: pointer;
+	white-space: nowrap;
+}
+
+.x-btn-over .x-btn-left {
+	background-position: 0 -63px;
+}
+
+.x-btn-over .x-btn-right {
+	background-position: 0 -84px;
+}
+
+.x-btn-over .x-btn-center {
+	background-position: 0 -105px;
+}
+
+.x-btn-down .x-btn-center,.x-btn-menu-active .x-btn-center {
+	background-position: 0 -126px;
+}
+
+.x-btn-disabled * {
+	color: gray !important;
+	cursor: default !important;
+}
+
+.x-btn-menu-text-wrap .x-btn-center {
+	padding: 0 3px;
+}
+
+.ext-gecko .x-btn-menu-text-wrap .x-btn-center {
+	padding: 0 1px;
+}
+
+.x-btn-menu-arrow-wrap .x-btn-center {
+	padding: 0;
+}
+
+.x-btn-menu-arrow-wrap .x-btn-center button {
+	width: 12px !important;
+	height: 21px;
+	padding: 0 !important;
+	display: block;
+	background: transparent url(images/basic-dialog/btn-arrow.gif) no-repeat
+		left 3px;
+}
+
+.x-btn-with-menu  .x-btn-center {
+	padding-right: 2px !important;
+}
+
+.x-btn-with-menu  .x-btn-center em {
+	display: block;
+	background: transparent url(images/toolbar/btn-arrow.gif) no-repeat
+		right 0;
+	padding-right: 10px;
+}
+
+.x-btn-text-icon .x-btn-with-menu .x-btn-center em {
+	display: block;
+	background: transparent url(images/toolbar/btn-arrow.gif) no-repeat
+		right 3px;
+	padding-right: 10px;
+}

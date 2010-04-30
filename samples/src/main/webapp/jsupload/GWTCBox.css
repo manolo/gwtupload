@@ -1,0 +1,123 @@
+
+.GWTCBox {
+	font-family: "Myriad Pro","Myriad Web","Tahoma","Helvetica","Arial",sans-serif;
+	font-size: 12px;
+}
+.GWTCBox .gwtc-boxPanel {
+	font-size: 12px;
+}
+
+.GWTCBox .topCenter {
+	height: 8px;
+	overflow: hidden;
+}
+.GWTCBox .bottomCenter {
+	height: 8px;
+	overflow: hidden;
+}
+.GWTCBox .middleLeft{
+	padding-left: 4px;
+	overflow: hidden;
+}
+.GWTCBox .middleRight {
+	padding-right: 4px;
+	overflow: hidden;
+}
+.GWTCBox .middleCenter {
+	padding: 4px 10px;
+}
+.GWTCBox .topLeftInner,
+.GWTCBox .topRightInner,
+.GWTCBox .bottomLeftInner,
+.GWTCBox .bottomRightInner {
+    width: 8px;
+    height: 8px;
+    zoom: 1;
+	overflow: hidden;
+}
+
+.GWTCBox .topCenter {
+	background: transparent url(images/box/m-tb.png) repeat-x 0 0;
+}
+.GWTCBox .bottomCenter {
+	background: transparent url(images/box/m-bb.png) repeat-x 0 0;
+}
+.GWTCBox .middleLeft{
+	background: transparent url(images/box/m-cl.png) repeat-y 0 0px;
+}
+.GWTCBox .middleRight {
+	background: transparent url(images/box/m-cr.png) repeat-y 0 0px;
+}
+.GWTCBox .middleCenter {
+	background: white url(images/box/m-cb.png) repeat-x 0 -16px;
+}
+.GWTCBox .topLeft {
+  background: transparent url(images/box/m-corners.png) no-repeat 0 0;
+}
+.GWTCBox .topRight {
+  background: transparent url(images/box/m-corners.png) no-repeat right -8px;
+}
+.GWTCBox .bottomLeft {
+	background: transparent url(images/box/m-corners.png) no-repeat 0 -16px;
+}
+.GWTCBox .bottomRight {
+  background: transparent url(images/box/m-corners.png) no-repeat right -24px;
+}
+
+.GWTCBox-grey .topCenter {
+	background: transparent url(images/box/g-tb.gif) repeat-x 0 0;
+}
+.GWTCBox-grey .bottomCenter {
+	background: transparent url(images/box/g-tb.gif) repeat-x 0 -8px;
+}
+.GWTCBox-grey .middleLeft{
+	background: transparent url(images/box/g-cl.gif) repeat-y 0 0px;
+}
+.GWTCBox-grey .middleRight {
+	background: transparent url(images/box/g-cr.gif) repeat-y 0 0px;
+}
+.GWTCBox-grey .middleCenter {
+	background: #eee url(images/box/g-tb.gif) repeat-x 0 -16px;
+}
+.GWTCBox-grey .topLeft {
+  background: transparent url(images/box/g-corners.gif) no-repeat 0 0;
+}
+.GWTCBox-grey .topRight {
+  background: transparent url(images/box/g-corners.gif) no-repeat right -8px;
+}
+.GWTCBox-grey .bottomLeft {
+	background: transparent url(images/box/g-corners.gif) no-repeat 0 -16px;
+}
+.GWTCBox-grey .bottomRight {
+  background: transparent url(images/box/g-corners.gif) no-repeat right -24px;
+}
+
+
+.GWTCBox-blue .topCenter {
+	background: transparent url(images/box/b-tb.gif) repeat-x 0 0;
+}
+.GWTCBox-blue .bottomCenter {
+	background: transparent url(images/box/b-tb.gif) repeat-x 0 -8px;
+}
+.GWTCBox-blue .middleLeft{
+	background: transparent url(images/box/b-cl.gif) repeat-y 0 0px;
+}
+.GWTCBox-blue .middleRight {
+	background: transparent url(images/box/b-cr.gif) repeat-y 0 0px;
+}
+.GWTCBox-blue .middleCenter {
+	background: #c3daf9 url(images/box/b-tb.gif) repeat-x 0 -16px;
+}
+.GWTCBox-blue .topLeft {
+  background: transparent url(images/box/b-corners.gif) no-repeat 0 0;
+}
+.GWTCBox-blue .topRight {
+  background: transparent url(images/box/b-corners.gif) no-repeat right -8px;
+}
+.GWTCBox-blue .bottomLeft {
+	background: transparent url(images/box/b-corners.gif) no-repeat 0 -16px;
+}
+.GWTCBox-blue .bottomRight {
+  background: transparent url(images/box/b-corners.gif) no-repeat right -24px;
+}
+

@@ -1,0 +1,56 @@
+
+.GWTCTabPanel {
+	border-collapse:collapse;
+	width:100%;
+}
+
+.GWTCTabPanel .gwt-TabBar {
+	padding:0;
+	border-collapse:collapse;
+	height:27px;
+	margin:0.5em 0 0 0;
+}
+
+.GWTCTabPanel .gwt-TabBar td div.gwt-TabBarItem {
+	background:url(images/tabGreyLeft.png) no-repeat bottom left;
+	padding-left:1.2em;
+	height:27px;
+	cursor:pointer;
+}
+
+.GWTCTabPanel .gwt-TabBar td div.gwt-TabBarItem div {
+	font:16px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;	
+	background:url(images/tabGreyRight.png) no-repeat bottom right;
+	height:27px;
+	line-height:27px;
+	padding-right: 1.2em;
+	white-space: nowrap;
+}
+
+.GWTCTabPanel .gwt-TabBar td div.gwt-TabBarItem.gwt-TabBarItem-selected {
+	background:url(images/tabWhiteLeft.png) no-repeat bottom left;
+	padding-left:1.5em;
+	height:32px;
+	border-bottom:solid 1px #fff;
+}
+
+.GWTCTabPanel .gwt-TabBar td div.gwt-TabBarItem.gwt-TabBarItem-selected div {
+	font-weight:bold;
+	color:#444;
+	background:url(images/tabWhiteRight.png) no-repeat bottom right;
+	height:32px;
+	line-height:32px;
+	padding-right:1.2em;
+}
+
+.GWTCTabPanel .gwt-TabBar .gwt-TabBarFirst {
+	background:none;
+	padding:0;
+	border-bottom:solid 1px #dedede;
+}
+
+.GWTCTabPanel .gwt-TabBar .gwt-TabBarRest {
+	background:none;
+	padding:0;
+	border-bottom:solid 1px #dedede;
+}

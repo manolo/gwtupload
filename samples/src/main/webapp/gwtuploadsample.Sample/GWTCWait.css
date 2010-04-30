@@ -1,0 +1,15 @@
+div.GWTCGlassPanel {
+  opacity: 0.40;
+  background-color: #d0e6ff;
+  zoom: 1;
+  filter: alpha(opacity=40);
+}
+
+.GWTCWait {
+  font-family:  "Trebuchet MS", Helvetica, Arial, sans-serif;
+  background: transparent;
+}  
+
+.GWTCWait .panel { 
+  text-align: center;
+}

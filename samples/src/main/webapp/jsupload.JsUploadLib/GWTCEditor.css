@@ -1,0 +1,7 @@
+
+/** load gwt standard.css before this **/
+
+.GWTCEditor {
+	width: 100%;
+	border: 2px solid #C5D9FF;
+}

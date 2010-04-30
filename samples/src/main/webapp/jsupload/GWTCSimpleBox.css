@@ -1,0 +1,220 @@
+/*
+div.x-box-tl {
+    border: 2px;
+    zoom:1;
+    background: transparent url(images/box/corners.gif) no-repeat 0 0;
+}
+div.x-box-tc {
+	height: 8px;
+	overflow: hidden;
+    background: transparent url(images/box/tb.gif) repeat-x 0 0;
+}
+div.x-box-tr {
+   background: transparent url(images/box/corners.gif) no-repeat right -8px;
+}
+div.x-box-ml {
+   padding-left: 4px;
+   overflow: hidden;
+   zoom:1;
+   background: transparent url(images/box/l.gif) repeat-y 0;
+}
+div.x-box-mc {
+	background: #eee url(images/box/tb.gif) repeat-x 0 -16px;
+	padding: 4px 10px;
+	font-family: "Myriad Pro","Myriad Web","Tahoma","Helvetica","Arial",sans-serif;
+	color: #393939;
+        width: 100%;
+	font-size: 12px;
+}
+
+div.x-box-blue > div > div > div.x-box-mc {
+	background: #eee url(images/box/tb.gif) repeat-x 0 -16px;
+}
+div.x-box-mr {
+	padding-right: 4px;
+	overflow: hidden;
+    background: transparent url(images/box/r.gif) repeat-y right;
+}
+div.x-box-bl {
+    zoom:1;
+    background: transparent url(images/box/corners.gif) no-repeat 0 -16px;
+}
+div.x-box-bc {
+    height: 8px;
+    overflow: hidden;
+    background: transparent url(images/box/tb.gif) repeat-x 0 -8px;
+}
+div.x-box-br {
+    background: transparent url(images/box/corners.gif) no-repeat right -24px;
+}
+
+.x-box-tl, .x-box-bl {
+   padding-left: 8px;
+   overflow: hidden;
+}
+
+.x-box-tr, .x-box-br {
+   padding-right: 8px;
+   overflow: hidden;
+}
+
+.x-box-mc h3 {
+	font-size: 14px;
+	font-weight: bold;
+    margin: 0 0 4 0;
+    zoom:1;
+}
+
+div.x-box-blue > div.x-box-bl, 
+div.x-box-blue > div > div.x-box-br, 
+div.x-box-blue > div.x-box-tl, 
+div.x-box-blue > div > div.x-box-tr {
+  background-image: url(images/box/corners-blue.gif); 
+}
+
+div.x-box-blue > div.x-box-ml {
+  background-image: url(images/box/l-blue.gif);
+}
+
+div.x-box-blue > div > div > div.x-box-bc,
+div.x-box-blue > div > div > div.x-box-mc,
+div.x-box-blue > div > div > div.x-box-tc {
+  background-image: url(images/box/tb-blue.gif);
+}
+
+.x-box-blue .x-box-mc h3 {
+   color: #17385b;
+}
+
+div.x-box-blue > div > div > div.x-box-mc {
+   background-color: #c3daf9;
+}
+
+*/
+
+.x-box-tl {
+	background: transparent url(images/box/n-corners.gif) no-repeat 0 0;
+    zoom:1;
+}
+
+.x-box-tc {
+	height: 8px;
+	background: transparent url(images/box/n-tb.gif) repeat-x 0 0;
+	overflow: hidden;
+}
+
+.x-box-tr {
+	background: transparent url(images/box/n-corners.gif) no-repeat right -8px;
+}
+
+.x-box-ml {
+	background: transparent url(images/box/n-cl.gif) repeat-y 0;
+	padding-left: 4px;
+	overflow: hidden;
+    zoom:1;
+}
+
+.x-box-mc {
+	background: #eee url(images/box/n-tb.gif) repeat-x 0 -16px;
+	padding: 4px 10px;
+	font-family: "Myriad Pro","Myriad Web","Tahoma","Helvetica","Arial",sans-serif;
+	color: #393939;
+	font-size: 12px;
+}
+
+.x-box-mc h3 {
+	font-size: 14px;
+	font-weight: bold;
+	margin: 0px 0px 4px 0px;
+    zoom:1;
+}
+
+.x-box-mr {
+	background: transparent url(images/box/n-cr.gif) repeat-y right;
+	padding-right: 4px;
+	overflow: hidden;
+}
+
+.x-box-bl {
+	background: transparent url(images/box/n-corners.gif) no-repeat 0 -16px;
+    zoom:1;
+}
+
+.x-box-bc {
+	background: transparent url(images/box/n-tb.gif) repeat-x 0 -8px;
+	height: 8px;
+	overflow: hidden;
+}
+
+.x-box-br {
+	background: transparent url(images/box/n-corners.gif) no-repeat right -24px;
+}
+
+.x-box-tl, .x-box-bl {
+	padding-left: 8px;
+	overflow: hidden;
+}
+
+.x-box-tr, .x-box-br {
+	padding-right: 8px;
+	overflow: hidden;
+}
+/*
+.x-box-blue .x-box-bl, .x-box-blue .x-box-br, .x-box-blue .x-box-tl, .x-box-blue .x-box-tr {
+	background-image: url(images/box/corners-blue.gif);
+}
+
+.x-box-blue .x-box-bc, .x-box-blue .x-box-mc, .x-box-blue .x-box-tc {
+	background-image: url(images/box/tb-blue.gif);
+}
+
+.x-box-blue .x-box-mc {
+	background-color: #c3daf9;
+}
+
+.x-box-blue .x-box-mc h3 {
+	color: #17385b;
+}
+
+.x-box-blue .x-box-ml {
+	background-image: url(images/box/l-blue.gif);
+}
+
+.x-box-blue .x-box-mr {
+	background-image: url(images/box/r-blue.gif);
+}
+*/
+div.x-box-blue > div.x-box-bl, 
+div.x-box-blue > div > div.x-box-br, 
+div.x-box-blue > div.x-box-tl, 
+div.x-box-blue > div > div.x-box-tr {
+  background-image: url(images/box/corners-blue.gif); 
+}
+
+div.x-box-blue > div.x-box-ml {
+  background-image: url(images/box/l-blue.gif);
+}
+
+div.x-box-blue > div > div > div.x-box-bc,
+div.x-box-blue > div > div > div.x-box-mc,
+div.x-box-blue > div > div > div.x-box-tc {
+  background-image: url(images/box/tb-blue.gif);
+}
+* > div.x-box-blue  > div  > div > div.x-box-mc {
+   	background-color: #c3daf9;
+}
+
+.x-box-blue .x-box-mc h3 {
+   color: #17385b;
+}
+
+/*
+* > div.x-box-blue  > div  > div  > div.x-box-mc {
+   background-color:  expression(#c3daf9);
+}
+*/
+
+
+
+
+

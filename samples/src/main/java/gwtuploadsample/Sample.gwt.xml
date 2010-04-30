@@ -1,0 +1,4 @@
+<module>
+  <inherits name="gwtupload.GWTUpload"/>
+  <inherits name="jsupload.JsUploadLib"/>
+</module>

@@ -1,0 +1,77 @@
+.GWTCIntervalSelector * {
+  font-family:  "Lucida Grande", "Trebuchet MS", Helvetica, Arial, sans-serif;
+  font-size: 10pt;
+  vertical-align: middle;
+}
+
+.NightsSelectorListBox {
+	font-size: 10px;
+	height: 18px;
+	margin-left: 4px;
+	margin-right: 4px;
+}
+
+.GWTCIntervalSelector .GWTCIntervalLayout1 table.DateInfo, 
+.GWTCIntervalSelector .GWTCIntervalLayout1 table.DateChanger {
+	margin-left: auto;
+	margin-right: auto;
+	width : 20em; 
+	border-collapse : collapse; 
+}
+.GWTCIntervalSelector .GWTCIntervalLayout1 table.DateInfo {
+	border : 1px solid #ddd;  
+}
+.GWTCIntervalSelector .GWTCIntervalLayout1 tr.checkinRow  {
+	background : #dfdfdf;
+}
+.GWTCIntervalSelector .GWTCIntervalLayout1 .DateChanger div.gwt-Label {
+  text-align: right;
+}
+
+.GWTCIntervalSelector table.GWTCIntervalLayout2, 
+.GWTCIntervalSelector table.GWTCIntervalLayout3,
+.GWTCIntervalSelector table.GWTCIntervalLayout1 {
+	border : 1px solid #dfdfdf; 
+}
+
+.GWTCIntervalSelector .checkinButton,
+.GWTCIntervalSelector .checkoutButton {
+    border : none;
+    background : transparent url(images/gwtc-calendar.gif) no-repeat left center;
+    cursor : pointer;
+	min-height: 20px;
+	margin-left: 10px;
+    padding-left: 16px;
+}
+
+
+.GWTCIntervalSelector .checkinButton:hover, .GWTCIntervalSelector .checkoutButton:hover 
+{
+	background: transparent url(images/gwtc-calendar.gif) no-repeat left center;
+	color : #f60; 
+}
+
+.GWTCIntervalLayout2 .nightsLabel {
+    margin-left: 7px;
+}
+
+.GWTCIntervalSelector .labels 
+{
+	font-weight: bold; color : #000;
+}
+.GWTCIntervalLayout4 .checkoutDateValue, .GWTCIntervalLayout5 .checkoutDateValue
+{
+	padding-left: 4px;
+}
+
+.GWTCIntervalSelector .checkinWeekValue, .GWTCIntervalSelector .checkoutWeekValue  {
+    padding: 0px 5px;
+}
+
+.GWTCIntervalSelector-week .checkinRow,
+.GWTCIntervalSelector-week .nightsValue { 
+    border: 2px ridge grey;
+    min-height: 20px;
+}
+
+

@@ -1,0 +1,32 @@
+.GWTCAlert {
+   font-family:  "Lucida Grande", "Trebuchet MS", Helvetica, Arial, sans-serif;
+   font-size: 12pt;
+   border : 5px solid #ff4a26;
+   background : #fff;
+   color : #000;
+   padding :  4px 10px 10px 10px;
+   text-align : center;
+}
+
+.GWTCAlert-box {
+	border: none;
+    background : transparent;
+}
+
+.GWTCAlert .Caption {
+  display: none;		
+}
+
+.GWTCAlert .panel .msgCell {
+   padding : 8px 0 40px 0;width : 230px;
+}
+.GWTCAlert .panel td {
+   text-align : center;
+}
+
+.GWTCAlert .panel .btnCell .okButton {
+   margin-left: auto;
+   margin-right: auto;
+   height: 16px;
+   width: 50px;
+}
