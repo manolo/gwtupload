@@ -32,6 +32,50 @@
     <downloadLabel>Beta</downloadLabel>
   </properties>
 
+  <dependencies>
+    <dependency>
+      <groupId>com.google.gwt</groupId>
+      <artifactId>gwt-user</artifactId>
+      <version>${gwtVersion}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>${log4jVersion}</version>
+    </dependency>    
+    <dependency>
+      <groupId>commons-fileupload</groupId>
+      <artifactId>commons-fileupload</artifactId>
+      <version>${commonsFileuploadVersion}</version>
+    </dependency>    
+    <dependency>
+      <groupId>gwtchismes</groupId>
+      <artifactId>gwtchismes</artifactId>
+      <version>${gwtChismesVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.gwt</groupId>
+      <artifactId>gwt-incubator</artifactId>
+      <version>${gwtIncubatorVersion}</version>
+    </dependency>    
+    <dependency>
+      <groupId>org.timepedia.exporter</groupId>
+      <artifactId>gwtexporter</artifactId>
+      <version>${gwtExporterVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.appengine</groupId>
+      <artifactId>appengine-api-1.0-sdk</artifactId>
+      <version>${gaeVersion}</version>
+      <scope>provided</scope>
+    </dependency>    
+  </dependencies>
+
+
+
+
+<!--  </dependencies>-->
   <description>
    GWTUpload is a library for uploading files to web servers, 
    showing a progress bar with real information about the process (file size, bytes transferred, etc). 
@@ -78,10 +122,6 @@
       <archive>http://groups.google.com/group/gwtupload</archive>
     </mailingList>
   </mailingLists>
-
-  <prerequisites>
-    <maven>[2.1,)</maven>
-  </prerequisites>
 
   <repositories>
     <repository>
@@ -179,33 +219,6 @@
     </extensions>
   </build>
 
-  <dependencies>
-    <dependency>
-      <groupId>org.timepedia.exporter</groupId>
-      <artifactId>gwtexporter</artifactId>
-      <version>${gwtExporterVersion}</version>
-    </dependency>
-    <dependency>
-      <groupId>gwtchismes</groupId>
-      <artifactId>gwtchismes</artifactId>
-      <version>${gwtChismesVersion}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.google.gwt</groupId>
-      <artifactId>gwt-incubator</artifactId>
-      <version>${gwtIncubatorVersion}</version>
-    </dependency>
-    <dependency>
-      <groupId>commons-fileupload</groupId>
-      <artifactId>commons-fileupload</artifactId>
-      <version>${commonsFileuploadVersion}</version>
-    </dependency>
-    <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
-      <version>${log4jVersion}</version>
-    </dependency>
-  </dependencies>
 
   <reporting>
     <plugins>
