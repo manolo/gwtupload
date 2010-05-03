@@ -1,0 +1,64 @@
+body { 
+ background-color: #f3ead8; color:#000000 ; 
+ font-family: Arial, Helvetica, sans-serif;
+ font-size:14px;
+}
+
+h1, h2, h3 {
+ font-family: Arial, Helvetica, sans-serif;
+ color: navy;
+ font-size: 14px;
+}
+code {
+ font-size: 10px;
+ color: grey;
+}
+pre {
+ font-size: 11px;
+ color: grey;
+}
+
+a {
+ font-weight: bold;
+ color: #331166;
+ text-decoration: none;
+}
+a:hover {
+ color: #666666;
+ text-decoration: underline;
+}
+hr{
+ color: #666666;
+ background-color: #666666;
+ text-align: left;
+ border: 0;
+ text-align: left;
+ margin-left: 0; 
+}
+
+.TableHeadingColor     { background-image:url(javadoc.jpg); background-repeat:repeat-x; color:#e8f1f6;}
+.TableHeadingColor a:link, .TableHeadingColor a:visited {
+ color: #bbbbbb;
+}
+.TableHeadingColor a:hover {
+ border: none;
+ background-color:#666666;
+}
+.TableSubHeadingColor  { background: #e7d4d8; color:#000000 }
+.TableRowColor         { background: #e8f1f6; color:#000000 }
+
+.FrameTitleFont   { font-size: 100%; font-family: Helvetica, Arial, sans-serif; color:#000000 }
+.FrameHeadingFont { font-size:  90%; font-family: Helvetica, Arial, sans-serif; color:#000000 }
+.FrameItemFont    { font-size:  90%; font-family: Helvetica, Arial, sans-serif; color:#000000 }
+
+.NavBarCell1    { background-image:url(javadoc.jpg);}
+.NavBarCell1 a:hover {
+ border: none;
+ background-color:#666666;
+}
+.NavBarCell1Rev { background-color:#666666; color:#e8f1f6}
+.NavBarFont1    { font-family: Arial, Helvetica, sans-serif; color:#e8f1f6;}
+.NavBarFont1Rev { font-family: Arial, Helvetica, sans-serif; }
+
+.NavBarCell2    { font-family: Arial, Helvetica, sans-serif; background-color:#e8f1f6; color:#000000}
+.NavBarCell3    { font-family: Arial, Helvetica, sans-serif; background-color:#e8f1f6; color:#000000}
