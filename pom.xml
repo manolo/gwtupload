@@ -184,19 +184,16 @@
       <groupId>org.timepedia.exporter</groupId>
       <artifactId>gwtexporter</artifactId>
       <version>${gwtExporterVersion}</version>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>gwtchismes</groupId>
       <artifactId>gwtchismes</artifactId>
       <version>${gwtChismesVersion}</version>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-incubator</artifactId>
       <version>${gwtIncubatorVersion}</version>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>commons-fileupload</groupId>
