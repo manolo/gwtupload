@@ -96,7 +96,7 @@ public interface IUploader extends HasJsData, HasWidgets {
     @DefaultStringValue("Unable to contact with the server: ")
     String uploaderServerUnavailable();
 
-    @DefaultStringValue("Timeout sending the file:\n perhups your browser does not send files correctly,\n your session has expired,\n or there was a server error.\nPlease try again.")
+    @DefaultStringValue("Timeout sending the file:\n perhaps your browser does not send files correctly,\n your session has expired,\n or there was a server error.\nPlease try again.")
     String uploaderTimeout();
   }
 
