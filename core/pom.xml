@@ -7,11 +7,12 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>gwtupload</artifactId>
   <packaging>jar</packaging>
-  <name>GwtUpload library: client and server classes (gwt: 1.6.x,1.7.x,2.0.x)</name>
+  <name>GwtUpload library</name>
+  <description>GwtUpload library: client and server classes (gwt: 1.6.x,1.7.x,2.0.x)</description>
 
   <parent>
     <groupId>gwtupload</groupId>
-    <artifactId>gwtupload-parent</artifactId>
+    <artifactId>gwtupload-project</artifactId>
     <version>0.6-SNAPSHOT</version>
   </parent>
 
@@ -59,4 +60,12 @@
       </plugin>
     </plugins>
   </build>
+
+  <distributionManagement>
+    <site>
+      <id>googlecode</id>
+      <url>svn:https://gwtupload.googlecode.com/svn/site/${artifactId}</url>
+    </site>
+  </distributionManagement>
+
 </project>

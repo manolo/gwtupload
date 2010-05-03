@@ -7,11 +7,12 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>gwtupload-samples</artifactId>
   <packaging>war</packaging>
-  <name>Examples ready to deploy</name>
+  <name>GwtUpload Examples</name>
+  <description>Examples ready to deploy</description>
 
   <parent>
     <groupId>gwtupload</groupId>
-    <artifactId>gwtupload-parent</artifactId>
+    <artifactId>gwtupload-project</artifactId>
     <version>0.6-SNAPSHOT</version>
   </parent>
 
@@ -108,9 +109,9 @@
           <style>PRETTY</style>
           <!-- Modules to compile -->
           <modules>
-            <module>gwtuploadsample.ChismesUploadSample</module>
+            <!-- <module>gwtuploadsample.ChismesUploadSample</module>
             <module>gwtuploadsample.SingleUploadSample</module>
-            <module>gwtuploadsample.MultipleUploadSample</module>
+            <module>gwtuploadsample.MultipleUploadSample</module> -->
             <module>jsupload.JsUpload</module>
           </modules>
         </configuration>
@@ -129,5 +130,12 @@
       </plugin>
     </plugins>
   </build>
+
+  <distributionManagement>
+    <site>
+      <id>googlecode</id>
+      <url>svn:https://gwtupload.googlecode.com/svn/site/${artifactId}</url>
+    </site>
+  </distributionManagement>
 
 </project>

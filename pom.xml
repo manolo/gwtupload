@@ -5,8 +5,8 @@
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>gwtupload</groupId>
-  <artifactId>gwtupload-parent</artifactId>
-  <name>Everything: sources, .jar library, .war application, .js library</name>
+  <artifactId>gwtupload-project</artifactId>
+  <name>GwtUpload project</name>
   <packaging>pom</packaging>
   <version>0.6-SNAPSHOT</version>
 
@@ -43,6 +43,8 @@
 
    JSUpload is the client library but compiled and exported into javascript, 
    so users without Gwt skills can use it directly in their web pages. 
+
+   It includes a bunch of useful examples to learn how to use the library and see its features.
   </description>
 
   <url>http://code.google.com/p/gwtupload/</url>
@@ -103,6 +105,10 @@
 
   <pluginRepositories>
     <pluginRepository>
+      <id>repo1-plugins</id>
+      <url>http://repo1.maven.org/maven2/</url>
+    </pluginRepository>
+    <pluginRepository>
       <id>repository.riedelcastro.org</id>
       <url>http://repository.riedelcastro.org</url>
     </pluginRepository>
@@ -127,7 +133,7 @@
     </repository>
     <site>
       <id>googlecode</id>
-      <url>svn:https://gwtupload.googlecode.com/svn/site/${artifactId}</url>
+      <url>svn:https://gwtupload.googlecode.com/svn/site</url>
     </site>
     <snapshotRepository>
       <uniqueVersion>false</uniqueVersion>
@@ -163,7 +169,22 @@
           </descriptors>
         </configuration>
       </plugin>
-
     </plugins>
+    <extensions>
+      <extension>
+        <groupId>org.jvnet.wagon-svn</groupId>
+        <artifactId>wagon-svn</artifactId>
+        <version>1.8</version>
+      </extension>
+    </extensions>
   </build>
+
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </reporting>
 </project>
