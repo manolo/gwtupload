@@ -1,6 +1,6 @@
 /*
- * Copyright 2010 Manuel Carrasco Moñino. (manuel_carrasco at users.sourceforge.net) 
- * http://code.google.com/p/gwtupload
+ * Copyright 2010 Manuel Carrasco Moñino. (manuel_carrasco at
+ * users.sourceforge.net) http://code.google.com/p/gwtupload
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -17,16 +17,24 @@
 package gwtupload.server.exceptions;
 
 /**
- * Exception thrown in user's customized action servlets 
+ * Exception thrown in user's customized action servlets
  * 
  * @author Manolo Carrasco Moñino
- *
+ * 
  */
 public class UploadActionException extends Exception {
   private static final long serialVersionUID = 1L;
-  
+
+  public UploadActionException(Throwable e) {
+    super(e);
+  }
+
   public UploadActionException(String message) {
     super(message);
+  }
+
+  public UploadActionException(String message, Throwable e) {
+    super(message, e);
   }
 
 }

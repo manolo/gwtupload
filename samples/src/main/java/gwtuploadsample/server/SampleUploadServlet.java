@@ -70,7 +70,7 @@ public class SampleUploadServlet extends UploadAction {
           receivedFiles.put(item.getFieldName(), file);
           receivedContentTypes.put(item.getFieldName(), item.getContentType());
         } catch (Exception e) {
-          throw new UploadActionException(e.getMessage());
+          throw new UploadActionException(e);
         }
       }
       removeSessionFileItems(request);
