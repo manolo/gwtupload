@@ -179,6 +179,37 @@
     </extensions>
   </build>
 
+  <dependencies>
+    <dependency>
+      <groupId>org.timepedia.exporter</groupId>
+      <artifactId>gwtexporter</artifactId>
+      <version>${gwtExporterVersion}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>gwtchismes</groupId>
+      <artifactId>gwtchismes</artifactId>
+      <version>${gwtChismesVersion}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.google.gwt</groupId>
+      <artifactId>gwt-incubator</artifactId>
+      <version>${gwtIncubatorVersion}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>commons-fileupload</groupId>
+      <artifactId>commons-fileupload</artifactId>
+      <version>${commonsFileuploadVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>${log4jVersion}</version>
+    </dependency>
+  </dependencies>
+
   <reporting>
     <plugins>
       <plugin>
