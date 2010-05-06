@@ -145,12 +145,8 @@
 
   <pluginRepositories>
     <pluginRepository>
-      <id>repo1-plugins</id>
-      <url>http://repo1.maven.org/maven2/</url>
-    </pluginRepository>
-    <pluginRepository>
-      <id>repository.riedelcastro.org</id>
-      <url>http://repository.riedelcastro.org</url>
+      <id>gwtupload</id>
+      <url>http://gwtupload.googlecode.com/svn/mavenrepo/</url>
     </pluginRepository>
   </pluginRepositories>
 
