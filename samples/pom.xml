@@ -128,6 +128,24 @@
           </uploads>
         </configuration>
       </plugin>
+      <plugin>
+        <artifactId>maven-clean-plugin</artifactId>
+        <configuration>
+          <filesets>
+            <fileset><directory>src/main/webapp/gwtupload</directory></fileset>
+            <fileset><directory>src/main/webapp/gwtuploadsample.ChismesUploadSample</directory></fileset>
+            <fileset><directory>src/main/webapp/gwtuploadsample.MultipleUploadSample</directory></fileset>
+            <fileset><directory>src/main/webapp/gwtuploadsample.Sample</directory></fileset>
+            <fileset><directory>src/main/webapp/gwtuploadsample.SingleUploadSample</directory></fileset>
+            <fileset><directory>src/main/webapp/jsupload</directory></fileset>
+            <fileset><directory>src/main/webapp/jsupload.JsUploadLib</directory></fileset>
+            <fileset><directory>src/main/webapp/WEB-INF/classes</directory></fileset>
+            <fileset><directory>tomcat</directory></fileset>
+            <fileset><directory>www-test</directory></fileset>
+            <fileset><directory>.gwt-tmp</directory></fileset>
+        </filesets>
+      </configuration>
+    </plugin>
     </plugins>
   </build>
 
