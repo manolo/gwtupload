@@ -24,7 +24,7 @@
     <gwtVersion>2.0.2</gwtVersion>
     <commonsFileuploadVersion>1.2.1</commonsFileuploadVersion>
     <gwtChismesVersion>0.9.7</gwtChismesVersion>
-    <gwtExporterVersion>2.0.10</gwtExporterVersion>
+    <gwtExporterVersion>2.04</gwtExporterVersion>
     <gwtIncubatorVersion>20100204-r1747</gwtIncubatorVersion>
     <junitVersion>3.8.2</junitVersion>
     <log4jVersion>1.2.16</log4jVersion>
@@ -140,6 +140,10 @@
       <id>hupa-repo-incubator</id>
       <url>http://svn.apache.org/repos/asf/james/hupa/lib</url>
       <layout>legacy</layout>
+    </repository>
+    <repository>
+      <id>timepedia</id>
+      <url>http://timefire-repository.googlecode.com/svn/mavenrepo/</url>
     </repository>
   </repositories>
 
