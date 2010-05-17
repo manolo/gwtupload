@@ -57,25 +57,43 @@ public class SampleUploadServlet extends UploadAction {
    */
   @Override
   public String executeAction(HttpServletRequest request, List<FileItem> sessionFiles) throws UploadActionException {
+    String response = "";
+    int cont = 0;
     for (FileItem item : sessionFiles) {
       if (false == item.isFormField()) {
+        cont ++;
         try {
           /// Create a new file based on the remote file name in the client
           // String saveName = item.getName().replaceAll("[\\\\/><\\|\\s\"'{}()\\[\\]]+", "_");
           // File file =new File("/tmp/" + saveName);
-          /// Create a temporary file
+          
+          /// Create a temporary file placed in /tmp (only works in unix)
           // File file = File.createTempFile("upload-", ".bin", new File("/tmp"));
+          
+          /// Create a temporary file placed in the default system temp folder
           File file = File.createTempFile("upload-", ".bin");
           item.write(file);
+          
+          /// Save a list with the received files
           receivedFiles.put(item.getFieldName(), file);
           receivedContentTypes.put(item.getFieldName(), item.getContentType());
+          
+          /// Compose a xml message with the full file information
+          response += "<file-" + cont + "-field>" + item.getFieldName() + "</file-" + cont + "-field>\n";
+          response += "<file-" + cont + "-name>" + item.getName() + "</file-" + cont + "-name>\n";
+          response += "<file-" + cont + "-size>" + item.getSize() + "</file-" + cont + "-size>\n";
+          response += "<file-" + cont + "-type>" + item.getContentType()+ "</file-" + cont + "type>\n";
         } catch (Exception e) {
           throw new UploadActionException(e);
         }
       }
-      removeSessionFileItems(request);
     }
-    return null;
+    
+    /// Remove files from session because we have a copy of them
+    removeSessionFileItems(request);
+    
+    /// Send information of the received files to the client.
+    return "<response>\n" + response + "</response>\n";
   }
   
   /**
