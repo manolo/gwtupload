@@ -59,10 +59,10 @@ public class MemCacheFileItemFactory implements FileItemFactory, Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private byte[] buff = new byte[requestSize];
-    private int size = 0;
-
     Saveable<CacheableByteArrayOutputStream> saveable;
+    private byte[] buff = new byte[requestSize];
+
+    private int size = 0;
 
     public CacheableByteArrayOutputStream(Saveable<CacheableByteArrayOutputStream> object) {
       saveable = object;
@@ -96,15 +96,15 @@ public class MemCacheFileItemFactory implements FileItemFactory, Serializable {
    *
    */
   public class CacheableFileItem implements FileItem, Saveable<CacheableByteArrayOutputStream> {
-    String fname;
-    String ctype;
-    boolean formfield;
-    String name;
-    int size = 0;
-
-    CacheableByteArrayOutputStream data = null;
-
     private static final long serialVersionUID = 1L;
+    String ctype;
+    CacheableByteArrayOutputStream data = null;
+    String fname;
+    boolean formfield;
+
+    String name;
+
+    int size = 0;
 
     public CacheableFileItem(String fieldName, String contentType, boolean isFormField, String fileName) {
       ctype = contentType;
@@ -121,7 +121,7 @@ public class MemCacheFileItemFactory implements FileItemFactory, Serializable {
         try {
           Cache cache = CacheManager.getInstance().getCacheFactory().createCache(Collections.emptyMap());
           cache.remove(fname);
-        } catch (Exception e) {}
+        } catch (Exception e) { }
         data = new CacheableByteArrayOutputStream(this);
       }
     }
@@ -132,20 +132,6 @@ public class MemCacheFileItemFactory implements FileItemFactory, Serializable {
 
     public String getContentType() {
       return ctype;
-    }
-
-    private byte[] getData() {
-      if (data == null) {
-        try {
-          Cache cache = CacheManager.getInstance().getCacheFactory().createCache(Collections.emptyMap());
-          return (byte[]) cache.get(fname);
-        } catch (Exception e) {
-          e.printStackTrace();
-          return null;
-        }
-      } else {
-        return data.get();
-      }
     }
 
     public String getFieldName() {
@@ -188,7 +174,7 @@ public class MemCacheFileItemFactory implements FileItemFactory, Serializable {
     public void save(CacheableByteArrayOutputStream o) {
       if (data != null) {
         try {
-          Cache cache = CacheManager.getInstance().getCacheFactory().createCache(new HashMap(){{
+          Cache cache = CacheManager.getInstance().getCacheFactory().createCache(new HashMap() { {
             put(GCacheFactory.EXPIRATION_DELTA, 3600); 
           }});
           cache.put(fname, data.get());
@@ -212,15 +198,28 @@ public class MemCacheFileItemFactory implements FileItemFactory, Serializable {
       throw new UnsupportedOperationException(this.getClass().getName() + " doesn't support write to files");
     }
 
+    private byte[] getData() {
+      if (data == null) {
+        try {
+          Cache cache = CacheManager.getInstance().getCacheFactory().createCache(Collections.emptyMap());
+          return (byte[]) cache.get(fname);
+        } catch (Exception e) {
+          e.printStackTrace();
+          return null;
+        }
+      } else {
+        return data.get();
+      }
+    }
   }
   
   /**
-   * Interface for objects that has can be saved
+   * Interface for objects that has can be saved.
    *
    * @param <T>
    */
   public interface Saveable<T> {
-    public void save(T o);
+    void save(T o);
   }
 
   // Max request size in App-engine

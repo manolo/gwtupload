@@ -55,10 +55,11 @@ public class MemCacheUploadListener extends AbstractUploadListener {
 
   public static MemCacheUploadListener current(String sessionId) {
     MemCacheUploadListener listener = null;
-    for (int i=0; i<11; i++) { 
+    for (int i = 0; i < 11; i++) { 
       Object o = getCacheInstance().get(KEY_LISTENER + sessionId + i);
-      if (o != null) 
+      if (o != null) {
         listener = (MemCacheUploadListener) o;
+      }
     }
     logger.info(className + " " + sessionId + " get " +  listener);
     return listener;
@@ -68,7 +69,7 @@ public class MemCacheUploadListener extends AbstractUploadListener {
   public static Cache getCacheInstance() {
     if (cache == null) {
       try {
-        cache = CacheManager.getInstance().getCacheFactory().createCache(new HashMap(){{
+        cache = CacheManager.getInstance().getCacheFactory().createCache(new HashMap() { {
           put(GCacheFactory.EXPIRATION_DELTA, 60); 
         }});
       } catch (Exception e) {
@@ -89,27 +90,29 @@ public class MemCacheUploadListener extends AbstractUploadListener {
    * @see gwtupload.server.AbstractUploadListener#remove()
    */
   public void remove() {
-    for (int i=0; i<11; i++) 
+    for (int i = 0; i < 11; i++) {
       getCacheInstance().remove(KEY_LISTENER + sessionId + i);
+    }
     counter = 0;
     logger.info(className + " " + sessionId + " Remove " + this.toString());
   }
 
   @SuppressWarnings("unchecked")
   public void save() {
-    int decena = (int)getPercent() / 10;
+    int decena = (int) getPercent() / 10;
     if (decena >= counter) {
       counter = decena;
 
       MemCacheUploadListener listener = current(sessionId);
-      if (listener != null && listener.isCanceled())
+      if (listener != null && listener.isCanceled()) {
         exception = listener.getException();
+      }
 
       getCacheInstance().put(KEY_LISTENER + sessionId + counter, this);
       
       saved = new Date();
       logger.info(className + " " + sessionId + " Saved " + this.toString());
-      counter ++;
+      counter++;
     }
   }
 
