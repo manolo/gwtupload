@@ -112,6 +112,11 @@ public class MemCacheUploadListener extends AbstractUploadListener {
       counter ++;
     }
   }
+
+  public void setFinished(boolean finished) {
+    counter = 0;
+    super.setFinished(finished);
+  }
   
   public String toString() {
     return "counter=" + counter + " " + super.toString();
