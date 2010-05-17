@@ -162,6 +162,7 @@ public abstract class AbstractUploadListener implements ProgressListener, Serial
 
   public void setFinished(boolean finished) {
     this.finished = finished;
+    save();
   }
 
   public String toString() {
