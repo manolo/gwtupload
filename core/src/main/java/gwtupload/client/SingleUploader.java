@@ -187,5 +187,11 @@ public class SingleUploader extends Uploader {
     button.setEnabled(false);
     button.removeStyleName("changed");
   }
+  
+  @Override
+  public void setEnabled(boolean b) {
+    super.setEnabled(b);
+    button.setEnabled(b);
+  }
 
 }
