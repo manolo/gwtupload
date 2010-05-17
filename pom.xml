@@ -177,8 +177,8 @@
     </site>
     <snapshotRepository>
       <uniqueVersion>false</uniqueVersion>
-      <id>googlecode</id>
-      <url>dav:https://gwtupload.googlecode.com/svn/mavenrepo/</url>
+      <id>localfolder</id>
+      <url>file:../GWTUpload-mavenrepo/</url>
     </snapshotRepository>
   </distributionManagement>
 
