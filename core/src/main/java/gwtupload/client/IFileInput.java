@@ -43,27 +43,12 @@ import gwtupload.client.DecoratedFileUpload.FileUploadWithMouseEvents;
 public interface IFileInput extends HasChangeHandlers {
   
   /**
-   * A DecoratedFileInput implementing the IFileInput interface
+   * A HyperLinkFileInput implementing the IFileInput interface
    * 
    */
-  public class ButtonFileInput extends DecoratedFileUpload implements IFileInput {
-
-    public ButtonFileInput() {
-      super();
-    }
-
-    public ButtonFileInput(Widget w) {
-      super(w);
-    }
-
-    public IFileInput newInstance() {
-      ButtonFileInput ret = new ButtonFileInput();
-      Widget widget = button != null ? button : new Button(this.getText());
-      ret.setButton(widget);
-      return ret;
-    }
-
-    public void setLength(int length) {
+  public class AnchorFileInput extends ButtonFileInput {
+    public AnchorFileInput() {
+      super(new Anchor());
     }
   }
   
@@ -97,9 +82,38 @@ public interface IFileInput extends HasChangeHandlers {
   }
   
   /**
+   * A DecoratedFileInput implementing the IFileInput interface
+   * 
+   */
+  public class ButtonFileInput extends DecoratedFileUpload implements IFileInput {
+    public ButtonFileInput() {
+      super();
+    }
+
+    public ButtonFileInput(Widget w) {
+      super(w);
+    }
+
+    public IFileInput newInstance() {
+      ButtonFileInput ret = new ButtonFileInput();
+      Widget widget = button != null ? button : new Button(this.getText());
+      ret.setButton(widget);
+      return ret;
+    }
+
+    public void setLength(int length) {
+    }
+  }
+
+  /**
    * Enum for different IFileInput implementations
    */
   public enum FileInputType implements HasFileInputType {
+    ANCHOR {
+      public IFileInput getInstance() {
+        return GWT.create(AnchorFileInput.class);
+      }
+    },
     BROWSER_INPUT {
       public IFileInput getInstance() {
         return GWT.create(BrowserFileInput.class);
@@ -110,33 +124,18 @@ public interface IFileInput extends HasChangeHandlers {
         return GWT.create(ButtonFileInput.class);
       }
     },
-    ANCHOR {
-      public IFileInput getInstance() {
-        return GWT.create(AnchorFileInput.class);
-      }
-    },
     LABEL {
       public IFileInput getInstance() {
         return GWT.create(LabelFileInput.class);
       }
     }
   }
-
+  
   /**
    * interface for FileInputType enum
    */
   interface HasFileInputType {
     IFileInput getInstance(); 
-  }
-  
-  /**
-   * A HyperLinkFileInput implementing the IFileInput interface
-   * 
-   */
-  public class AnchorFileInput extends ButtonFileInput {
-    public AnchorFileInput() {
-      super(new Anchor());
-    }
   }
 
   /**
@@ -175,11 +174,21 @@ public interface IFileInput extends HasChangeHandlers {
   Widget getWidget();
 
   /**
+   * return whether the input is or not enabled.
+   */  
+  boolean isEnabled();
+
+  /**
    * Creates a new instance of the current object type.
    * 
    * @return a new instance
    */
   IFileInput newInstance();
+
+  /**
+   * Enable the file input.
+   */  
+  void setEnabled(boolean b);
 
   /**
    * Set the length in characters of the fileinput which are shown.
@@ -203,14 +212,14 @@ public interface IFileInput extends HasChangeHandlers {
    * @param height
    */
   void setSize(String width, String height);
-
+  
   /**
    * Set the text for the link which opens the browse file dialog.
    * 
    * @param text
    */
   void setText(String text);
-
+  
   void setVisible(boolean b);
 
 }

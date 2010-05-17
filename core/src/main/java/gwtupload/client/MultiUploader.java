@@ -57,26 +57,28 @@ public class MultiUploader extends Composite implements IUploader {
   };
   private boolean avoidRepeat = true;
   private IUploader currentUploader = null;
+  private boolean enabled = true;
   private String fileInputPrefix = "GWTMU";
   private int fileInputSize = Uploader.DEFAULT_FILEINPUT_SIZE;
-  private FileInputType fileInputType;
 
+  private FileInputType fileInputType;
   private UploaderConstants i18nStrs = GWT.create(UploaderConstants.class);
   private IUploader lastUploader = null;
   private int maximumFiles = 0;
   private FlowPanel multiUploaderPanel = new FlowPanel();
   private IUploader.OnCancelUploaderHandler onCancelHandler = null;
+  
   private IUploader.OnChangeUploaderHandler onChangeHandler = null;
-  
   private IUploader.OnFinishUploaderHandler onFinishHandler = null;
-  private IUploader.OnStartUploaderHandler onStartHandler = null;
 
-  private IUploader.OnStatusChangedHandler onStatusChangedHandler = null;
+  private IUploader.OnStartUploaderHandler onStartHandler = null;
   
+  private IUploader.OnStatusChangedHandler onStatusChangedHandler = null;
+
   private String servletPath = null;
 
   private IUploadStatus statusWidget = null;
-
+  
   private Vector<IUploader> uploaders = new Vector<IUploader>();
   
   private String[] validExtensions = null;
@@ -352,6 +354,13 @@ public class MultiUploader extends Composite implements IUploader {
   }
 
   /* (non-Javadoc)
+   * @see gwtupload.client.IUploader#isEnabled()
+   */
+  public boolean isEnabled() {
+    return enabled;
+  }
+
+  /* (non-Javadoc)
    * @see com.google.gwt.user.client.ui.HasWidgets#iterator()
    */
   public Iterator<Widget> iterator() {
@@ -374,6 +383,14 @@ public class MultiUploader extends Composite implements IUploader {
     uploaders = new Vector<IUploader>();
     multiUploaderPanel.clear();
     newUploaderInstance();
+  }
+
+  /* (non-Javadoc)
+   * @see gwtupload.client.IUploader#setEnabled(boolean)
+   */
+  public void setEnabled(boolean b) {
+    enabled = b;
+    currentUploader.setEnabled(b);
   }
 
   /* (non-Javadoc)
@@ -442,7 +459,7 @@ public class MultiUploader extends Composite implements IUploader {
     validExtensions = ext;
     currentUploader.setValidExtensions(ext);
   }
-
+  
   /* (non-Javadoc)
   * @see gwtupload.client.IUploader#submit()
   */
@@ -453,7 +470,7 @@ public class MultiUploader extends Composite implements IUploader {
   protected IUploader getUploaderInstance() {
     return new Uploader(fileInputType, true);
   }
-  
+
   private void newUploaderInstance() {
 
     if (maximumFiles > 0 && getNonErroneousUploads() >= maximumFiles) {
@@ -504,6 +521,7 @@ public class MultiUploader extends Composite implements IUploader {
     
     currentUploader.setFileInputPrefix(fileInputPrefix);
     currentUploader.setFileInputSize(fileInputSize);
+    currentUploader.setEnabled(enabled);
     // add the new uploader to the panel
     multiUploaderPanel.add((Widget) currentUploader);
 

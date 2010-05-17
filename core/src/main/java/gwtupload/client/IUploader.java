@@ -282,11 +282,21 @@ public interface IUploader extends HasJsData, HasWidgets {
   IUploadStatus getStatusWidget();
 
   /**
+   * return whether the input is or not enabled.
+   */
+  boolean isEnabled();
+
+  /**
    * Reset form elements in single uploaders.
    * Remove uploaded elements in multiple uploaders from the main panel.
    * Reset the list of already uploaded files. 
    */
   void reset();
+
+  /**
+   * Enable the file input.
+   */
+  void setEnabled(boolean b);
 
   /**
    * Changes the fileInput implementation.
@@ -319,7 +329,7 @@ public interface IUploader extends HasJsData, HasWidgets {
    * @param strs
    */
   void setI18Constants(UploaderConstants strs);
-
+  
   /**
    * Sets the url where the server application is installed.
    * This url is used to get the session, send the form, get the process 
@@ -330,7 +340,7 @@ public interface IUploader extends HasJsData, HasWidgets {
    * @param path
    */
   void setServletPath(String path);
-
+  
   /**
    * Changes the status widget used to show the progress.
    * @param status

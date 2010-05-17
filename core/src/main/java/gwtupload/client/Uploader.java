@@ -169,6 +169,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
   
   private boolean autoSubmit = false;
   private boolean avoidRepeatedFiles = false;
+  private boolean enabled = true;
   private String basename = null;
   private IUploadStatus.UploadCancelHandler cancelHandler = new IUploadStatus.UploadCancelHandler() {
     public void onCancel() {
@@ -645,6 +646,13 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     return statusWidget;
   }
 
+  /* (non-Javadoc)
+   * @see gwtupload.client.IUploader#isEnabled()
+   */
+  public boolean isEnabled() {
+    return enabled;
+  }
+
   /**
    * Returns a iterator of the widgets contained in the form panel.
    */
@@ -678,14 +686,24 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     autoSubmit = b;
   }
 
+  /* (non-Javadoc)
+   * @see gwtupload.client.IUploader#setEnabled(boolean)
+   */
+  public void setEnabled(boolean b) {
+    enabled = b;
+    if (fileInput != null) {
+      fileInput.setEnabled(b);
+    }
+  }
+
   public void setFileInput(IFileInput input) {
     if (fileInput != null) {
       fileInput.getWidget().removeFromParent();
     }
-    
     fileInput = input;
     fileInput.addChangeHandler(onFileInputChanged);
     fileInput.setText(i18nStrs.uploaderBrowse());
+    fileInput.setEnabled(enabled);
     setFileInputSize(DEFAULT_FILEINPUT_SIZE);
     assignNewNameToFileInput();
     uploadForm.add(fileInput.getWidget());
@@ -771,7 +789,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
       this.validExtensions[j++] = ext.toLowerCase();
     }
   }
-
+  
   /* (non-Javadoc)
    * @see gwtupload.client.IUploader#submit()
    */
@@ -810,7 +828,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
       handler.onChange(this);
     }
   }
-
+  
   /**
    * Method called when the file upload process has finished,  
    * or the file has been canceled or removed from the queue.
@@ -836,7 +854,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
       handler.onStart(this);
     }
   }
-  
+
   /**
    * Adds a file to the upload queue.
    */
@@ -866,7 +884,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     statusWidget.setStatus(IUploadStatus.Status.ERROR);
     statusWidget.setError(msg);
   }
-  
+
   private String composeURL(String... params) {
     String ret = getServletPath();
     String sep = ret.contains("?") ? "&" : "?";
@@ -960,7 +978,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     RequestBuilder reqBuilder = new RequestBuilder(RequestBuilder.GET, composeURL("remove=" + getInputName()));
     reqBuilder.sendRequest("remove_file", onDeleteFileCallback);
   }
-
+  
   /**
    * Sends a request to the server in order to get the session cookie,
    * when the response with the session comes, it submits the form.
@@ -1026,7 +1044,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
       Window.alert(e.getMessage());
     }
   }
-  
+
   private boolean validateExtension(String filename) {
     if (filename == null || filename.length() == 0) {
       return false;

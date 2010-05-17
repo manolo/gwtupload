@@ -55,6 +55,28 @@ import java.util.HashMap;
 public class DecoratedFileUpload extends Composite implements HasText, HasName, HasChangeHandlers {
 
   /**
+   * A FileUpload which implements onChange, onMouseOver and onMouseOut events.
+   * 
+   * Note FileUpload in version 2.0.x implements onChange event, but we put it here 
+   * in order to be compatible with 1.6.x
+   *
+   */
+  public static class FileUploadWithMouseEvents extends FileUpload implements HasMouseOverHandlers, HasMouseOutHandlers, HasChangeHandlers {
+
+    public HandlerRegistration addChangeHandler(ChangeHandler handler) {
+      return addDomHandler(handler, ChangeEvent.getType());
+    }
+
+    public HandlerRegistration addMouseOutHandler(MouseOutHandler handler) {
+      return addDomHandler(handler, MouseOutEvent.getType());
+    }
+
+    public HandlerRegistration addMouseOverHandler(final MouseOverHandler handler) {
+      return addDomHandler(handler, MouseOverEvent.getType());
+    }
+  }
+
+  /**
    * An abstract class which is the base for specific browser implementations.
    */
   private abstract static class DecoratedFileUploadImpl {
@@ -202,30 +224,9 @@ public class DecoratedFileUpload extends Composite implements HasText, HasName, 
     }
   }
 
-  /**
-   * A FileUpload which implements onChange, onMouseOver and onMouseOut events.
-   * 
-   * Note FileUpload in version 2.0.x implements onChange event, but we put it here 
-   * in order to be compatible with 1.6.x
-   *
-   */
-  public static class FileUploadWithMouseEvents extends FileUpload implements HasMouseOverHandlers, HasMouseOutHandlers, HasChangeHandlers {
-
-    public HandlerRegistration addChangeHandler(ChangeHandler handler) {
-      return addDomHandler(handler, ChangeEvent.getType());
-    }
-
-    public HandlerRegistration addMouseOutHandler(MouseOutHandler handler) {
-      return addDomHandler(handler, MouseOutEvent.getType());
-    }
-
-    public HandlerRegistration addMouseOverHandler(final MouseOverHandler handler) {
-      return addDomHandler(handler, MouseOverEvent.getType());
-    }
-  }
-
   private static final String STYLE_BUTTON_OVER_SUFFIX = "over";
   private static final String STYLE_CONTAINER = "DecoratedFileUpload";
+  private static final String STYLE_DISABLED = "disabled";
   protected Widget button;
   protected AbsolutePanel container;
   protected FileUploadWithMouseEvents input = new FileUploadWithMouseEvents();
@@ -277,6 +278,10 @@ public class DecoratedFileUpload extends Composite implements HasText, HasName, 
     return this;
   }
 
+  public boolean isEnabled() {
+    return input.isEnabled();
+  }
+
   @Override
   public void onAttach() {
     super.onAttach();
@@ -304,6 +309,15 @@ public class DecoratedFileUpload extends Composite implements HasText, HasName, 
     impl.resize();
   }
 
+  public void setEnabled(boolean b) {
+    input.setEnabled(b);
+    if (b) {
+      container.removeStyleDependentName(STYLE_DISABLED);
+    } else {
+      container.addStyleDependentName(STYLE_DISABLED);
+    }
+  }
+  
   public void setName(String fieldName) {
     input.setName(fieldName);
   }
@@ -313,6 +327,6 @@ public class DecoratedFileUpload extends Composite implements HasText, HasName, 
       ((HasText) button).setText(text);
       impl.resize();
     }
-  }
+  }  
 
 }
