@@ -27,7 +27,8 @@ import gwtupload.client.Uploader;
 import gwtupload.client.IFileInput.FileInputType;
 import gwtupload.client.IUploadStatus.Status;
 import gwtupload.client.PreloadedImage.OnLoadPreloadedImageHandler;
-import jsupload.client.*;
+import jsupload.client.ChismesUploadProgress;
+import jsupload.client.IncubatorUploadProgress;
 
 /**
  * <p>

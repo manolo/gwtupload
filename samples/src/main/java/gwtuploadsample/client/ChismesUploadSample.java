@@ -33,9 +33,6 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
-import jsupload.client.*;
-
-import java.util.HashMap;
 
 import gwtupload.client.IUploader;
 import gwtupload.client.MultiUploader;
@@ -45,6 +42,9 @@ import gwtupload.client.Uploader;
 import gwtupload.client.IFileInput.FileInputType;
 import gwtupload.client.IUploadStatus.Status;
 import gwtupload.client.PreloadedImage.OnLoadPreloadedImageHandler;
+import jsupload.client.ChismesUploadProgress;
+
+import java.util.HashMap;
 
 /**
  * <p>
@@ -181,7 +181,6 @@ public class ChismesUploadSample implements EntryPoint {
     multiUploadBox.add(multiUploader);
     tabPanel.add(multiUploadBox, i18nStrs.multiUploadTabText());
     multiUploader.setServletPath(Uploader.DEFAULT_SERVLET_PATH + Window.Location.getQueryString());
-
 
     // FIXME: GWTCButton here doesn't handle onClick
     SingleUploader simpleUploader = new SingleUploader(FileInputType.LABEL, new ChismesUploadProgress(true));
