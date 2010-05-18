@@ -21,16 +21,16 @@
     <maven.compiler.source>1.5</maven.compiler.source>
     <maven.compiler.target>1.5</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <gwtVersion>2.0.2</gwtVersion>
+    <gwtVersion>2.0.3</gwtVersion>
     <commonsFileuploadVersion>1.2.1</commonsFileuploadVersion>
     <gwtChismesVersion>0.9.7</gwtChismesVersion>
     <gwtExporterVersion>2.04</gwtExporterVersion>
     <gwtIncubatorVersion>20100204-r1747</gwtIncubatorVersion>
     <junitVersion>3.8.2</junitVersion>
     <log4jVersion>1.2.16</log4jVersion>
-    <gaeVersion>1.2.0</gaeVersion>
     <downloadLabel>Beta</downloadLabel>
     <localMavenRepo>file:${env.HOME}/workspace/GWTUpload-mavenrepo</localMavenRepo>
+    <gae.version>1.3.2</gae.version>
   </properties>
 
   <dependencies>
@@ -64,6 +64,11 @@
       <groupId>org.timepedia.exporter</groupId>
       <artifactId>gwtexporter</artifactId>
       <version>${gwtExporterVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.appengine</groupId>
+      <artifactId>appengine-api-1.0-sdk</artifactId>
+      <version>${gae.version}</version>
     </dependency>
   </dependencies>
 
