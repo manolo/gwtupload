@@ -67,6 +67,9 @@
 
   <build>
     <outputDirectory>${www}/WEB-INF/classes</outputDirectory>
+    <resources>
+      <resource><directory>src/main/java</directory></resource>
+    </resources>
     <plugins>
       <plugin>
         <artifactId>maven-resources-plugin</artifactId>
@@ -143,9 +146,42 @@
             <fileset><directory>tomcat</directory></fileset>
             <fileset><directory>www-test</directory></fileset>
             <fileset><directory>.gwt-tmp</directory></fileset>
-        </filesets>
-      </configuration>
-    </plugin>
+          </filesets>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-deploy-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>deploy</phase>
+            <goals>
+              <goal>deploy-file</goal>
+            </goals>
+            <configuration>
+              <file>${project.build.directory}/${project.artifactId}-${project.version}.jar</file>
+              <groupId>${project.groupId}</groupId>
+              <artifactId>${project.artifactId}</artifactId>
+              <version>${project.version}</version>
+              <packaging>jar</packaging>
+              <url>${localMavenRepo}</url>
+              <uniqueVersion>false</uniqueVersion>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
 

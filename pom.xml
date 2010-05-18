@@ -30,6 +30,7 @@
     <log4jVersion>1.2.16</log4jVersion>
     <gaeVersion>1.2.0</gaeVersion>
     <downloadLabel>Beta</downloadLabel>
+    <localMavenRepo>file:${env.HOME}/workspace/GWTUpload-mavenrepo</localMavenRepo>
   </properties>
 
   <dependencies>
@@ -64,18 +65,8 @@
       <artifactId>gwtexporter</artifactId>
       <version>${gwtExporterVersion}</version>
     </dependency>
-    <dependency>
-      <groupId>com.google.appengine</groupId>
-      <artifactId>appengine-api-1.0-sdk</artifactId>
-      <version>${gaeVersion}</version>
-      <scope>provided</scope>
-    </dependency>    
   </dependencies>
 
-
-
-
-<!--  </dependencies>-->
   <description>
    GWTUpload is a library for uploading files to web servers, 
    showing a progress bar with real information about the process (file size, bytes transferred, etc). 
@@ -178,7 +169,7 @@
     <snapshotRepository>
       <uniqueVersion>false</uniqueVersion>
       <id>localfolder</id>
-      <url>file:../GWTUpload-mavenrepo/</url>
+      <url>${localMavenRepo}</url>
     </snapshotRepository>
   </distributionManagement>
 
