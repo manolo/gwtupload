@@ -1,0 +1,58 @@
+
+<html>
+  <head>
+    <title>GwtUpload & JsUpload examples, Manolo Carrasco Moñino, 2009</title>
+    <meta name="Author" content="Manuel Carrasco Moñino">
+    <style type="text/css">
+    body {
+        font-family:verdana,arial,helvetica,clean,sans-serif;
+        font-size: 14px;
+    }
+    h2, ul {
+        margin-top: 10px;
+        margin-left: auto;
+        margin-right: auto;
+        width: 600px; 
+    }
+    li {
+       margin-top: 10px;
+    }
+    </style>
+
+  </head>
+  <body>
+	<script type="text/javascript">
+	      // a workaround for capturing and passing gwt.codesvr parameter in development mode
+		  function goTo(location) {
+			  window.location = location + window.location.search;
+		  }
+	</script>
+	<h2>Index of demos.</h2>
+    <ul>
+    <li> <a target="_blank" href="http://code.google.com/p/gwtupload/wiki/GwtUpload_GettingStarted">GwtUpload </a>is a java library for developers who use Google web toolkit.
+	<ul>
+		<li><a href="javascript:goTo('gwtuploadsample.SingleUploadSample/SingleUploadSample.html')">Example</a> of SingleUploader using the default progress-bar in a modal dialog.</li>
+		<li><a href="javascript:goTo('gwtuploadsample.MultipleUploadSample/MultipleUploadSample.html')">Example</a> of MultipleUploader with different progress-bar implementations.</li>
+		<li>A sophisticated <a href="javascript:goTo('gwtuploadsample.ChismesUploadSample/ChismesUploadSample.html')">Example</a> using the
+		   <a target="_blank" href="http://code.google.com/p/gwtchismes/">GWTChismes</a> library and internationalization.</li>
+	</ul>
+	</li>
+	<li> <a target="_blank" href="http://code.google.com/p/gwtupload/wiki/JsUpload_Documentation">JsUpload</a> is a javascript library thought to be used in any kind of web applications. It doesn't depend on any other library like jquery, prototype, etc.
+	<ul>	   
+		<li><a href="javascript:goTo('jsupload/JsUpload.html')">Example</a> of how to use the JsUpload library.</li>
+	</ul>
+	</li>
+	</ul>   
+
+    <!-- 
+         Google Analytics code for the gwtupload project's web site.
+         Remove it if you deploy this sample in your site 
+    -->
+	<script type="text/javascript">
+	  document.write(unescape("%3Cscript src='http://www.google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+	</script>
+	<script type="text/javascript">
+	  try {var pageTracker = _gat._getTracker("UA-645641-9");pageTracker._trackPageview();} catch(err) {}
+	</script>
+  </body>
+</html>

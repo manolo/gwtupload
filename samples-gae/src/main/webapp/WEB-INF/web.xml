@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE web-app
+    PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+    "http://java.sun.com/dtd/web-app_2_3.dtd">
+
+<web-app>
+
+  <context-param>
+    <param-name>maxSize</param-name>
+<!--    <param-value>3145728</param-value>-->
+    <param-value>1024000</param-value>
+  </context-param>
+  
+<!--  <context-param>-->
+<!--    <param-name>slowUploads</param-name>-->
+<!--    <param-value>true</param-value>-->
+<!--  </context-param>-->
+
+  <servlet>
+    <servlet-name>uploadServlet</servlet-name>
+<!--    <servlet-class>gwtupload.server.UploadServlet</servlet-class>-->
+    <servlet-class>gwtupload.server.gae.AppEngineUploadAction</servlet-class>
+  </servlet>
+  
+  <servlet-mapping>
+    <servlet-name>uploadServlet</servlet-name>
+    <url-pattern>*.gupld</url-pattern>
+  </servlet-mapping>
+
+</web-app>
