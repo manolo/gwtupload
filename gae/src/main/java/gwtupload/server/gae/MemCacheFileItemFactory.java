@@ -223,7 +223,7 @@ public class MemCacheFileItemFactory implements FileItemFactory, Serializable {
   }
 
   // Max request size in App-engine
-  public static final int DEFAULT_REQUEST_SIZE = 512 * 1024;
+  public static final int DEFAULT_REQUEST_SIZE = 1023 * 1024 ;
 
   private static final long serialVersionUID = 1L;
 

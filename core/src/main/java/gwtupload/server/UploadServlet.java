@@ -430,13 +430,11 @@ public class UploadServlet extends HttpServlet implements Servlet {
   public void init(ServletConfig config) throws ServletException {
     super.init(config);
 
-    if (isAppEngine()) {
-      // Appengine doesn't support requests greater than 512KB.
-      maxSize = 512 * 1024;
-    } else {
-      String size = config.getServletContext().getInitParameter("maxSize");
-      if (size != null) {
+    String size = config.getServletContext().getInitParameter("maxSize");
+    if (size != null) {
+      try {
         maxSize = Long.parseLong(size);
+      } catch (NumberFormatException e) {
       }
     }
 
@@ -445,11 +443,14 @@ public class UploadServlet extends HttpServlet implements Servlet {
       if ("true".equalsIgnoreCase(slow)) {
         uploadDelay = DEFAULT_SLOW_DELAY_MILLIS;
       } else {
-        uploadDelay = Integer.valueOf(slow);
+        try {
+          uploadDelay = Integer.valueOf(slow);
+        } catch (NumberFormatException e) {
+        }
       }
     }
 
-    logger.debug("UPLOAD-SERVLET init: maxSize=" + maxSize + ", slowUploads=" + slow + ", isAppEngine=" + isAppEngine());
+    logger.info("UPLOAD-SERVLET init: maxSize=" + maxSize + ", slowUploads=" + slow + ", isAppEngine=" + isAppEngine());
   }
 
   /**
@@ -599,7 +600,7 @@ public class UploadServlet extends HttpServlet implements Servlet {
 
     List<FileItem> uploadedItems;
     try {
-      // set file upload progress listener, and put it into user session,
+      // Create a file upload progress listener, and put it in the user session,
       // so the browser can use ajax to query status of the upload process
       listener = createNewListener(request);
 
