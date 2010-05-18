@@ -3,4 +3,5 @@
   <inherits name="com.google.code.p.gwtchismes.GWTChismes" />
   <inherits name="com.google.gwt.widgetideas.WidgetBase" />
   <inherits name="org.timepedia.exporter.Exporter" />
+  <stylesheet src="JsUpload.css"/>
 </module>
