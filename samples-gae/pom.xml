@@ -74,12 +74,10 @@
       <artifactId>appengine-api-1.0-sdk</artifactId>
       <version>${gae.version}</version>
     </dependency>
-
   </dependencies>
 
   <properties>
     <www>${project.build.directory}/www</www>
-    <gae.version>1.3.2</gae.version>
   </properties>
 
   <build>
@@ -147,6 +145,14 @@
       <plugin>
          <groupId>net.kindleit</groupId>
          <artifactId>maven-gae-plugin</artifactId>
+         <executions>
+           <execution>
+             <phase>deploy</phase>
+             <goals>
+               <goal>deploy</goal>
+             </goals>
+           </execution>
+         </executions>
       </plugin>
     </plugins>
   </build>
