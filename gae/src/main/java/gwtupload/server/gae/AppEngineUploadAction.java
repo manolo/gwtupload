@@ -62,8 +62,15 @@ public class AppEngineUploadAction extends UploadAction {
   @Override
   public void init(ServletConfig config) throws ServletException {
     super.init(config);
-    uploadDelay = Math.max(50, uploadDelay);
-    maxSize = MemCacheFileItemFactory.DEFAULT_REQUEST_SIZE;
+    if (isAppEngine()) {
+      if (uploadDelay > 0) {
+        uploadDelay = Math.max(50, uploadDelay);
+      }
+      if (maxSize > MemCacheFileItemFactory.DEFAULT_REQUEST_SIZE) {
+      	maxSize = MemCacheFileItemFactory.DEFAULT_REQUEST_SIZE;
+        logger.info("GAE-UPLOAD-SERVLET restricting maxSize to " + maxSize ); 
+      }
+    }
   }
   
   @Override
@@ -76,6 +83,7 @@ public class AppEngineUploadAction extends UploadAction {
   @Override
   protected final AbstractUploadListener getCurrentListener(
       HttpServletRequest request) {
+	  
     return MemCacheUploadListener.current(request.getSession().getId());
   }
 
