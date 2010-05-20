@@ -110,6 +110,7 @@ public class UploadServlet extends HttpServlet implements Servlet {
   protected static final int DEFAULT_REQUEST_LIMIT_KB = 5 * 1024 * 1024;
 
   protected static final int DEFAULT_SLOW_DELAY_MILLIS = 300;
+  
   protected static final String DELETED_TRUE = "<deleted>true</deleted>";
 
   protected static final String ERROR_ITEM_NOT_FOUND = "<error>item not found</error>";
@@ -117,8 +118,10 @@ public class UploadServlet extends HttpServlet implements Servlet {
   protected static final String ERROR_TIMEOUT = "<error>timeout receiving file</error>";
 
   protected static final String FINISHED_OK = "<finished>OK</finished>";
-
+  
   protected static Logger logger = Logger.getLogger(UploadServlet.class);
+
+  protected static String PARAM_BLOBSTORE = "blobstore";
 
   protected static String PARAM_CANCEL = "cancel";
 
@@ -130,6 +133,8 @@ public class UploadServlet extends HttpServlet implements Servlet {
 
   protected static String PARAM_REMOVE = "remove";
 
+  protected static String PARAM_SESSION = "new_session";
+  
   protected static String PARAM_SHOW = "show";
 
   protected static final ThreadLocal<HttpServletRequest> perThreadRequest = new ThreadLocal<HttpServletRequest>();
@@ -142,8 +147,12 @@ public class UploadServlet extends HttpServlet implements Servlet {
 
   private static final long serialVersionUID = 2740693677625051632L;
 
+  private static final String TAG_BLOBSTORE = "blobstore";
+  
+  private static final String TAG_BLOBSTORE_PATH = "blobpath";
+  
   private static final String TAG_CANCELED = "canceled";
-
+  
   private static String XML_TPL = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<response>%%MESSAGE%%</response>\n";
   
   /**
@@ -374,8 +383,10 @@ public class UploadServlet extends HttpServlet implements Servlet {
   }
 
   protected long maxSize = DEFAULT_REQUEST_LIMIT_KB;
-
+  
   protected int uploadDelay = 0;
+  
+  protected boolean useBlobstore = true;
 
   /**
    * Mark the current upload process to be cancelled.
@@ -466,14 +477,18 @@ public class UploadServlet extends HttpServlet implements Servlet {
       return new UploadListener(uploadDelay, request.getContentLength());
     }
   }
-
+  
   /**
    * The get method is used to monitor the uploading process or to get the
    * content of the uploaded files.
    */
   protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
     perThreadRequest.set(request);
-    if (request.getParameter(PARAM_SHOW) != null) {
+    if (request.getParameter(PARAM_SESSION) != null) {
+      renderXmlResponse(request, response, "<" + TAG_BLOBSTORE + ">" + (isAppEngine() && useBlobstore) + "</" + TAG_BLOBSTORE + ">");
+    } else if (request.getParameter(PARAM_BLOBSTORE) != null) {
+      renderXmlResponse(request, response, "<" + TAG_BLOBSTORE_PATH + ">" + getBlobstorePath(request)  + "</" + TAG_BLOBSTORE_PATH + ">");
+    } else if (request.getParameter(PARAM_SHOW) != null) {
       getUploadedFile(request, response);
     } else if (request.getParameter(PARAM_CANCEL) != null) {
       cancelUpload(request);
@@ -542,6 +557,10 @@ public class UploadServlet extends HttpServlet implements Servlet {
     if (listener != null) {
       listener.setFinished(true);
     }
+  }
+
+  protected String getBlobstorePath(HttpServletRequest request) {
+    return null;
   }
 
   /**
@@ -683,6 +702,7 @@ public class UploadServlet extends HttpServlet implements Servlet {
       listener.remove();
     }
   }
+
   
   /**
    * Method executed each time the client asks the server for the progress status.

@@ -62,17 +62,6 @@ public class SingleUploader extends Uploader {
   }
 
   /**
-   * Uses the standard browser input, customized status, and creates a 
-   * standard button to send the file
-   * 
-   * @param status
-   *        Customized status widget to use
-   */
-  public SingleUploader(IUploadStatus status) {
-    this(FileInputType.BROWSER_INPUT, status);
-  }
-
-  /**
    * Creates a standard button to send the file
    * 
    * @param type
@@ -139,6 +128,17 @@ public class SingleUploader extends Uploader {
   }
 
   /**
+   * Uses the standard browser input, customized status, and creates a 
+   * standard button to send the file
+   * 
+   * @param status
+   *        Customized status widget to use
+   */
+  public SingleUploader(IUploadStatus status) {
+    this(FileInputType.BROWSER_INPUT, status);
+  }
+
+  /**
    * 
    * @param status
    *        Customized status widget to use
@@ -147,6 +147,12 @@ public class SingleUploader extends Uploader {
    */
   public SingleUploader(IUploadStatus status, Button button) {
     this(FileInputType.BROWSER_INPUT, status, button, null);
+  }
+
+  @Override
+  public void setEnabled(boolean b) {
+    super.setEnabled(b);
+    button.setEnabled(b);
   }
 
   /* (non-Javadoc)
@@ -177,7 +183,7 @@ public class SingleUploader extends Uploader {
     button.setEnabled(true);
     button.removeStyleName("changed");
   }
-
+  
   /* (non-Javadoc)
    * @see gwtupload.client.Uploader#onStartUpload()
    */
@@ -186,12 +192,6 @@ public class SingleUploader extends Uploader {
     super.onStartUpload();
     button.setEnabled(false);
     button.removeStyleName("changed");
-  }
-  
-  @Override
-  public void setEnabled(boolean b) {
-    super.setEnabled(b);
-    button.setEnabled(b);
   }
 
 }

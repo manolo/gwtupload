@@ -94,7 +94,6 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     }
   }
   public static final int DEFAULT_FILEINPUT_SIZE = 40;
-  public static final String DEFAULT_SERVLET_PATH = "servlet.gupld";
   public static final String PARAMETER_FILENAME = "filename";
   
   public static final String PARAMETER_SHOW = "show";
@@ -169,22 +168,44 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
   
   private boolean autoSubmit = false;
   private boolean avoidRepeatedFiles = false;
-  private boolean enabled = true;
   private String basename = null;
+  private boolean blobstore = false;
   private IUploadStatus.UploadCancelHandler cancelHandler = new IUploadStatus.UploadCancelHandler() {
     public void onCancel() {
       cancel();
     }
   };
   private boolean cancelled = false;
+  private boolean enabled = true;
   private IFileInput fileInput;
   private String fileInputPrefix = "GWTU";
   private FileInputType fileInputType;
   private boolean finished = false;
-  
   private boolean hasSession = false;
-
   private long lastData = now();
+  
+  private final RequestCallback onBlobstoreReceivedCallback = new RequestCallback() {
+    public void onError(Request request, Throwable exception) {
+      String message = removeHtmlTags(exception.getMessage());
+      cancelUpload(i18nStrs.uploaderServerUnavailable() + getServletPath() + "\n\n" + message);
+    }
+    public void onResponseReceived(Request request, Response response) {
+      try {
+        String url = Utils.getXmlNodeValue(XMLParser.parse(response.getText()), "blobpath");
+        if (url != null && url.length() > 0 && !"null".equalsIgnoreCase(url)) {
+           uploadForm.setAction(url);
+        }
+        receivedBlobPath = true;
+      } catch (Exception e) {
+        if (response.getText().toLowerCase().matches("error")) {
+          String message = i18nStrs.uploaderServerError() + "\nAction: " + getServletPath() + "\nException: " + e.getMessage() + response.getText();
+          cancelUpload(i18nStrs.uploaderServerUnavailable() + getServletPath() + "\n\n" + message);
+        }
+      }
+      uploadForm.submit();
+    }
+  };
+
   private final RequestCallback onCancelReceivedCallback = new RequestCallback() {
     public void onError(Request request, Throwable exception) {
       GWT.log("onCancelReceivedCallback onError: " , exception);
@@ -197,7 +218,6 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     }
   };
   private Vector<IUploader.OnChangeUploaderHandler> onChangeHandlers = new Vector<IUploader.OnChangeUploaderHandler>();
-  
   private final RequestCallback onDeleteFileCallback = new RequestCallback() {
     public void onError(Request request, Throwable exception) {
       statusWidget.setStatus(Status.DELETED);
@@ -209,6 +229,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
       fileDone.remove(getFileName());
     }
   };
+  
   private final ChangeHandler onFileInputChanged = new ChangeHandler() {
     public void onChange(ChangeEvent event) {
       basename = Utils.basename(getFileName());
@@ -224,7 +245,6 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     }
   };
   private Vector<IUploader.OnFinishUploaderHandler> onFinishHandlers = new Vector<IUploader.OnFinishUploaderHandler>();
-  
   private final RequestCallback onSessionReceivedCallback = new RequestCallback() {
     public void onError(Request request, Throwable exception) {
       String message = removeHtmlTags(exception.getMessage());
@@ -232,12 +252,21 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     }
     public void onResponseReceived(Request request, Response response) {
       hasSession = true;
+      try {
+        String s = Utils.getXmlNodeValue(XMLParser.parse(response.getText()), "blobstore");
+        if ("true".equalsIgnoreCase(s)) {
+          blobstore = true;
+          sendAjaxRequestToGetBlobstorePath();
+          return;
+        }
+      } catch (Exception e) {
+      }
       uploadForm.submit();
     }
   };
   
   private Vector<IUploader.OnStartUploaderHandler> onStartHandlers = new Vector<IUploader.OnStartUploaderHandler>();
-  
+
   private Vector<IUploader.OnStatusChangedHandler> onStatusChangeHandlers = new Vector<IUploader.OnStatusChangedHandler>();
   
   /**
@@ -272,13 +301,13 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     }
 
   };
-
+  
   private SubmitCompleteHandler onSubmitCompleteHandler = new SubmitCompleteHandler() {
     public void onSubmitComplete(SubmitCompleteEvent event) {
       serverResponse = event.getResults();
     }
   };
-
+  
   /**
    *  Handler called when the file form is submitted
    *  
@@ -319,10 +348,21 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
         try {
           sendAjaxRequestToValidateSession();
         } catch (Exception e) {
-            GWT.log("Exception in validateSession", null);
+          GWT.log("Exception in validateSession", null);
         }
         return;
       }
+
+      if (blobstore && !receivedBlobPath) {
+        event.cancel();
+        try {
+          sendAjaxRequestToGetBlobstorePath();
+        } catch (Exception e) {
+          GWT.log("Exception in getblobstorePath", null);
+        }
+        return;
+      }
+      receivedBlobPath = false;
 
       addToQueue();
 
@@ -348,10 +388,14 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
       }
     }
   };
-  
-  private int requestsCounter = 0;
 
+  private boolean receivedBlobPath = false;
+
+  private int requestsCounter = 0;
+  
   private String serverResponse = null;
+
+  private String servletPath = "servlet.gupld";
   
   private IUploadStatus.UploadStatusChangedHandler statusChangedHandler = new IUploadStatus.UploadStatusChangedHandler() {
     public void onStatusChanged(IUploadStatus statusWiget) {
@@ -440,7 +484,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     uploadForm = form;
     uploadForm.setEncoding(FormPanel.ENCODING_MULTIPART);
     uploadForm.setMethod(FormPanel.METHOD_POST);
-    uploadForm.setAction(DEFAULT_SERVLET_PATH);
+    uploadForm.setAction(servletPath);
     uploadForm.addSubmitHandler(onSubmitFormHandler);
     uploadForm.addSubmitCompleteHandler(onSubmitCompleteHandler);
 
@@ -629,7 +673,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
    * return the configured server service in the form-panel.
    */
   public String getServletPath() {
-    return uploadForm.getAction();
+    return servletPath;
   }
 
   /* (non-Javadoc)
@@ -739,6 +783,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
    */
   public void setServletPath(String path) {
     if (path != null) {
+      servletPath = path;
       uploadForm.setAction(path);
     }
   }
@@ -979,6 +1024,16 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     reqBuilder.sendRequest("remove_file", onDeleteFileCallback);
   }
   
+  /**
+   * Sends a request to the server in order to get the blobstore path.
+   * When the response with the session comes, it submits the form.
+   */
+  private void sendAjaxRequestToGetBlobstorePath() throws RequestException {
+    RequestBuilder reqBuilder = new RequestBuilder(RequestBuilder.GET, composeURL("blobstore=true"));
+    reqBuilder.setTimeoutMillis(DEFAULT_AJAX_TIMEOUT);
+    reqBuilder.sendRequest("blobstore", onBlobstoreReceivedCallback);
+  }
+
   /**
    * Sends a request to the server in order to get the session cookie,
    * when the response with the session comes, it submits the form.
