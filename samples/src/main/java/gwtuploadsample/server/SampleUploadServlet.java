@@ -61,7 +61,7 @@ public class SampleUploadServlet extends UploadAction {
     int cont = 0;
     for (FileItem item : sessionFiles) {
       if (false == item.isFormField()) {
-        cont ++;
+        cont++;
         try {
           /// Create a new file based on the remote file name in the client
           // String saveName = item.getName().replaceAll("[\\\\/><\\|\\s\"'{}()\\[\\]]+", "_");
@@ -82,7 +82,7 @@ public class SampleUploadServlet extends UploadAction {
           response += "<file-" + cont + "-field>" + item.getFieldName() + "</file-" + cont + "-field>\n";
           response += "<file-" + cont + "-name>" + item.getName() + "</file-" + cont + "-name>\n";
           response += "<file-" + cont + "-size>" + item.getSize() + "</file-" + cont + "-size>\n";
-          response += "<file-" + cont + "-type>" + item.getContentType()+ "</file-" + cont + "type>\n";
+          response += "<file-" + cont + "-type>" + item.getContentType() + "</file-" + cont + "type>\n";
         } catch (Exception e) {
           throw new UploadActionException(e);
         }

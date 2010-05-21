@@ -294,6 +294,13 @@ public class MultiUploader extends Composite implements IUploader {
     return lastUploader.getServerResponse();
   }
 
+  /* (non-Javadoc)
+   * @see gwtupload.client.IUploader#getServletPath()
+   */
+  public String getServletPath() {
+    return currentUploader.getServletPath();
+  }
+
   /**
    *  Return the status of the multiuploader.
    *  
@@ -451,7 +458,7 @@ public class MultiUploader extends Composite implements IUploader {
   public void setStatusWidget(IUploadStatus status) {
     currentUploader.setStatusWidget(status);
   }
-
+  
   /* (non-Javadoc)
   * @see gwtupload.client.IUploader#setValidExtensions(java.lang.String[])
   */
@@ -459,7 +466,7 @@ public class MultiUploader extends Composite implements IUploader {
     validExtensions = ext;
     currentUploader.setValidExtensions(ext);
   }
-  
+
   /* (non-Javadoc)
   * @see gwtupload.client.IUploader#submit()
   */

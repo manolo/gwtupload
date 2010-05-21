@@ -23,7 +23,7 @@ import gwtupload.client.IUploader.UploaderConstants;
 import java.util.HashMap;
 
 /**
- * Internationalizable constants
+ * Internationalizable constants.
  * 
  * @author Manuel Carrasco Moñino
  */
@@ -55,6 +55,9 @@ public class I18nConstants implements UploaderConstants {
   }
   public String uploaderAlreadyDone() {
     return or(strs.get(Const.TXT_ALREADY_DONE), defaultStrs.uploaderAlreadyDone());
+  }
+  public String uploaderBlobstoreError() {
+    return defaultStrs.uploaderBlobstoreError();
   }
   public String uploaderBrowse() {
     return or(strs.get(Const.TXT_BROWSE), defaultStrs.uploaderBrowse());

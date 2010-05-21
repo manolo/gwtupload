@@ -58,17 +58,19 @@ public class AppEngineUploadAction extends UploadAction {
     }
   }
 
-
   @Override
   public void init(ServletConfig config) throws ServletException {
     super.init(config);
     if (isAppEngine()) {
+      useBlobstore = false;
       if (uploadDelay > 0) {
         uploadDelay = Math.max(50, uploadDelay);
       }
       if (maxSize > MemCacheFileItemFactory.DEFAULT_REQUEST_SIZE) {
-      	maxSize = MemCacheFileItemFactory.DEFAULT_REQUEST_SIZE;
-        logger.info("GAE-UPLOAD-SERVLET restricting maxSize to " + maxSize ); 
+        maxSize = MemCacheFileItemFactory.DEFAULT_REQUEST_SIZE;
+        logger.info("GAEE-UPLOAD-SERVLET init: maxSize=" + maxSize
+            + ", slowUploads=" + uploadDelay + ", isAppEngine=" + isAppEngine()
+            + ", useBlobstore=" + useBlobstore);
       }
     }
   }
@@ -79,11 +81,9 @@ public class AppEngineUploadAction extends UploadAction {
     return new MemCacheUploadListener(uploadDelay, request.getContentLength());
   }
 
-
   @Override
   protected final AbstractUploadListener getCurrentListener(
       HttpServletRequest request) {
-	  
     return MemCacheUploadListener.current(request.getSession().getId());
   }
 

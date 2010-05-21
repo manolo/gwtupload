@@ -48,40 +48,6 @@ import com.google.appengine.api.memcache.stdimpl.GCacheFactory;
  */
 public class MemCacheFileItemFactory implements FileItemFactory, Serializable {
   
-  static final int MEMCACHE_LIMIT = 1023*1024;
-  
-  public class MemCacheInputStream extends InputStream {
-    
-    private Cache cache = null;
-    String key;
-    ByteArrayInputStream is;
-    
-    public MemCacheInputStream(String key) {
-      this.key = key;
-      try {
-        cache = CacheManager.getInstance().getCacheFactory().createCache(Collections.emptyMap());
-      } catch (Exception e) {
-      }
-    }
-    
-    public int read() throws IOException {
-      if (is == null || is.available() <= 0) {
-        try {
-          byte[] data = (byte[])cache.get(key);
-          if (data != null ){
-            is = new ByteArrayInputStream(data);
-            key += "X";
-          }
-        } catch (Exception e) {
-        }
-      }
-      if (is != null) {
-        return is.read();
-      }
-      return -1;
-    }
-  }
-  
   /**
    * An OutputStream that saves received data in memory.
    * 
@@ -96,8 +62,8 @@ public class MemCacheFileItemFactory implements FileItemFactory, Serializable {
     Saveable<CacheableByteArrayOutputStream> saveable;
     private byte[] buff = new byte[requestSize];
 
-    private int size = 0;
     private int read = 0;
+    private int size = 0;
 
     public CacheableByteArrayOutputStream(Saveable<CacheableByteArrayOutputStream> object) {
       saveable = object;
@@ -112,6 +78,14 @@ public class MemCacheFileItemFactory implements FileItemFactory, Serializable {
       return buff;
     }
 
+    public int read(byte[] ret) {
+      int i = 0;
+      for (; i < ret.length && read < size; i++, read++) {
+        ret[i] = buff[read];
+      }
+      return i;
+    }
+
     public void reset() {
       size = 0;
     }
@@ -119,24 +93,15 @@ public class MemCacheFileItemFactory implements FileItemFactory, Serializable {
     public int size() {
       return size;
     }
-
+    
     @Override
     public void write(int b) throws IOException {
       buff[size++] = (byte) b;
     }
-    
-    public int read (byte[] ret) {
-    	int i = 0;
-    	for (; i<ret.length && read < size; i++, read++) {
-    		ret[i] = buff[read];
-    	}
-    	return i;
-    }
-  }  
-
+  }
+  
   /**
    * FileItem class which stores file data in cache.
-   *
    */
   public class CacheableFileItem implements FileItem, Saveable<CacheableByteArrayOutputStream> {
     private static final long serialVersionUID = 1L;
@@ -225,13 +190,11 @@ public class MemCacheFileItemFactory implements FileItemFactory, Serializable {
           }});
           byte[] buff = new byte[MEMCACHE_LIMIT];
           String sufix = "";
-          int n=0;
-          while ( (n = data.read(buff)) > 0) {
-        	  System.out.println("Putting: " + fname + sufix + " " + n);
-              cache.put(fname + sufix, buff);
-              sufix+="X";
-              buff = new byte[1023*1024];
-          };
+          while ((data.read(buff)) > 0) {
+            cache.put(fname + sufix, buff);
+            sufix += "X";
+            buff = new byte[1023 * 1024];
+          }
           size = data.size();
           data = null;
         } catch (Exception e) {
@@ -268,6 +231,40 @@ public class MemCacheFileItemFactory implements FileItemFactory, Serializable {
   }
   
   /**
+   */
+  public class MemCacheInputStream extends InputStream {
+    
+    ByteArrayInputStream is;
+    String key;
+    private Cache cache = null;
+    
+    public MemCacheInputStream(String key) {
+      this.key = key;
+      try {
+        cache = CacheManager.getInstance().getCacheFactory().createCache(Collections.emptyMap());
+      } catch (Exception e) {
+      }
+    }
+    
+    public int read() throws IOException {
+      if (is == null || is.available() <= 0) {
+        try {
+          byte[] data = (byte[]) cache.get(key);
+          if (data != null) {
+            is = new ByteArrayInputStream(data);
+            key += "X";
+          }
+        } catch (Exception e) {
+        }
+      }
+      if (is != null) {
+        return is.read();
+      }
+      return -1;
+    }
+  }  
+
+  /**
    * Interface for objects that has can be saved.
    *
    * @param <T>
@@ -275,9 +272,11 @@ public class MemCacheFileItemFactory implements FileItemFactory, Serializable {
   public interface Saveable<T> {
     void save(T o);
   }
-
+  
   // Max request size in App-engine
   public static final int DEFAULT_REQUEST_SIZE = 3 * 1024 * 1024 - 1024;
+
+  static final int MEMCACHE_LIMIT = 1023 * 1024;
 
   private static final long serialVersionUID = 1L;
 

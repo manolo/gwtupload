@@ -81,6 +81,9 @@ public interface IUploader extends HasJsData, HasWidgets {
     @DefaultStringValue("This file was already uploaded.")
     String uploaderAlreadyDone();
 
+    @DefaultStringValue("It seems the application is configured to use GAE blobstore.\nThe server has raised an error while creating an Upload-Url\nBe sure thar you have enabled billing for this application in order to use blobstore.")
+    String uploaderBlobstoreError();
+
     @DefaultStringValue("Choose a file to upload ...")
     String uploaderBrowse();
 
@@ -92,7 +95,7 @@ public interface IUploader extends HasJsData, HasWidgets {
 
     @DefaultStringValue("Invalid server response. Have you configured correctly your application in the server side?")
     String uploaderServerError();
-
+    
     @DefaultStringValue("Unable to contact with the server: ")
     String uploaderServerUnavailable();
 
@@ -141,7 +144,7 @@ public interface IUploader extends HasJsData, HasWidgets {
           ret += n.getNodeValue();
         }
       }
-      return ret.length() == 0 ? null : ret;
+      return ret.length() == 0 ? null : ret.replaceAll("^\\s+", "").replaceAll("\\s+$", "");
     }
 
     /**
@@ -167,6 +170,11 @@ public interface IUploader extends HasJsData, HasWidgets {
       return valid;
     }
   }
+
+  /**
+   * Get the url where the server application is installed.
+   */
+  String getServletPath();
 
   /**
    * Add a handler that will be called when the upload is canceled by the user.
@@ -322,7 +330,7 @@ public interface IUploader extends HasJsData, HasWidgets {
    * Changes the number of characters shown in the file input text.
    */
   void setFileInputSize(int length);
-
+  
   /**
    * Internationalize the Uploader widget.
    * 

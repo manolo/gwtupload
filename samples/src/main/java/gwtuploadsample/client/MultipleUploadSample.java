@@ -23,7 +23,6 @@ import com.google.gwt.user.client.ui.RootPanel;
 import gwtupload.client.IUploader;
 import gwtupload.client.MultiUploader;
 import gwtupload.client.PreloadedImage;
-import gwtupload.client.Uploader;
 import gwtupload.client.IFileInput.FileInputType;
 import gwtupload.client.IUploadStatus.Status;
 import gwtupload.client.PreloadedImage.OnLoadPreloadedImageHandler;
@@ -73,7 +72,7 @@ public class MultipleUploadSample implements EntryPoint {
     defaultUploader.setMaximumFiles(3);
     defaultUploader.setFileInputPrefix("default");
     // You can add customized parameters to servlet call 
-    defaultUploader.setServletPath(Uploader.DEFAULT_SERVLET_PATH + "?foo=bar");
+    defaultUploader.setServletPath(defaultUploader.getServletPath() + "?foo=bar");
     defaultUploader.avoidRepeatFiles(true);
 
     MultiUploader incubatorUploader = new MultiUploader(FileInputType.ANCHOR, new IncubatorUploadProgress());

@@ -28,7 +28,6 @@ import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.RequestTimeoutException;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FormPanel;
@@ -40,6 +39,7 @@ import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
 import com.google.gwt.user.client.ui.FormPanel.SubmitHandler;
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.XMLParser;
+import com.google.gwt.xml.client.impl.DOMParseException;
 
 import gwtupload.client.IFileInput.FileInputType;
 import gwtupload.client.IUploadStatus.Status;
@@ -154,6 +154,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
         // finally, onSubmit handler will hide the fileInput again
         setFileInputSize(1);
         fileInput.getWidget().setSize("1px", "1px");
+//        DOM.setStyleAttribute(fileInput.getWidget().getElement(), "opacity", "0");
         fileInput.setVisible(true);
         uploadForm.submit();
       }
@@ -190,18 +191,22 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
       cancelUpload(i18nStrs.uploaderServerUnavailable() + getServletPath() + "\n\n" + message);
     }
     public void onResponseReceived(Request request, Response response) {
+      String text = response.getText();
+      String url = null;
       try {
-        String url = Utils.getXmlNodeValue(XMLParser.parse(response.getText()), "blobpath");
-        if (url != null && url.length() > 0 && !"null".equalsIgnoreCase(url)) {
-           uploadForm.setAction(url);
+        url = Utils.getXmlNodeValue(XMLParser.parse(text), "blobpath");
+      } catch (DOMParseException e) {
+        if (text.contains("<blobpath>")) {
+          url = text.replaceAll("[\r\n]+","").replaceAll("^.*<blobpath>\\s*", "").replaceAll("\\s*</blobpath>.*$", "");
         }
-        receivedBlobPath = true;
       } catch (Exception e) {
-        if (response.getText().toLowerCase().matches("error")) {
-          String message = i18nStrs.uploaderServerError() + "\nAction: " + getServletPath() + "\nException: " + e.getMessage() + response.getText();
-          cancelUpload(i18nStrs.uploaderServerUnavailable() + getServletPath() + "\n\n" + message);
-        }
+        cancelUpload(i18nStrs.uploaderBlobstoreError() + "\n>>>\n" + e.getMessage() + "\n>>>>\n" + e);
+        return;
       }
+      if (url != null && url.length() > 0 && !"null".equalsIgnoreCase(url)) {
+        uploadForm.setAction(url);
+      }
+      receivedBlobPath = true;
       uploadForm.submit();
     }
   };
@@ -244,7 +249,9 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
       onChangeInput();
     }
   };
+  
   private Vector<IUploader.OnFinishUploaderHandler> onFinishHandlers = new Vector<IUploader.OnFinishUploaderHandler>();
+  
   private final RequestCallback onSessionReceivedCallback = new RequestCallback() {
     public void onError(Request request, Throwable exception) {
       String message = removeHtmlTags(exception.getMessage());
@@ -259,9 +266,11 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
           sendAjaxRequestToGetBlobstorePath();
           return;
         }
+        uploadForm.submit();
       } catch (Exception e) {
+        String message = i18nStrs.uploaderServerError() + "\nAction: " + getServletPath() + "\nException: " + e.getMessage() + response.getText();
+        cancelUpload(i18nStrs.uploaderServerUnavailable() + getServletPath() + "\n\n" + message);
       }
-      uploadForm.submit();
     }
   };
   
@@ -368,6 +377,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
 
       uploading = true;
       finished = false;
+      serverResponse = null;
 
       if (autoSubmit) {
         (new Timer() {
@@ -932,6 +942,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
 
   private String composeURL(String... params) {
     String ret = getServletPath();
+    ret = ret.replaceAll("[\\?&]+$", "");
     String sep = ret.contains("?") ? "&" : "?";
     for (String par : params) { 
       ret += sep + par;
@@ -974,6 +985,11 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
       cancelUpload(error);
       return;
     } else if (Utils.getXmlNodeValue(doc, TAG_WAIT) != null) {
+      if (serverResponse != null) {
+        GWT.log("server response received, cancelling the upload " + getFileName() + " " + serverResponse, null);
+        successful = true;
+        uploadFinished();
+      }
     } else if (Utils.getXmlNodeValue(doc, TAG_CANCELED) != null) {
       successful = false;
       cancelled = true;
@@ -1061,43 +1077,39 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
    * - in the case of error talking with the server.
    */
   private void uploadFinished() {
-    try {
-      removeFromQueue();
-      finished = true;
-      uploading = false;
-      updateStatusTimer.finish();
+    removeFromQueue();
+    finished = true;
+    uploading = false;
+    updateStatusTimer.finish();
 
-      if (successful) {
-        if (avoidRepeatedFiles) {
-          if (fileDone.contains(getFileName())) {
-            if (autoSubmit) {
-              statusWidget.setVisible(false);
-              statusWidget.setStatus(IUploadStatus.Status.REPEATED);
-            } else {
-              successful = false;
-              statusWidget.setError(i18nStrs.uploaderAlreadyDone());
-            }
+    if (successful) {
+      if (avoidRepeatedFiles) {
+        if (fileDone.contains(getFileName())) {
+          if (autoSubmit) {
+            statusWidget.setVisible(false);
+            statusWidget.setStatus(IUploadStatus.Status.REPEATED);
           } else {
-            fileDone.add(getFileName());
-            statusWidget.setStatus(IUploadStatus.Status.SUCCESS);
+            successful = false;
+            statusWidget.setError(i18nStrs.uploaderAlreadyDone());
           }
         } else {
+          fileDone.add(getFileName());
           statusWidget.setStatus(IUploadStatus.Status.SUCCESS);
         }
-      } else if (cancelled) {
-        statusWidget.setStatus(IUploadStatus.Status.CANCELED);
       } else {
-        statusWidget.setStatus(IUploadStatus.Status.ERROR);
+        statusWidget.setStatus(IUploadStatus.Status.SUCCESS);
       }
-      if (!autoSubmit) {
-        statusWidget.setVisible(false);
-      } else {
-        uploaderPanel.remove(uploadForm);
-      }
-      onFinishUpload();
-    } catch (Exception e) {
-      Window.alert(e.getMessage());
+    } else if (cancelled) {
+      statusWidget.setStatus(IUploadStatus.Status.CANCELED);
+    } else {
+      statusWidget.setStatus(IUploadStatus.Status.ERROR);
     }
+    if (!autoSubmit) {
+      statusWidget.setVisible(false);
+    } else {
+      uploaderPanel.remove(uploadForm);
+    }
+    onFinishUpload();
   }
 
   private boolean validateExtension(String filename) {

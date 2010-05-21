@@ -386,7 +386,7 @@ public class UploadServlet extends HttpServlet implements Servlet {
   
   protected int uploadDelay = 0;
   
-  protected boolean useBlobstore = true;
+  protected boolean useBlobstore = false;
 
   /**
    * Mark the current upload process to be cancelled.
@@ -587,6 +587,75 @@ public class UploadServlet extends HttpServlet implements Servlet {
   }
 
   /**
+   * Method executed each time the client asks the server for the progress status.
+   * It uses the listener to generate the adequate response
+   * 
+   * @param request
+   * @param fieldname
+   * @return a map of tag/values to be rendered 
+   */
+  protected Map<String, String> getUploadStatus(HttpServletRequest request, String fieldname) {
+
+    perThreadRequest.set(request);
+
+    HttpSession session = request.getSession();
+
+    Map<String, String> ret = new HashMap<String, String>();
+    long currentBytes = 0;
+    long totalBytes = 0;
+    long percent = 0;
+    AbstractUploadListener listener = getCurrentListener(request);
+    if (listener != null) {
+      if (listener.getException() != null) {
+        if (listener.getException() instanceof UploadCanceledException) {
+          ret.put(TAG_CANCELED, "true");
+          ret.put(TAG_FINISHED, TAG_CANCELED);
+          logger.error("UPLOAD-SERVLET (" + session.getId() + ") getUploadStatus: " + fieldname + " cancelled by the user after " + listener.getBytesRead() + " Bytes");
+        } else {
+          String errorMsg = "The upload was cancelled because there was an error in the server.\nServer's error is:\n" + listener.getException().getMessage();
+          ret.put(TAG_ERROR, errorMsg);
+          ret.put(TAG_FINISHED, TAG_ERROR);
+          logger.error("UPLOAD-SERVLET (" + session.getId() + ") getUploadStatus: " + fieldname + " finished with error: " + listener.getException().getMessage());
+        }
+      } else {
+        currentBytes = listener.getBytesRead();
+        totalBytes = listener.getContentLength();
+        percent = totalBytes != 0 ? currentBytes * 100 / totalBytes : 0;
+        // logger.debug("UPLOAD-SERVLET (" + session.getId() + ") getUploadStatus: " + fieldname + " " + currentBytes + "/" + totalBytes + " " + percent + "%");
+        ret.put("percent", "" + percent);
+        ret.put("currentBytes", "" + currentBytes);
+        ret.put("totalBytes", "" + totalBytes);
+        if (listener.isFinished()) {
+          ret.put(TAG_FINISHED, "ok");
+        }
+      }
+    } else if (getSessionFileItems(request) != null) {
+      if (fieldname == null) {
+        ret.put(TAG_FINISHED, "ok");
+        logger.debug("UPLOAD-SERVLET (" + session.getId() + ") getUploadStatus: " + request.getQueryString() + " finished with files: " + session.getAttribute(ATTR_FILES));
+      } else {
+        Vector<FileItem> sessionFiles = (Vector<FileItem>) getSessionFileItems(request);
+        for (FileItem file : sessionFiles) {
+          if (file.isFormField() == false && file.getFieldName().equals(fieldname)) {
+            ret.put(TAG_FINISHED, "ok");
+            ret.put(PARAM_FILENAME, fieldname);
+            logger.debug("UPLOAD-SERVLET (" + session.getId() + ") getUploadStatus: " + fieldname + " finished with files: " + session.getAttribute(ATTR_FILES));
+          }
+        }
+      }
+    } else {
+      logger.debug("UPLOAD-SERVLET (" + session.getId() + ") getUploadStatus: no listener in session");
+      ret.put("wait", "listener is null");
+    }
+    if (ret.containsKey(TAG_FINISHED)) {
+      removeCurrentListener(request);
+    }
+
+    perThreadRequest.set(null);
+    return ret;
+  }
+
+  /**
    * This method parses the submit action, puts in session a listener where the
    * progress status is updated, and eventually stores the received data in
    * the user session.
@@ -690,7 +759,7 @@ public class UploadServlet extends HttpServlet implements Servlet {
       throw ex;
     }
   }
-
+  
   /**
    * Remove the listener active in this session.
    * 
@@ -701,76 +770,6 @@ public class UploadServlet extends HttpServlet implements Servlet {
     if (listener != null) {
       listener.remove();
     }
-  }
-
-  
-  /**
-   * Method executed each time the client asks the server for the progress status.
-   * It uses the listener to generate the adequate response
-   * 
-   * @param request
-   * @param fieldname
-   * @return a map of tag/values to be rendered 
-   */
-  private Map<String, String> getUploadStatus(HttpServletRequest request, String fieldname) {
-
-    perThreadRequest.set(request);
-
-    HttpSession session = request.getSession();
-
-    Map<String, String> ret = new HashMap<String, String>();
-    long currentBytes = 0;
-    long totalBytes = 0;
-    long percent = 0;
-    AbstractUploadListener listener = getCurrentListener(request);
-    if (listener != null) {
-      if (listener.getException() != null) {
-        if (listener.getException() instanceof UploadCanceledException) {
-          ret.put(TAG_CANCELED, "true");
-          ret.put(TAG_FINISHED, TAG_CANCELED);
-          logger.error("UPLOAD-SERVLET (" + session.getId() + ") getUploadStatus: " + fieldname + " cancelled by the user after " + listener.getBytesRead() + " Bytes");
-        } else {
-          String errorMsg = "The upload was cancelled because there was an error in the server.\nServer's error is:\n" + listener.getException().getMessage();
-          ret.put(TAG_ERROR, errorMsg);
-          ret.put(TAG_FINISHED, TAG_ERROR);
-          logger.error("UPLOAD-SERVLET (" + session.getId() + ") getUploadStatus: " + fieldname + " finished with error: " + listener.getException().getMessage());
-        }
-      } else {
-        currentBytes = listener.getBytesRead();
-        totalBytes = listener.getContentLength();
-        percent = totalBytes != 0 ? currentBytes * 100 / totalBytes : 0;
-        // logger.debug("UPLOAD-SERVLET (" + session.getId() + ") getUploadStatus: " + fieldname + " " + currentBytes + "/" + totalBytes + " " + percent + "%");
-        ret.put("percent", "" + percent);
-        ret.put("currentBytes", "" + currentBytes);
-        ret.put("totalBytes", "" + totalBytes);
-        if (listener.isFinished()) {
-          ret.put(TAG_FINISHED, "ok");
-        }
-      }
-    } else if (getSessionFileItems(request) != null) {
-      if (fieldname == null) {
-        ret.put(TAG_FINISHED, "ok");
-        logger.debug("UPLOAD-SERVLET (" + session.getId() + ") getUploadStatus: " + request.getQueryString() + " finished with files: " + session.getAttribute(ATTR_FILES));
-      } else {
-        Vector<FileItem> sessionFiles = (Vector<FileItem>) getSessionFileItems(request);
-        for (FileItem file : sessionFiles) {
-          if (file.isFormField() == false && file.getFieldName().equals(fieldname)) {
-            ret.put(TAG_FINISHED, "ok");
-            ret.put(PARAM_FILENAME, fieldname);
-            logger.debug("UPLOAD-SERVLET (" + session.getId() + ") getUploadStatus: " + fieldname + " finished with files: " + session.getAttribute(ATTR_FILES));
-          }
-        }
-      }
-    } else {
-      logger.debug("UPLOAD-SERVLET (" + session.getId() + ") getUploadStatus: no listener in session");
-      ret.put("wait", "listener is null");
-    }
-    if (ret.containsKey(TAG_FINISHED)) {
-      removeCurrentListener(request);
-    }
-
-    perThreadRequest.set(null);
-    return ret;
   }
 
 }
