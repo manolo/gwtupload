@@ -23,7 +23,6 @@ import org.apache.commons.fileupload.FileItem;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintWriter;
 import java.util.List;
 import java.util.Vector;
 
@@ -207,19 +206,10 @@ public abstract class UploadAction extends UploadServlet {
     } else if (message != null) {
       renderHtmlMessage(response, message);
     } else {
-      renderXmlResponse(request, response, "OK");
+      renderXmlResponse(request, response, "OK", true);
     }
     
     finish(request);
-  }
-
-  private void renderHtmlMessage(HttpServletResponse response, String message) throws IOException {
-    response.setContentType("text/html; charset=UTF-8");
-    response.setCharacterEncoding("UTF-8");
-    PrintWriter out = response.getWriter();
-    out.print(message);
-    out.flush();
-    out.close();
   }
   
 }

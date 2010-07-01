@@ -28,10 +28,13 @@ import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.RequestTimeoutException;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FormPanel;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
@@ -47,7 +50,9 @@ import gwtupload.client.IUploadStatus.Status;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
+import java.util.Map.Entry;
 
 /**
  * <p>
@@ -77,6 +82,22 @@ import java.util.Vector;
  *         </ul>
  */
 public class Uploader extends Composite implements IsUpdateable, IUploader, HasJsData {
+  
+  static HTML mlog;
+  public static void log(String msg, Throwable e) {
+    if (mlog == null) {
+      if (Window.Location.getParameter("log") != null) {
+        mlog = new HTML();
+        RootPanel.get().add(mlog);
+        log(msg, e);
+      } else {
+        GWT.log(msg, e);
+      }
+    } else {
+      String html = (msg + "\n" + (e != null ? e.getMessage() :"")).replaceAll("\n", "<br/>");
+      mlog.setHTML(mlog.getHTML() + html);
+    }
+  }
   
   /**
    * FormPanel's add method only can be called once
@@ -213,7 +234,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
 
   private final RequestCallback onCancelReceivedCallback = new RequestCallback() {
     public void onError(Request request, Throwable exception) {
-      GWT.log("onCancelReceivedCallback onError: " , exception);
+      log("onCancelReceivedCallback onError: " , exception);
       statusWidget.setStatus(IUploadStatus.Status.CANCELED);
     }
     public void onResponseReceived(Request request, Response response) {
@@ -226,7 +247,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
   private final RequestCallback onDeleteFileCallback = new RequestCallback() {
     public void onError(Request request, Throwable exception) {
       statusWidget.setStatus(Status.DELETED);
-      GWT.log("onCancelReceivedCallback onError: ", exception);
+      log("onCancelReceivedCallback onError: ", exception);
     }
 
     public void onResponseReceived(Request request, Response response) {
@@ -288,9 +309,9 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     public void onError(Request request, Throwable exception) {
       waitingForResponse = false;
       if (exception instanceof RequestTimeoutException) {
-        GWT.log("GWTUpload: onStatusReceivedCallback timeout error, asking the server again.", null);
+        log("GWTUpload: onStatusReceivedCallback timeout error, asking the server again.", null);
       } else {
-        GWT.log("GWTUpload: onStatusReceivedCallback error: " + exception.getMessage(), exception);
+        log("GWTUpload: onStatusReceivedCallback error: " + exception.getMessage(), exception);
         updateStatusTimer.finish();
         String message = removeHtmlTags(exception.getMessage());
         message += "\n" + exception.getClass().getName();
@@ -314,6 +335,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
   private SubmitCompleteHandler onSubmitCompleteHandler = new SubmitCompleteHandler() {
     public void onSubmitComplete(SubmitCompleteEvent event) {
       serverResponse = event.getResults();
+      log("onSubmitComplete: " + serverResponse, null);
     }
   };
   
@@ -357,7 +379,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
         try {
           sendAjaxRequestToValidateSession();
         } catch (Exception e) {
-          GWT.log("Exception in validateSession", null);
+          log("Exception in validateSession", null);
         }
         return;
       }
@@ -367,7 +389,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
         try {
           sendAjaxRequestToGetBlobstorePath();
         } catch (Exception e) {
-          GWT.log("Exception in getblobstorePath", null);
+          log("Exception in getblobstorePath", null);
         }
         return;
       }
@@ -609,13 +631,13 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     
     cancelled = true;
     automaticUploadTimer.cancel();
-    GWT.log("cancelling " +  uploading, null);
+    log("cancelling " +  uploading, null);
     if (uploading) {
       updateStatusTimer.finish();
       try {
         sendAjaxRequestToCancelCurrentUpload();
       } catch (Exception e) {
-        GWT.log("Exception cancelling request " + e.getMessage(), e);
+        log("Exception cancelling request " + e.getMessage(), e);
       }
       statusWidget.setStatus(IUploadStatus.Status.CANCELING);
     } else {
@@ -948,6 +970,9 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
       ret += sep + par;
       sep = "&";
     }
+    for (Entry<String, List<String>> e : Window.Location.getParameterMap().entrySet()) {
+      ret += sep + e.getKey() + "=" + e.getValue().get(0);
+    }
     ret += sep + "random=" + Math.random();
     return ret;
   }
@@ -986,7 +1011,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
       return;
     } else if (Utils.getXmlNodeValue(doc, TAG_WAIT) != null) {
       if (serverResponse != null) {
-        GWT.log("server response received, cancelling the upload " + getFileName() + " " + serverResponse, null);
+        log("server response received, cancelling the upload " + getFileName() + " " + serverResponse, null);
         successful = true;
         uploadFinished();
       }
@@ -1006,7 +1031,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
       statusWidget.setProgress(transferredKB, totalKB);
       return;
     } else {
-      GWT.log("incorrect response: " + getFileName() + " " + responseTxt, null);
+      log("incorrect response: " + getFileName() + " " + responseTxt, null);
     }
     
     if (now() - lastData >  uploadTimeout) {

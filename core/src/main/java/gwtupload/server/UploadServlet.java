@@ -118,7 +118,7 @@ public class UploadServlet extends HttpServlet implements Servlet {
   protected static final String ERROR_TIMEOUT = "<error>timeout receiving file</error>";
 
   protected static final String FINISHED_OK = "<finished>OK</finished>";
-  
+
   protected static Logger logger = Logger.getLogger(UploadServlet.class);
 
   protected static String PARAM_BLOBSTORE = "blobstore";
@@ -347,23 +347,65 @@ public class UploadServlet extends HttpServlet implements Servlet {
     return item;
   }
 
+  
   /**
-   * Writes a XML response to the client.
+   * Writes a response to the client.
+   */
+  protected static void renderMessage(HttpServletResponse response, String message, String contentType) throws IOException {
+    response.setContentType(contentType + "; charset=UTF-8");
+    response.setCharacterEncoding("UTF-8");
+    PrintWriter out = response.getWriter();
+    out.print(message);
+    out.flush();
+    out.close();
+  }
+
+  /**
+   * Writes an XML response to the client.
+   */
+  protected void renderHtmlMessage(HttpServletResponse response, String message) throws IOException {
+    renderMessage(response, message, "text/html");
+  }
+  
+  /**
+   * Writes a XML response to the client. 
+   * The message must be a text which will be wrapped in an XML structure.
+   * 
+   * Note: if the request is a POST, the response should set the content type 
+   *  to text/html or text/plain in order to be able in the client side to
+   *  read the iframe body (submitCompletEvent.getResults()), otherwise the
+   *  method returns null 
    * 
    * @param request
    * @param response
    * @param message
+   * @param post
+   *        specify whether the request is post or not.   
    * @throws IOException
    */
-  protected static void renderXmlResponse(HttpServletRequest request, HttpServletResponse response, String message) throws IOException {
-    response.setContentType("text/xml; charset=UTF-8");
-    response.setCharacterEncoding("UTF-8");
-    PrintWriter out = response.getWriter();
-    String xml = XML_TPL.replace("%%MESSAGE%%", message != null ? message : "");
+  protected static void renderXmlResponse(HttpServletRequest request, HttpServletResponse response, String message, boolean post) throws IOException {
+    
+    String contentType = post ? "text/plain" : "text/xml";
 
-    out.print(xml);
-    out.flush();
-    out.close();
+    // TODO: this is here for testing purposes, it must be removed
+    String ctype = request.getParameter("ctype");
+    if (ctype != null) {
+      if("xml".equalsIgnoreCase(ctype)) {
+        contentType = "text/xml";
+      } else if("html".equalsIgnoreCase(ctype)) {
+        contentType = "text/html";
+      } else if("text".equalsIgnoreCase(ctype)) {
+        contentType = "text/plain";
+      }
+    }
+    
+    String xml = XML_TPL.replace("%%MESSAGE%%", message != null ? message : "");
+    
+    renderMessage(response, xml, contentType);
+  }
+
+  protected static void renderXmlResponse(HttpServletRequest request, HttpServletResponse response, String message) throws IOException {
+    renderXmlResponse(request, response, message, false);
   }
   
   protected static void setThreadLocalRequest(HttpServletRequest request) {
@@ -531,17 +573,17 @@ public class UploadServlet extends HttpServlet implements Servlet {
     try {
       error = parsePostRequest(request, response);
       finish(request);
-      renderXmlResponse(request, response, error != null && error.length() > 0 ? "<error>" + error + "</error>" : FINISHED_OK);
+      renderXmlResponse(request, response, error != null && error.length() > 0 ? "<error>" + error + "</error>" : FINISHED_OK, true);
     } catch (UploadCanceledException e) {
-      renderXmlResponse(request, response, CANCELED_TRUE);
+      renderXmlResponse(request, response, CANCELED_TRUE, true);
     } catch (UploadTimeoutException e) {
-      renderXmlResponse(request, response, ERROR_TIMEOUT);
+      renderXmlResponse(request, response, ERROR_TIMEOUT, true);
     } catch (UploadSizeLimitException e) {
-      renderXmlResponse(request, response, "<" + TAG_ERROR + ">" + e.getMessage() + "</" + TAG_ERROR + ">");
+      renderXmlResponse(request, response, "<" + TAG_ERROR + ">" + e.getMessage() + "</" + TAG_ERROR + ">", true);
     } catch (Exception e) {
       logger.error("UPLOAD-SERVLET (" + request.getSession().getId() + ") Exception -> " + e.getMessage() + "\n" + stackTraceToString(e));
       error = e.getMessage();
-      renderXmlResponse(request, response, "<" + TAG_ERROR + ">" + error + "</" + TAG_ERROR + ">");
+      renderXmlResponse(request, response, "<" + TAG_ERROR + ">" + error + "</" + TAG_ERROR + ">", true);
     } finally {
       perThreadRequest.set(null);
     }

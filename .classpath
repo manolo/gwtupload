@@ -4,10 +4,10 @@
 	<classpathentry kind="src" path="samples/src/main/java"/>
 	<classpathentry kind="src" path="core/src/main/java"/>
 	<classpathentry kind="src" path="core/src/test/java"/>
-	<classpathentry kind="src" path="samples/src/main/resources"/>
 	<classpathentry kind="src" path="jsupload/src/main/java"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="com.google.gwt.eclipse.core.GWT_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3"/>
 	<classpathentry kind="con" path="org.maven.ide.eclipse.MAVEN2_CLASSPATH_CONTAINER"/>
 	<classpathentry kind="output" path="samples/src/main/webapp/WEB-INF/classes"/>
 </classpath>
