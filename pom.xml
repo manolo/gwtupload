@@ -151,6 +151,10 @@
       <id>timepedia</id>
       <url>http://timefire-repository.googlecode.com/svn/mavenrepo/</url>
     </repository>
+    <repository>
+      <id>seasar</id>
+      <url>http://maven.seasar.org/maven2</url>
+    </repository>
   </repositories>
 
   <pluginRepositories>
