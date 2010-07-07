@@ -41,13 +41,48 @@ import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 
-import gwtupload.client.IUploader.UploaderConstants;
-
 import java.util.HashMap;
 
 /**
  * A decorated file upload is a widget which hides a FileUpload showing
  * a clickable and customizable Widget, normally a button.
+ * 
+ * If you want to use this widget in your application, define these
+ * css rules:
+ * 
+ * <pre>
+.DecoratedFileUpload {
+  margin-right: 5px;
+}
+
+.DecoratedFileUpload .gwt-Button,
+.DecoratedFileUpload .gwt-Anchor,
+.DecoratedFileUpload .gwt-Label {
+  white-space: nowrap;
+  font-size: 10px;
+  min-height: 15px;
+}
+
+.DecoratedFileUpload .gwt-Anchor,
+.DecoratedFileUpload .gwt-Label {
+  color: blue;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.DecoratedFileUpload .gwt-Button:HOVER,
+.DecoratedFileUpload .gwt-Button-over,
+.DecoratedFileUpload .gwt-Anchor-over,
+.DecoratedFileUpload .gwt-Label-over {
+  color: #af6b29;
+}
+
+.DecoratedFileUpload-disabled .gwt-Button,
+.DecoratedFileUpload-disabled .gwt-Anchor,
+.DecoratedFileUpload-disabled .gwt-Label {
+  color: grey;
+}
+ * </pre>
  * 
  * @author Manuel Carrasco Moñino
  *
@@ -57,8 +92,8 @@ public class DecoratedFileUpload extends Composite implements HasText, HasName, 
   /**
    * A FileUpload which implements onChange, onMouseOver and onMouseOut events.
    * 
-   * Note FileUpload in version 2.0.x implements onChange event, but we put it here 
-   * in order to be compatible with 1.6.x
+   * Note: although FileUpload implements HasChangeHandlers in version Gwt 2.0.x,
+   * we put it here in order to be compatible with older Gwt versions.
    *
    */
   public static class FileUploadWithMouseEvents extends FileUpload implements HasMouseOverHandlers, HasMouseOutHandlers, HasChangeHandlers {
@@ -232,67 +267,97 @@ public class DecoratedFileUpload extends Composite implements HasText, HasName, 
   protected FileUploadWithMouseEvents input = new FileUploadWithMouseEvents();
   protected boolean reuseButton = false;
   private DecoratedFileUploadImpl impl;
-  private UploaderConstants strs = GWT.create(UploaderConstants.class);
+  private String text = "";
 
-  public DecoratedFileUpload() {
+  /**
+   * Default constructor, it renders a default button with the provided 
+   * text when the element is attached.
+   */
+  public DecoratedFileUpload(String text) {
     impl = GWT.create(DecoratedFileUploadImpl.class);
     container = new AbsolutePanel();
     container.addStyleName(STYLE_CONTAINER);
     initWidget(container);
     impl.init(container, input);
+    this.text = text;
   }
 
+  /**
+   * Constructor which uses the provided widget as the button where the
+   * user has to click to show the browse file dialog.
+   * The widget has to implement the HasClickHandlers interface.
+   */
   public DecoratedFileUpload(Widget button) {
-    this();
+    this("");
     setButton(button);
   }
 
+  /**
+   * Add a handler which will be fired when the user selects a file.
+   */
   public HandlerRegistration addChangeHandler(ChangeHandler handler) {
     return input.addChangeHandler(handler);
   }
 
+  /**
+   * Return the file name selected by the user.
+   */
   public String getFilename() {
     return input.getFilename();
   }
 
+  /**
+   * Return the original FileUpload wrapped by this decorated widget. 
+   */
   public FileUpload getFileUpload() {
     return input;
   }
 
+  /**
+   * Return the name of the widget.
+   */
   public String getName() {
     return input.getName();
   }
 
+  /**
+   * Return the text shown in the clickable button.
+   */
   public String getText() {
-    if (button == null) {
-      return "";
-    }
-    if (button instanceof HasText) {
-      return ((HasText) button).getText();
-    } else {
-      return button.toString();
-    }
+    return text;
   }
 
+  /**
+   * Return this widget instance. 
+   */
   public Widget getWidget() {
     return this;
   }
 
+  /**
+   * Return whether the input is enabled.
+   */
   public boolean isEnabled() {
     return input.isEnabled();
   }
 
+  /* (non-Javadoc)
+   * @see com.google.gwt.user.client.ui.Composite#onAttach()
+   */
   @Override
   public void onAttach() {
     super.onAttach();
     if (button == null) {
-      button = new Button(strs.uploaderBrowse());
+      button = new Button(text);
       setButton(button);
     } else {
       impl.resize();
     }
   }
 
+  /**
+   * Set the button the user has to click on to show the browse dialog. 
+   */
   public void setButton(Widget button) {
     assert button instanceof HasClickHandlers : "Button should extend HasClickHandlers";
     if (this.button != null) {
@@ -304,11 +369,17 @@ public class DecoratedFileUpload extends Composite implements HasText, HasName, 
     impl.resize();
   }
 
+  /**
+   * Set the gutton size.
+   */
   public void setButtonSize(String width, String height) {
     button.setSize(width, height);
     impl.resize();
   }
 
+  /**
+   * Enable or disable the FileInput. 
+   */
   public void setEnabled(boolean b) {
     input.setEnabled(b);
     if (b) {
@@ -318,11 +389,18 @@ public class DecoratedFileUpload extends Composite implements HasText, HasName, 
     }
   }
   
+  /**
+   * Set the widget name.
+   */
   public void setName(String fieldName) {
     input.setName(fieldName);
   }
 
+  /**
+   * Set the text of the button.
+   */
   public void setText(String text) {
+    this.text = text;
     if (button instanceof HasText) {
       ((HasText) button).setText(text);
       impl.resize();

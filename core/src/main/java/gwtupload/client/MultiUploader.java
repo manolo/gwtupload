@@ -62,7 +62,7 @@ public class MultiUploader extends Composite implements IUploader {
   private int fileInputSize = Uploader.DEFAULT_FILEINPUT_SIZE;
 
   private FileInputType fileInputType;
-  private UploaderConstants i18nStrs = GWT.create(UploaderConstants.class);
+  private UploaderConstants i18nStrs = Uploader.I18N_CONSTANTS;
   private IUploader lastUploader = null;
   private int maximumFiles = 0;
   private FlowPanel multiUploaderPanel = new FlowPanel();

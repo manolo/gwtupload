@@ -87,7 +87,7 @@ public interface IFileInput extends HasChangeHandlers {
    */
   public class ButtonFileInput extends DecoratedFileUpload implements IFileInput {
     public ButtonFileInput() {
-      super();
+      super(Uploader.I18N_CONSTANTS.uploaderBrowse());
     }
 
     public ButtonFileInput(Widget w) {

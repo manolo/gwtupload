@@ -111,7 +111,7 @@ public class SingleUploader extends Uploader {
 
     this.button = button;
     if (button.getText().length() == 0) {
-      button.setText(i18nStrs.uploaderSend());
+      button.setText(I18N_CONSTANTS.uploaderSend());
     }
 
     button.addStyleName("submit");
