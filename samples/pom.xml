@@ -11,7 +11,7 @@
   <description>Examples ready to deploy</description>
 
   <parent>
-    <groupId>gwtupload</groupId>
+    <groupId>com.googlecode.gwtupload</groupId>
     <artifactId>gwtupload-project</artifactId>
     <version>0.6-SNAPSHOT</version>
   </parent>
@@ -30,13 +30,13 @@
       <scope>runtime</scope>
     </dependency>
     <dependency>
-      <groupId>gwtupload</groupId>
+      <groupId>${groupId}</groupId>
       <artifactId>gwtupload</artifactId>
       <version>${version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>gwtupload</groupId>
+      <groupId>${groupId}</groupId>
       <artifactId>jsupload</artifactId>
       <version>${version}</version>
       <scope>provided</scope>
@@ -162,7 +162,6 @@
         </executions>
       </plugin>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-deploy-plugin</artifactId>
         <executions>
           <execution>
@@ -171,16 +170,24 @@
               <goal>deploy-file</goal>
             </goals>
             <configuration>
+              <repositoryId>sonatype-nexus-snapshots</repositoryId>
               <file>${project.build.directory}/${project.artifactId}-${project.version}.jar</file>
               <groupId>${project.groupId}</groupId>
               <artifactId>${project.artifactId}</artifactId>
               <version>${project.version}</version>
               <packaging>jar</packaging>
-              <url>${localMavenRepo}</url>
+              <!-- <url>${localMavenRepo}</url> -->
+              <url>http://oss.sonatype.org/content/repositories/snapshots</url>
               <uniqueVersion>false</uniqueVersion>
             </configuration>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-deploy-plugin</artifactId>
+        <configuration>
+          <skip>true</skip>
+        </configuration>
       </plugin>
     </plugins>
   </build>

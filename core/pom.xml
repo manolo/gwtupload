@@ -8,10 +8,10 @@
   <artifactId>gwtupload</artifactId>
   <packaging>jar</packaging>
   <name>GwtUpload library</name>
-  <description>GwtUpload library: client and server classes (gwt: 1.6.x,1.7.x,2.0.x)</description>
+  <description>GwtUpload library: client and server classes (compatible with: Gwt 1.6.x,1.7.x,2.0.x)</description>
 
   <parent>
-    <groupId>gwtupload</groupId>
+    <groupId>com.googlecode.gwtupload</groupId>
     <artifactId>gwtupload-project</artifactId>
     <version>0.6-SNAPSHOT</version>
   </parent>
@@ -63,14 +63,40 @@
           </uploads>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <executions>
+        <execution>
+          <phase>package</phase>
+          <goals>
+            <goal>jar</goal>
+          </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>attach-javadocs</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
 
+<!--
   <distributionManagement>
     <site>
       <id>googlecode</id>
       <url>svn:https://gwtupload.googlecode.com/svn/site/${artifactId}</url>
     </site>
   </distributionManagement>
+-->
 
 </project>

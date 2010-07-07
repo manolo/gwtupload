@@ -11,7 +11,7 @@
   <description>Library for using gwtupload in AppEngine servers (requires gwtupload.jar)</description>
 
   <parent>
-    <groupId>gwtupload</groupId>
+    <groupId>com.googlecode.gwtupload</groupId>
     <artifactId>gwtupload-project</artifactId>
     <version>0.6-SNAPSHOT</version>
   </parent>
@@ -24,7 +24,7 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>gwtupload</groupId>
+      <groupId>${groupId}</groupId>
       <artifactId>gwtupload</artifactId>
       <version>${version}</version>
       <scope>provided</scope>
@@ -53,6 +53,30 @@
             </upload>
           </uploads>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <executions>
+        <execution>
+          <phase>package</phase>
+          <goals>
+            <goal>jar</goal>
+          </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>attach-javadocs</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>

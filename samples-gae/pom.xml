@@ -11,7 +11,7 @@
   <description>Examples ready to deploy in GAE server</description>
 
   <parent>
-    <groupId>gwtupload</groupId>
+    <groupId>com.googlecode.gwtupload</groupId>
     <artifactId>gwtupload-project</artifactId>
     <version>0.6-SNAPSHOT</version>
   </parent>
@@ -30,23 +30,23 @@
       <scope>runtime</scope>
     </dependency>
     <dependency>
-      <groupId>gwtupload</groupId>
+      <groupId>${groupId}</groupId>
       <artifactId>gwtupload</artifactId>
       <version>${version}</version>
     </dependency>
     <dependency>
-      <groupId>gwtupload</groupId>
+      <groupId>${groupId}</groupId>
       <artifactId>jsupload</artifactId>
       <version>${version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>gwtupload</groupId>
+      <groupId>${groupId}</groupId>
       <artifactId>gwtupload-gae</artifactId>
       <version>${version}</version>
     </dependency>
     <dependency>
-      <groupId>gwtupload</groupId>
+      <groupId>${groupId}</groupId>
       <artifactId>gwtupload-samples</artifactId>
       <version>${version}</version>
       <scope>provided</scope>

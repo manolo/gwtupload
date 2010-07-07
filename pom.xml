@@ -4,7 +4,7 @@
                       http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
-  <groupId>gwtupload</groupId>
+  <groupId>com.googlecode.gwtupload</groupId>
   <artifactId>gwtupload-project</artifactId>
   <name>GwtUpload project</name>
   <packaging>pom</packaging>
@@ -16,6 +16,12 @@
     <module>jsupload</module>
     <module>samples</module>
   </modules>
+
+  <parent>
+    <groupId>org.sonatype.oss</groupId>
+    <artifactId>oss-parent</artifactId>
+    <version>3</version>
+  </parent>
 
   <properties>
     <maven.compiler.source>1.5</maven.compiler.source>
@@ -175,6 +181,8 @@
     <url>http://code.google.com/p/gwtupload/source/browse/trunk</url>
   </scm>
 
+<!--
+
   <distributionManagement>
     <repository>
       <uniqueVersion>false</uniqueVersion>
@@ -191,6 +199,7 @@
       <url>${localMavenRepo}</url>
     </snapshotRepository>
   </distributionManagement>
+-->
 
   <build>
     <plugins>
@@ -219,6 +228,21 @@
           </descriptors>
         </configuration>
       </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-gpg-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>sign-artifacts</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>sign</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
     </plugins>
   </build>
 

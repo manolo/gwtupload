@@ -11,7 +11,7 @@
   <description>JsUpload library: JavaScript ready to use in non gwt web apps and cgi-bin server script.</description>
 
   <parent>
-    <groupId>gwtupload</groupId>
+    <groupId>com.googlecode.gwtupload</groupId>
     <artifactId>gwtupload-project</artifactId>
     <version>0.6-SNAPSHOT</version>
   </parent>
@@ -24,7 +24,7 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>gwtupload</groupId>
+      <groupId>${groupId}</groupId>
       <artifactId>gwtupload</artifactId>
       <version>${version}</version>
       <scope>provided</scope>
