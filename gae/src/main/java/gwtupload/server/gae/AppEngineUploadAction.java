@@ -1,5 +1,5 @@
 /*
- * Copyright 2009 Manuel Carrasco Moñino. (manuel_carrasco at
+ * Copyright 2010 Manuel Carrasco Moñino. (manuel_carrasco at
  * users.sourceforge.net) http://code.google.com/p/gwtupload
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not

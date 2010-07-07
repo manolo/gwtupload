@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 #
-# Copyright 2009 Manolo Carrasco Moñino. (manuel_carrasco at users.sourceforge.net)
+# Copyright 2010 Manolo Carrasco Moñino. (manolo at apache/org)
 # http://code.google.com/p/gwtupload
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may not
