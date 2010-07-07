@@ -9,7 +9,7 @@
   <parent>
     <groupId>com.googlecode.gwtupload</groupId>
     <artifactId>gwtupload-project</artifactId>
-    <version>0.7-SNAPSHOT</version>
+    <version>0.6-SNAPSHOT</version>
   </parent>
 
   <dependencies>
@@ -166,14 +166,15 @@
               <goal>deploy-file</goal>
             </goals>
             <configuration>
-              <repositoryId>sonatype-nexus-snapshots</repositoryId>
+              <!-- <repositoryId>sonatype-nexus-snapshots</repositoryId> -->
+              <repositoryId>sonatype-nexus-staging</repositoryId>
               <file>${project.build.directory}/${project.artifactId}-${project.version}.jar</file>
               <groupId>${project.groupId}</groupId>
               <artifactId>${project.artifactId}</artifactId>
               <version>${project.version}</version>
               <packaging>jar</packaging>
-              <!-- <url>${localMavenRepo}</url> -->
-              <url>http://oss.sonatype.org/content/repositories/snapshots</url>
+              <!-- <url>http://oss.sonatype.org/content/repositories/snapshots</url> -->
+              <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
               <uniqueVersion>false</uniqueVersion>
             </configuration>
           </execution>
