@@ -76,8 +76,10 @@ my $sid = new Digest::MD5()->add( $$, time(), rand(time) )->hexdigest();
 my $set_cookie = "";
 if ( $ENV{'HTTP_COOKIE'} && $ENV{'HTTP_COOKIE'} =~ /$idname="*([^";]+)/ ) {
     $sid = $1;
-} else {
+} elsif ($mkpath) {
     $set_cookie = "Set-Cookie: CGISESSID=$sid; path=/\n"
+} else {
+    writeResponse("<error>JSUPLOAD: Unable to find $idname</error>");
 }
 my $user_dir = "$tmp_dir/$sid/";
 my $data_file = "$user_dir/data.$$";
@@ -120,9 +122,8 @@ sub doPost {
         chmod( 0777, "$user_dir" );
     }
     
-    if (!-w $user_dir) {
-       writeResponse("<error>JSUPLOAD: The folder: $user_dir should be created by the application before uploading any file.</error>");
-    }
+    writeResponse("<error>JSUPLOAD: The folder: $user_dir should be created by the application before uploading any file.</error>") 
+        unless (-w $user_dir);
 
     ## Validate request size
     my $len = $ENV{'CONTENT_LENGTH'} || 3000;
@@ -213,7 +214,7 @@ sub writeResponse {
     close(STDIN);
     print "Content-Type: text/plain\n$set_cookie\n"
         . "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>"
-        . "\n<response>\n$msg</response>\n";
+        . "\n<response>\n  $msg\n</response>\n";
     exit;
 }
 
