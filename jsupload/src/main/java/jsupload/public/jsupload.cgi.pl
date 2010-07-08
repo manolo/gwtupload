@@ -17,30 +17,44 @@
 #
 
 ############################################################################################
-## * The provided server script has been written in perl for the GWTUpload/JSUpload library.
+## * * The provided server script has been written in perl for the GWTUpload/JSUpload library.
 ## *
-## * This script requires perl, CGI and Digest::MD5, which are installed by default in
+## * * This script requires perl, CGI and Digest::MD5, which are installed by default in
 ## * most linux/unix distributions.
 ## *
-## * You have to put this file in a script/cgi-bin enabled folder of your web server, and
+## * * You have to put this file in a script/cgi-bin enabled folder of your web server, and
 ## * you have to set the rigth execution permissions.
 ## *
-## * When it receives a POST request, it updates periodically a status file with the progress, 
-## * and stores all received form elements in a temporary folder for the user session.
-## *
-## * When it receives GET requests, returns a xml response with the progess information.
-## *
-## * When the GET request, has the parameter show=xxxx, it returns the content of the form
-## * element whose name is xxxx. If the element is a file it sends a response with the adequate
-## * content-type, otherwise it returns a xml response with the element's value.
-## *
-## * The files are stored in the folder /tmp/uploader/xxxx where xxxx is the session id (cookie CGISESSID)
-## * For each form element received, it stores a file /tmp/uploader/xxxx/yyyy.info where yyyy is 
-## * the name of the element. In the case of file elements, it puts the content of the file in
-## * /tmp/uploader/xxxx/yyyy.bin. 
-## *
-## * This script doesn't clean /tmp/uploader files. So the application responsible of handling
-## * this files has to clean them.
+## * # *Operation*:
+## *    * When it receives a POST request, it updates periodically a status file with the progress, 
+## *      and stores all received form elements in a temporary folder for the user session.
+## *    * When it receives GET requests, returns a xml response with the progess information.
+## *    * When the GET request, has the parameter show=xxxx, it returns the content of the form
+## *      element whose name is xxxx. If the element is a file it sends a response with the adequate
+## *      content-type, otherwise it returns a xml response with the element's value.
+## * # *Configuration*: At the top of the script you have some customizable variables.
+## *   * $idname: is the name for the sessionid cookie name, you could redefine it to match
+## *              the name of the cookie set by your application. By default the name is CGISESSID.
+## *   * $tmp_dir: is the prefix used in the path location to store the data received. By default
+## *              it is set to "/tmp/uploader", normally you have to change it to match the path
+## *              configured in your application.
+## *   * $max_size: is the maximum size in bytes allowed for the request size, note that it is not
+## *              the real file size because the request includes the headers and could have more
+## *              files or parameters. Normally only one file is transfered, and the request size
+## *              is very closed to the file size.
+## *   * $mkpath: if true jsupload will create the folder to store the received data, otherwise
+## *              it is the application the responsible of creating it. Setting it to false protects
+## *              your system to be used as a surreptitious storage area.
+## *   * $slow:   if it has a value greater than zero, after each chunk received, jsupload will sleep
+## *              for this value in milliseconds. It is used to see the progress bar in fast networks
+## *              when you are testing or developing your app.
+## * # *Integration*:
+## *   * The files are stored in the folder $tmp_dir/xxxx where xxxx is the session id (cookie CGISESSID).
+## *   * For each form element received, it stores a file /tmp/uploader/xxxx/yyyy.info 
+## *     where yyyy is the name of the element.
+## *   * In the case of file elements, it puts the content of the file in the file
+## *     /tmp/uploader/xxxx/yyyy.bin.
+## *   * The application must create, handle, and clean $tmp_dir files.
 ############################################################################################
 
 use CGI;
@@ -53,6 +67,8 @@ use Data::Dumper;
 my $idname   = "CGISESSID";
 my $tmp_dir  = "/tmp/uploader";
 my $max_size = 2000000;
+my $mkpath = 0;
+my $slow = 0;
 
 # Get the sessionId or create a new one
 # do not use CGI here, because we need to handle STDIN in order to update the progress status.
@@ -63,7 +79,6 @@ if ( $ENV{'HTTP_COOKIE'} && $ENV{'HTTP_COOKIE'} =~ /$idname="*([^";]+)/ ) {
 } else {
     $set_cookie = "Set-Cookie: CGISESSID=$sid; path=/\n"
 }
-my $slow = 0;
 my $user_dir = "$tmp_dir/$sid/";
 my $data_file = "$user_dir/data.$$";
 my $cancel_file = "$user_dir/cancel";
@@ -99,11 +114,13 @@ sub doPost {
     $| = 1;
 
     ## Validate permissions
-    if ( !-d "$user_dir" ) {
+    if ( $mkpath && !-d "$user_dir" ) {
         mkpath( "$user_dir", 0, 0777 )
-          || writeResponse("<error>Unable to create: $user_dir $!</error>");
+          || writeResponse("<error>JSUPLOAD: Unable to create: $user_dir $!</error>");
         chmod( 0777, "$user_dir" );
     }
+    
+    writeResponse("<error>JSUPLOAD: The folder: $user_dir should be created by the application before uploading any file.</error>");
 
     ## Validate request size
     my $len = $ENV{'CONTENT_LENGTH'} || 3000;
@@ -112,8 +129,8 @@ sub doPost {
         unlink($progress_file);
         unlink($data_file);
         my $maxKB = int ($max_size / 1024);
-	my $sizeKB = int ($len / 1024);
-	exitWithError("The maximum configured upload size ($maxKB KB.) has been exceeded ($sizeKB KB.) ");
+        my $sizeKB = int ($len / 1024);
+        exitWithError("The maximum configured upload size ($maxKB KB.) has been exceeded ($sizeKB KB.) ");
     }
 
     ## Receive the request, and update progress data
@@ -212,7 +229,7 @@ sub exitWithError {
     print F $msg;
     close(F);
     print STDERR "Upload Error: $msg\n";
-    writeResponse("<error>$msg</error>");
+    writeResponse("<error>JSUPLOAD: $msg</error>");
 }
 
 sub cancelProcess {
@@ -227,7 +244,7 @@ sub cancelProcess {
 sub getProgress {
     if ( -f "$error_file" ) {
         my $error=`cat $error_file`;
-        writeResponse("<error>$error</error><finished>true</finished>");
+        writeResponse("<error>JSUPLOAD: $error</error><finished>true</finished>");
     }
     if ( -f "$cancel_file" ) {
         writeResponse("<canceled>true</canceled><finished>canceled</finished>");
