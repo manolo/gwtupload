@@ -120,7 +120,9 @@ sub doPost {
         chmod( 0777, "$user_dir" );
     }
     
-    writeResponse("<error>JSUPLOAD: The folder: $user_dir should be created by the application before uploading any file.</error>");
+    if (!-w $user_dir) {
+       writeResponse("<error>JSUPLOAD: The folder: $user_dir should be created by the application before uploading any file.</error>");
+    }
 
     ## Validate request size
     my $len = $ENV{'CONTENT_LENGTH'} || 3000;
