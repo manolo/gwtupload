@@ -202,7 +202,7 @@ public interface IUploader extends HasJsData, HasWidgets {
   HandlerRegistration addOnFinishUploadHandler(IUploader.OnFinishUploaderHandler handler);
 
   /**
-   * Sets the handler that is called the sent process begin.
+   * Sets the handler that is called when the sent process begin.
    * This happens just in the moment that the form receives the submit event.
    * 
    * @param handler

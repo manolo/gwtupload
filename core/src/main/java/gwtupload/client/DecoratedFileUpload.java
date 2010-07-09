@@ -44,8 +44,8 @@ import com.google.gwt.user.client.ui.Widget;
 import java.util.HashMap;
 
 /**
- * A decorated file upload is a widget which hides a FileUpload showing
- * a clickable and customizable Widget, normally a button.
+ * A widget which hides a FileUpload showing a clickable, customizable
+ * and stylable Widget, normally a button.
  * 
  * If you want to use this widget in your application, define these
  * css rules:
@@ -116,6 +116,8 @@ public class DecoratedFileUpload extends Composite implements HasText, HasName, 
    */
   private abstract static class DecoratedFileUploadImpl {
 
+    private static final int DEFAULT_HEIGHT = 15;
+    private static final int DEFAULT_WIDTH = 100;
     protected Widget button;
     protected AbsolutePanel container;
     protected FileUploadWithMouseEvents input;
@@ -127,8 +129,11 @@ public class DecoratedFileUpload extends Composite implements HasText, HasName, 
 
     public void resize() {
       if (button != null) {
-        container.setWidth(button.getOffsetWidth() + "px");
-        container.setHeight(button.getOffsetHeight() + "px");
+        // When the widget is attached to a hidden panel, the reported button size is 0,
+        // so we put a default size.
+        int w = button.getOffsetWidth() > 0 ? button.getOffsetWidth() : DEFAULT_WIDTH;
+        int h = button.getOffsetHeight() > 0 ? button.getOffsetHeight() : DEFAULT_HEIGHT;
+        container.setSize(w + "px", h + "px");
       }
     }
 
@@ -222,7 +227,7 @@ public class DecoratedFileUpload extends Composite implements HasText, HasName, 
       container.add(wrapper, 0, 0);
       wrapper.setStyleName("wrapper");
       
-      // Not using GWT 2.0.x way to set Style attributes in order to be
+      // Not using the GWT 2.0.x way to set Style attributes in order to be
       // compatible with old GWT releases
       DOM.setStyleAttribute(container.getElement(), "cssFloat", "left");
       DOM.setStyleAttribute(wrapper.getElement(), "textAlign", "left");
@@ -252,10 +257,8 @@ public class DecoratedFileUpload extends Composite implements HasText, HasName, 
 
     public void resize() {
       super.resize();
-      if (button != null) {
-        wrapper.setWidth(button.getOffsetWidth() + "px");
-        wrapper.setHeight(button.getOffsetHeight() + "px");
-      }
+      wrapper.setWidth(container.getOffsetWidth() + "px");
+      wrapper.setHeight(container.getOffsetHeight() + "px");
     }
   }
 
@@ -370,7 +373,7 @@ public class DecoratedFileUpload extends Composite implements HasText, HasName, 
   }
 
   /**
-   * Set the gutton size.
+   * Set the button size.
    */
   public void setButtonSize(String width, String height) {
     button.setSize(width, height);
@@ -406,5 +409,12 @@ public class DecoratedFileUpload extends Composite implements HasText, HasName, 
       impl.resize();
     }
   }  
+  
+  /**
+   * Resize the absolute container to match the button size.
+   */
+  public void updateSize() {
+    impl.resize();
+  }
 
 }

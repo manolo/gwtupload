@@ -84,7 +84,7 @@ import java.util.Map.Entry;
 public class Uploader extends Composite implements IsUpdateable, IUploader, HasJsData {
   
   /**
-   * FormPanel's add method only can be called once
+   * FormPanel add method only can be called once.
    * This class override the add method to allow multiple additions
    * to a flowPanel.
    */
@@ -282,11 +282,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
       hasSession = true;
       try {
         String s = Utils.getXmlNodeValue(XMLParser.parse(response.getText()), "blobstore");
-        if ("true".equalsIgnoreCase(s)) {
-          blobstore = true;
-          sendAjaxRequestToGetBlobstorePath();
-          return;
-        }
+        blobstore = "true".equalsIgnoreCase(s);
         uploadForm.submit();
       } catch (Exception e) {
         String message = I18N_CONSTANTS.uploaderServerError() + "\nAction: " + getServletPath() + "\nException: " + e.getMessage() + response.getText();

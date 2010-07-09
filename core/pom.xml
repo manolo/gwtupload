@@ -59,6 +59,7 @@
           </uploads>
         </configuration>
       </plugin>
+<!--
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
@@ -83,16 +84,15 @@
           </execution>
         </executions>
       </plugin>
+-->
     </plugins>
   </build>
 
-<!--
   <distributionManagement>
     <site>
       <id>googlecode</id>
       <url>svn:https://gwtupload.googlecode.com/svn/site/${artifactId}</url>
     </site>
   </distributionManagement>
--->
 
 </project>

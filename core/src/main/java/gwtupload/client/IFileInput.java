@@ -79,6 +79,9 @@ public interface IFileInput extends HasChangeHandlers {
      */
     public void setText(String text) {
     }
+    
+    public void updateSize() {
+    }
   }
   
   /**
@@ -103,6 +106,7 @@ public interface IFileInput extends HasChangeHandlers {
 
     public void setLength(int length) {
     }
+
   }
 
   /**
@@ -221,5 +225,7 @@ public interface IFileInput extends HasChangeHandlers {
   void setText(String text);
   
   void setVisible(boolean b);
+  
+  void updateSize();
 
 }
