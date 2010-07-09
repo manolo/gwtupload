@@ -189,11 +189,4 @@
     </plugins>
   </build>
 
-  <distributionManagement>
-    <site>
-      <id>googlecode</id>
-      <url>svn:https://gwtupload.googlecode.com/svn/site/${artifactId}</url>
-    </site>
-  </distributionManagement>
-
 </project>
