@@ -37,17 +37,21 @@
 ## *              the name of the cookie set by your application. By default the name is CGISESSID.
 ## *   * $tmp_dir: is the prefix used in the path location to store the data received. By default
 ## *              it is set to "/tmp/uploader", normally you have to change it to match the path
-## *              configured in your application.
-## *   * $max_size: is the maximum size in bytes allowed for the request size, note that it is not
+## *              configured in your application. It is strongly recommended that this directory 
+## *              should be created apart from "/tmp", in a non-httpd accessible path.
+## *   * $max_size: is the maximum size in bytes allowed for the entire request size, note that it is not
 ## *              the real file size because the request includes the headers and could have more
 ## *              files or parameters. Normally only one file is transfered, and the request size
 ## *              is very closed to the file size.
 ## *   * $mkpath: if true jsupload will create the folder to store the received data, otherwise
-## *              it is the application the responsible of creating it. Setting it to false protects
-## *              your system to be used as a surreptitious storage area.
+## *              it is the application the responsible of creating it. Note that setting it to false 
+## *              your system is protected to be used as a surreptitious storage area. The files 
+## *              in this folder will be created with the default perl permissions (0666 or the user umask), 
+## *              so in the case you leave the application to create the folder be aware to set the
+## *              appropriate permissions.
 ## *   * $slow:   if it has a value greater than zero, after each chunk received, jsupload will sleep
-## *              for this value in milliseconds. It is used to see the progress bar in fast networks
-## *              when you are testing or developing your app.
+## *              for this value in seconds (it may be fractional). It is used to see the progress bar 
+## *              in fast networks when you are testing or developing your app.
 ## * # *Integration*:
 ## *   * The files are stored in the folder $tmp_dir/xxxx where xxxx is the session id (cookie CGISESSID).
 ## *   * For each form element received, it stores a file /tmp/uploader/xxxx/yyyy.info 
@@ -112,20 +116,20 @@ exit;
 
 ## This method receives the form content and stores each item in a temporary folder.
 sub doPost {
-    ## flush after a write
+    ## flush after any write operation.
     $| = 1;
 
-    ## Validate permissions
+    ## Validate permissions.
     if ( $mkpath && !-d "$user_dir" ) {
-        mkpath( "$user_dir", 0, 0777 )
+        mkpath( "$user_dir", 0, 0700 )
           || writeResponse("<error>JSUPLOAD: Unable to create: $user_dir $!</error>");
-        chmod( 0777, "$user_dir" );
     }
-    
+
+    ## Exit if the folder does not exist.
     writeResponse("<error>JSUPLOAD: The folder: $user_dir should be created by the application before uploading any file.</error>") 
         unless (-w $user_dir);
 
-    ## Validate request size
+    ## Validate request size.
     my $len = $ENV{'CONTENT_LENGTH'} || 3000;
     print STDERR "Receiving $len ($max_size)\n";
     if ( $len && $len > $max_size ) {
@@ -142,6 +146,8 @@ sub doPost {
     open( D, ">$data_file" ) || exitWithError("Can't open postfile: $user_dir/postdata $!</error>");
     my ( $n, $done, $line ) = ( 0, 0, "" );
     do {
+        ## If we have received an ajax request to cancel the upload, we close
+        ## the STDIN in order to make the client stop the uploading.
         if (-f $cancel_file) {
            close(D);
            unlink($progress_file);
@@ -151,7 +157,7 @@ sub doPost {
         $done += $n;
         updateProgress( $done, $len );
         print D $line;
-        select( undef, undef, undef, 0.1 ) if ($slow);
+        select( undef, undef, undef, $slow ) if ($slow);
     } while ( ( $n = sysread( STDIN, $line, 4096 ) ) > 0 );
     close(D);
 
@@ -183,8 +189,8 @@ sub doPost {
 }
 
 ## Save each received file in the user folder.
-## It generates two files, one has the content of the uploaded data i
-## and one with the item information (original name and content-type)
+## It generates two files, one with the content of the uploaded data,
+## and the other one with the item information (original name and content-type)
 sub saveFile {
     my ( $key, $name, $type, $fd ) = @_;
     my $bin_file = "";
