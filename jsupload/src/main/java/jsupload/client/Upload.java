@@ -145,8 +145,7 @@ public class Upload implements Exportable {
   }
 
   /**
-   * returns a javascript data structure.
-   *  
+   * Returns a javascript data structure:
    *    upload.data().url      // The url to get the uploaded file from the server
    *    upload.data().name     // The name of the input form element
    *    upload.data().filename // The name of the file selected by the user as is reported by the browser
