@@ -103,32 +103,31 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
   public static final UploaderConstants I18N_CONSTANTS = GWT.create(UploaderConstants.class);
   public static final String PARAMETER_FILENAME = "filename";
   public static final String PARAMETER_SHOW = "show";
-  
   protected static final String STYLE_BUTTON = "upld-button";
+  
   protected static final String STYLE_INPUT = "upld-input";
   protected static final String STYLE_MAIN = "GWTUpld";
   protected static final String STYLE_STATUS = "upld-status";
   static HTML mlog;
   private static final int DEFAULT_AJAX_TIMEOUT = 10000;
-  
   private static final int DEFAULT_AUTOUPLOAD_DELAY = 600;
+  
   private static final int DEFAULT_TIME_MAX_WITHOUT_RESPONSE = 60000;
-  
   private static final int DEFAULT_UPDATE_INTERVAL = 500;
+  
   private static HashSet<String> fileDone = new HashSet<String>();
-  private static Vector<String> fileQueue = new Vector<String>(); 
-  private static int statusInterval = DEFAULT_UPDATE_INTERVAL;
+  private static Vector<String> fileQueue = new Vector<String>();
+  private static int statusInterval = DEFAULT_UPDATE_INTERVAL; 
   private static final String TAG_CANCELED = "canceled";
-  
   private static final String TAG_CURRENT_BYTES = "currentBytes";
-  private static final String TAG_FINISHED = "finished";
-
-  private static final String TAG_PERCENT = "percent";
-  private static final String TAG_TOTAL_BYTES = "totalBytes";
-
-  private static final String TAG_WAIT = "wait";
-  private static int uploadTimeout = DEFAULT_TIME_MAX_WITHOUT_RESPONSE;
   
+  private static final String TAG_FINISHED = "finished";
+  private static final String TAG_PERCENT = "percent";
+
+  private static final String TAG_TOTAL_BYTES = "totalBytes";
+  private static final String TAG_WAIT = "wait";
+
+  private static int uploadTimeout = DEFAULT_TIME_MAX_WITHOUT_RESPONSE;
   public static void log(String msg, Throwable e) {
     if (mlog == null) {
       if (Window.Location.getParameter("log") != null) {
@@ -158,11 +157,11 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
   public static void setUploadTimeout(int uploadTimeout) {
     Uploader.uploadTimeout = uploadTimeout;
   }
+  
   private static long now() {
     return (new Date()).getTime();
   }
   protected HorizontalPanel uploaderPanel;
-  
   private final Timer automaticUploadTimer = new Timer() {
     boolean firstTime = true;
     public void run() {
@@ -189,6 +188,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
   };
   
   private boolean autoSubmit = false;
+  
   private boolean avoidRepeatedFiles = false;
   private String basename = null;
   private boolean blobstore = false;
@@ -205,11 +205,10 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
   private boolean finished = false;
   private boolean hasSession = false;
   private long lastData = now();
-  
   private final RequestCallback onBlobstoreReceivedCallback = new RequestCallback() {
     public void onError(Request request, Throwable exception) {
       String message = removeHtmlTags(exception.getMessage());
-      cancelUpload(I18N_CONSTANTS.uploaderServerUnavailable() + getServletPath() + "\n\n" + message);
+      cancelUpload(i18nStrs.uploaderServerUnavailable() + getServletPath() + "\n\n" + message);
     }
     public void onResponseReceived(Request request, Response response) {
       String text = response.getText();
@@ -221,7 +220,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
           url = text.replaceAll("[\r\n]+","").replaceAll("^.*<blobpath>\\s*", "").replaceAll("\\s*</blobpath>.*$", "");
         }
       } catch (Exception e) {
-        cancelUpload(I18N_CONSTANTS.uploaderBlobstoreError() + "\n>>>\n" + e.getMessage() + "\n>>>>\n" + e);
+        cancelUpload(i18nStrs.uploaderBlobstoreError() + "\n>>>\n" + e.getMessage() + "\n>>>>\n" + e);
         return;
       }
       if (url != null && url.length() > 0 && !"null".equalsIgnoreCase(url)) {
@@ -231,7 +230,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
       uploadForm.submit();
     }
   };
-
+  
   private final RequestCallback onCancelReceivedCallback = new RequestCallback() {
     public void onError(Request request, Throwable exception) {
       log("onCancelReceivedCallback onError: " , exception);
@@ -243,6 +242,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
       }
     }
   };
+
   private Vector<IUploader.OnChangeUploaderHandler> onChangeHandlers = new Vector<IUploader.OnChangeUploaderHandler>();
   private final RequestCallback onDeleteFileCallback = new RequestCallback() {
     public void onError(Request request, Throwable exception) {
@@ -255,7 +255,6 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
       fileDone.remove(getFileName());
     }
   };
-  
   private final ChangeHandler onFileInputChanged = new ChangeHandler() {
     public void onChange(ChangeEvent event) {
       basename = Utils.basename(getFileName());
@@ -276,7 +275,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
   private final RequestCallback onSessionReceivedCallback = new RequestCallback() {
     public void onError(Request request, Throwable exception) {
       String message = removeHtmlTags(exception.getMessage());
-      cancelUpload(I18N_CONSTANTS.uploaderServerUnavailable() + getServletPath() + "\n\n" + message);
+      cancelUpload(i18nStrs.uploaderServerUnavailable() + getServletPath() + "\n\n" + message);
     }
     public void onResponseReceived(Request request, Response response) {
       hasSession = true;
@@ -285,16 +284,16 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
         blobstore = "true".equalsIgnoreCase(s);
         uploadForm.submit();
       } catch (Exception e) {
-        String message = I18N_CONSTANTS.uploaderServerError() + "\nAction: " + getServletPath() + "\nException: " + e.getMessage() + response.getText();
-        cancelUpload(I18N_CONSTANTS.uploaderServerUnavailable() + getServletPath() + "\n\n" + message);
+        String message = i18nStrs.uploaderServerError() + "\nAction: " + getServletPath() + "\nException: " + e.getMessage() + response.getText();
+        cancelUpload(i18nStrs.uploaderServerUnavailable() + getServletPath() + "\n\n" + message);
       }
     }
   };
   
   private Vector<IUploader.OnStartUploaderHandler> onStartHandlers = new Vector<IUploader.OnStartUploaderHandler>();
-
-  private Vector<IUploader.OnStatusChangedHandler> onStatusChangeHandlers = new Vector<IUploader.OnStatusChangedHandler>();
   
+  private Vector<IUploader.OnStatusChangedHandler> onStatusChangeHandlers = new Vector<IUploader.OnStatusChangedHandler>();
+
   /**
    * Handler called when the status request response comes back.
    * 
@@ -312,7 +311,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
         String message = removeHtmlTags(exception.getMessage());
         message += "\n" + exception.getClass().getName();
         message += "\n" + exception.toString();
-        statusWidget.setError(I18N_CONSTANTS.uploaderServerUnavailable() + getServletPath() + "\n\n" + message);
+        statusWidget.setError(i18nStrs.uploaderServerUnavailable() + getServletPath() + "\n\n" + message);
       }
     }
 
@@ -353,7 +352,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
       }
 
       if (!autoSubmit && fileQueue.size() > 0) {
-        statusWidget.setError(I18N_CONSTANTS.uploaderActiveUpload());
+        statusWidget.setError(i18nStrs.uploaderActiveUpload());
         event.cancel();
         return;
       }
@@ -416,15 +415,15 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
       }
     }
   };
-
+  
   private boolean receivedBlobPath = false;
 
   private int requestsCounter = 0;
-  
-  private String serverResponse = null;
 
-  private String servletPath = "servlet.gupld";
+  private String serverResponse = null;
   
+  private String servletPath = "servlet.gupld";
+
   private IUploadStatus.UploadStatusChangedHandler statusChangedHandler = new IUploadStatus.UploadStatusChangedHandler() {
     public void onStatusChanged(IUploadStatus statusWiget) {
       for (IUploader.OnStatusChangedHandler handler : onStatusChangeHandlers) {
@@ -434,6 +433,8 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
   };
   
   private IUploadStatus statusWidget = new BaseUploadStatus();
+  
+  private UploaderConstants i18nStrs = I18N_CONSTANTS;
 
   private boolean successful = false;
 
@@ -774,7 +775,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     }
     fileInput = input;
     fileInput.addChangeHandler(onFileInputChanged);
-    fileInput.setText(I18N_CONSTANTS.uploaderBrowse());
+    fileInput.setText(i18nStrs.uploaderBrowse());
     fileInput.setEnabled(enabled);
     setFileInputSize(DEFAULT_FILEINPUT_SIZE);
     assignNewNameToFileInput();
@@ -800,6 +801,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
    * @see gwtupload.client.IUploader#setI18Constants(gwtupload.client.I18nUploadConstants)
    */
   public void setI18Constants(UploaderConstants strs) {
+    this.i18nStrs = strs;
     fileInput.setText(strs.uploaderBrowse());
     statusWidget.setI18Constants(strs);
   }
@@ -996,7 +998,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
       error = Utils.getXmlNodeValue(doc, "error");
     } catch (Exception e) {
       if (responseTxt.toLowerCase().matches("error")) {
-        error = I18N_CONSTANTS.uploaderServerError() + "\nAction: " + getServletPath() + "\nException: " + e.getMessage() + responseTxt;
+        error = i18nStrs.uploaderServerError() + "\nAction: " + getServletPath() + "\nException: " + e.getMessage() + responseTxt;
       }
     }
     
@@ -1031,7 +1033,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     
     if (now() - lastData >  uploadTimeout) {
       successful = false;
-      cancelUpload(I18N_CONSTANTS.uploaderTimeout());
+      cancelUpload(i18nStrs.uploaderTimeout());
       try {
         sendAjaxRequestToCancelCurrentUpload();
       } catch (Exception e) {
@@ -1110,7 +1112,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
             statusWidget.setStatus(IUploadStatus.Status.REPEATED);
           } else {
             successful = false;
-            statusWidget.setError(I18N_CONSTANTS.uploaderAlreadyDone());
+            statusWidget.setError(i18nStrs.uploaderAlreadyDone());
           }
         } else {
           fileDone.add(getFileName());
@@ -1141,7 +1143,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
       if (autoSubmit) {
         uploaderPanel.remove(uploadForm);
       }
-      statusWidget.setError(I18N_CONSTANTS.uploaderInvalidExtension() + validExtensionsMsg);
+      statusWidget.setError(i18nStrs.uploaderInvalidExtension() + validExtensionsMsg);
     }
     return valid;
   }
