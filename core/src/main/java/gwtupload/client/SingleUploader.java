@@ -182,6 +182,7 @@ public class SingleUploader extends Uploader {
     super.onFinishUpload();
     button.setEnabled(true);
     button.removeStyleName("changed");
+    reset();
   }
   
   /* (non-Javadoc)
