@@ -27,9 +27,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.ResourceBundle;
 import java.util.Vector;
 import java.util.Map.Entry;
 
@@ -256,6 +258,14 @@ public class UploadServlet extends HttpServlet implements Servlet {
   public static List<FileItem> getSessionItems(HttpServletRequest request) {
     return getSessionFileItems(request);
   }
+  
+  /**
+   * Returns the localized text of a key.
+   */
+  public static String getMessage(String key, Object...pars) {
+    ResourceBundle res = ResourceBundle.getBundle(UploadServlet.class.getName(), getThreadLocalRequest().getLocale());
+    return  new MessageFormat(res.getString(key), getThreadLocalRequest().getLocale()).format(pars);
+  }
 
   public static final HttpServletRequest getThreadLocalRequest() {
     return perThreadRequest.get();
@@ -347,7 +357,6 @@ public class UploadServlet extends HttpServlet implements Servlet {
     return item;
   }
 
-  
   /**
    * Writes a response to the client.
    */
@@ -654,7 +663,7 @@ public class UploadServlet extends HttpServlet implements Servlet {
           ret.put(TAG_FINISHED, TAG_CANCELED);
           logger.error("UPLOAD-SERVLET (" + session.getId() + ") getUploadStatus: " + fieldname + " cancelled by the user after " + listener.getBytesRead() + " Bytes");
         } else {
-          String errorMsg = "The upload was cancelled because there was an error in the server.\nServer's error is:\n" + listener.getException().getMessage();
+          String errorMsg = getMessage("server_error", listener.getException().getMessage());
           ret.put(TAG_ERROR, errorMsg);
           ret.put(TAG_FINISHED, TAG_ERROR);
           logger.error("UPLOAD-SERVLET (" + session.getId() + ") getUploadStatus: " + fieldname + " finished with error: " + listener.getException().getMessage());
@@ -722,7 +731,7 @@ public class UploadServlet extends HttpServlet implements Servlet {
       if (listener.isFrozen() || listener.isCanceled() || listener.getPercent() >= 100) {
         removeCurrentListener(request);
       } else {
-        String error = "The request has been rejected because the server is already receiving another file.";
+        String error = getMessage("busy");
         logger.error("UPLOAD-SERVLET (" + session.getId() + ") " + error);
         return error;
       }
@@ -761,7 +770,7 @@ public class UploadServlet extends HttpServlet implements Servlet {
           sessionFiles.add(fileItem);
         } else {
           logger.error("UPLOAD-SERVLET (" + session.getId() + ") error File empty: " + fileItem);
-          error += "\nError, the reception of the file " + fileItem.getName() + " was unsuccesful.\nPlease verify that the file exists and you have enough permissions to read it";
+          error += getMessage("no_file",  fileItem.getName());
         }
       }
 
@@ -774,7 +783,7 @@ public class UploadServlet extends HttpServlet implements Servlet {
         session.setAttribute(ATTR_FILES, sessionFiles);
       } else {
         logger.error("UPLOAD-SERVLET (" + session.getId() + ") error NO DATA received ");
-        error += "\nError, your browser has not sent any information.\nPlease try again or try it using another browser\n";
+        error += getMessage("no_data");
       }
 
       return error.length() > 0 ? error : null;
@@ -794,7 +803,6 @@ public class UploadServlet extends HttpServlet implements Servlet {
       throw e;
     } catch (Exception e) {
       logger.error("UPLOAD-SERVLET (" + request.getSession().getId() + ") Unexpected Exception -> " + e.getMessage() + "\n" + stackTraceToString(e));
-      System.out.println(stackTraceToString(e));
       e.printStackTrace();
       RuntimeException ex = new UploadException(e);
       listener.setException(ex);

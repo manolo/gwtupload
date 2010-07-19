@@ -16,6 +16,10 @@
  */
 package gwtupload.server.exceptions;
 
+import gwtupload.server.UploadServlet;
+
+import java.util.ResourceBundle;
+
 /**
  * Exception thrown when the recuest's length exceeds the maximum.  
  * 
@@ -39,8 +43,10 @@ public class UploadSizeLimitException extends RuntimeException {
     return getMessage();
   }
   
+  ResourceBundle res;
+  
   @Override
   public String getMessage() {
-    return "The request was rejected because its size: " + actualSize + " KB, exceeds the maximum: " + maxSize + " KB";
+    return UploadServlet.getMessage("size_limit", actualSize, maxSize);
   }
 }
