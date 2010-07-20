@@ -107,7 +107,7 @@
                 <exec dir="." executable="perl">
                   <arg line="gjslib.pl" />
                 </exec>
-                <exec dir="target/wiki" executable="svn">
+                <exec dir="target/wiki" executable="${wikiSvnExec}">
                   <arg line="commit -m updated_wiki_pages" />
                 </exec>
               </tasks>

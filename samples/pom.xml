@@ -166,15 +166,13 @@
               <goal>deploy-file</goal>
             </goals>
             <configuration>
-              <!-- <repositoryId>sonatype-nexus-snapshots</repositoryId> -->
-              <repositoryId>sonatype-nexus-staging</repositoryId>
+              <repositoryId>${sonatypeRepoId}</repositoryId>
               <file>${project.build.directory}/${project.artifactId}-${project.version}.jar</file>
               <groupId>${project.groupId}</groupId>
               <artifactId>${project.artifactId}</artifactId>
               <version>${project.version}</version>
               <packaging>jar</packaging>
-              <!-- <url>http://oss.sonatype.org/content/repositories/snapshots</url> -->
-              <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+              <url>${sonatypeUrl}</url>
               <uniqueVersion>false</uniqueVersion>
             </configuration>
           </execution>

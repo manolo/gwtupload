@@ -35,7 +35,21 @@
     <downloadLabel>Beta</downloadLabel>
     <localMavenRepo>file:${env.HOME}/workspace/GWTUpload-mavenrepo</localMavenRepo>
     <gae.version>1.3.2</gae.version>
+    <sonatypeRepoId>sonatype-nexus-snapshots</sonatypeRepoId>
+    <sonatypeUrl>http://oss.sonatype.org/content/repositories/snapshots</sonatypeUrl>
+    <wikiSvnExec>true</wikiSvnExec>
   </properties>
+
+  <profiles>
+     <profile>
+       <id>prod</id>
+       <properties>
+        <sonatypeRepoId>sonatype-nexus-staging</sonatypeRepoId>
+        <sonatypeUrl>http://oss.sonatype.org/service/local/staging/deploy/maven2</sonatypeUrl>
+        <wikiSvnExec>svn</wikiSvnExec>
+       </properties>
+     </profile>
+  </profiles>
 
   <dependencies>
     <dependency>
