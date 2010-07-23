@@ -45,7 +45,7 @@ public interface IUploadStatus extends HasProgress {
    * Enumeration of possible status values
    */
   public static enum Status {
-    CANCELED, CANCELING, DELETED, DONE, ERROR, INPROGRESS, QUEUED, REPEATED, SUBMITING, SUCCESS, UNINITIALIZED
+    CANCELED, CANCELING, DELETED, DONE, ERROR, INPROGRESS, QUEUED, REPEATED, SUBMITING, SUCCESS, UNINITIALIZED, CHANGED
   }
 
   /**

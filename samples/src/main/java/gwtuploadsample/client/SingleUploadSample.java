@@ -25,6 +25,7 @@ import gwtupload.client.PreloadedImage;
 import gwtupload.client.SingleUploader;
 import gwtupload.client.IFileInput.FileInputType;
 import gwtupload.client.IUploadStatus.Status;
+import gwtupload.client.IUploader.UploaderConstants;
 import gwtupload.client.PreloadedImage.OnLoadPreloadedImageHandler;
 
 /**
@@ -46,6 +47,8 @@ public class SingleUploadSample implements EntryPoint {
     }
   };
 
+  protected UploaderConstants i18nStrs;;
+
   private IUploader.OnFinishUploaderHandler onFinishUploaderHandler = new IUploader.OnFinishUploaderHandler() {
     public void onFinish(IUploader uploader) {
       if (uploader.getStatus() == Status.SUCCESS) {
@@ -53,7 +56,8 @@ public class SingleUploadSample implements EntryPoint {
       }
     }
   };
-
+  
+  
   public void onModuleLoad() {
     SingleUploader single1 = new SingleUploader();
     single1.addOnFinishUploadHandler(onFinishUploaderHandler);
@@ -62,7 +66,16 @@ public class SingleUploadSample implements EntryPoint {
     SingleUploader single2 = new SingleUploader(FileInputType.LABEL);
     single2.addOnFinishUploadHandler(onFinishUploaderHandler);
     RootPanel.get("single2").add(single2);
-    
+
+    SingleUploader single3 = new SingleUploader(FileInputType.LABEL);
+    single3.setAutoSubmit(true);
+    single3.setValidExtensions("jpg", "gif", "png");
+    single3.addOnFinishUploadHandler(onFinishUploaderHandler);
+    single3.getFileInput().getWidget().setStyleName("customButton"); 
+    single3.getFileInput().getWidget().setSize("159px", "27px");
+    single3.avoidRepeatFiles(true);
+    RootPanel.get("single3").add(single3);
+
     RootPanel.get("thumbnails").add(panelImages);
   }
 

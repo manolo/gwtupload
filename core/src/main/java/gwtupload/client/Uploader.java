@@ -163,32 +163,22 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
   }
   protected HorizontalPanel uploaderPanel;
   private final Timer automaticUploadTimer = new Timer() {
-    boolean firstTime = true;
+    private boolean firstTime = true;
     public void run() {
       if (isTheFirstInQueue()) {
         this.cancel();
+        firstTime = true;
         statusWidget.setStatus(IUploadStatus.Status.SUBMITING);
-        
-        // For security reasons, most browsers don't submit files if fileInput is hidden or has a size of 0,
-        // so, before sending the form, it is necessary to show the fileInput,
-        // finally, onSubmit handler will hide the fileInput again
-        setFileInputSize(1);
-        fileInput.getWidget().setSize("1px", "1px");
-//        DOM.setStyleAttribute(fileInput.getWidget().getElement(), "opacity", "0");
-        fileInput.setVisible(true);
+        statusWidget.setVisible(true);
         uploadForm.submit();
-      }
-      if (firstTime) {
+      } else if (firstTime) {
         addToQueue();
         firstTime = false;
-        fileInput.setVisible(false);
-        statusWidget.setVisible(true);
       }
     }
   };
   
-  private boolean autoSubmit = false;
-  
+  protected boolean autoSubmit = false;  
   private boolean avoidRepeatedFiles = false;
   private String basename = null;
   private boolean blobstore = false;
@@ -259,12 +249,12 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     public void onChange(ChangeEvent event) {
       basename = Utils.basename(getFileName());
       statusWidget.setFileName(basename);
+      if (avoidRepeatedFiles && fileDone.contains(getFileName())) {
+        statusWidget.setStatus(Status.REPEATED);
+        return;
+      }
       if (autoSubmit && validateExtension(basename) && basename.length() > 0) {
-        if (avoidRepeatedFiles && fileDone.contains(fileInput.getFilename())) {
-          return;
-        } else {
-          automaticUploadTimer.scheduleRepeating(DEFAULT_AUTOUPLOAD_DELAY);
-        }
+        automaticUploadTimer.scheduleRepeating(DEFAULT_AUTOUPLOAD_DELAY);
       }
       onChangeInput();
     }
@@ -357,7 +347,8 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
         return;
       }
 
-      if (fileDone.contains(getFileName())) {
+      if (avoidRepeatedFiles && fileDone.contains(getFileName())) {
+        statusWidget.setStatus(IUploadStatus.Status.REPEATED);
         successful = true;
         event.cancel();
         uploadFinished();
@@ -400,7 +391,6 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
         (new Timer() {
           public void run() {
             statusWidget.setVisible(true);
-            fileInput.setVisible(false);
             updateStatusTimer.start();
             statusWidget.setStatus(IUploadStatus.Status.INPROGRESS);
             lastData = now();
@@ -434,7 +424,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
   
   private IUploadStatus statusWidget = new BaseUploadStatus();
   
-  private UploaderConstants i18nStrs = I18N_CONSTANTS;
+  protected UploaderConstants i18nStrs = I18N_CONSTANTS;
 
   private boolean successful = false;
 
@@ -683,6 +673,14 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
   public String getFileName() {
     return fileInput.getFilename();
   }
+  
+  public FormPanel getForm() {
+    return uploadForm;
+  }
+  
+  public UploaderConstants getI18NConstants(){
+    return i18nStrs;
+  }
 
   /* (non-Javadoc)
    * @see gwtupload.client.IUploader#getInputName()
@@ -725,6 +723,10 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
   public boolean isEnabled() {
     return enabled;
   }
+  
+  public boolean isFinished() {
+    return finished;
+  }
 
   /**
    * Returns a iterator of the widgets contained in the form panel.
@@ -744,11 +746,18 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
    * @see gwtupload.client.IUploader#reset()
    */
   public void reset() {
+    reuse();
+    fileDone = new HashSet<String>();
+  }
+  
+  /**
+   * Prepare the uploader for a new upload.
+   */
+  public void reuse() {
     this.uploadForm.reset();
     updateStatusTimer.finish();
     uploading = cancelled = finished = successful = false;
     basename = serverResponse = null;
-    fileDone = new HashSet<String>();
   }
 
   /**
@@ -838,7 +847,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
   /* (non-Javadoc)
    * @see gwtupload.client.IUploader#setValidExtensions(java.lang.String[])
    */
-  public void setValidExtensions(String[] validExtensions) {
+  public void setValidExtensions(String... validExtensions) {
     if (validExtensions == null) {
       this.validExtensions = new String[0];
       return;
@@ -898,6 +907,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
    * but remember to call this in your function
    */
   protected void onChangeInput() {
+    statusWidget.setStatus(Status.CHANGED);
     for (IUploader.OnChangeUploaderHandler handler : onChangeHandlers) {
       handler.onChange(this);
     }
@@ -912,9 +922,6 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
   protected void onFinishUpload() {
     for (IUploader.OnFinishUploaderHandler handler : onFinishHandlers) {
       handler.onFinish(this);
-    }
-    if (autoSubmit == false) {
-      assignNewNameToFileInput();
     }
   }
   
@@ -944,7 +951,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
   /**
    * Change the fileInput name, because the server uses it as an uniq identifier.
    */
-  private void assignNewNameToFileInput() {
+  protected void assignNewNameToFileInput() {
     String fileInputName = (fileInputPrefix + "-" + Math.random()).replaceAll("\\.", "");
     fileInput.setName(fileInputName);
   }
@@ -1104,17 +1111,10 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     uploading = false;
     updateStatusTimer.finish();
 
+    statusWidget.setVisible(false);
     if (successful) {
       if (avoidRepeatedFiles) {
-        if (fileDone.contains(getFileName())) {
-          if (autoSubmit) {
-            statusWidget.setVisible(false);
-            statusWidget.setStatus(IUploadStatus.Status.REPEATED);
-          } else {
-            successful = false;
-            statusWidget.setError(i18nStrs.uploaderAlreadyDone());
-          }
-        } else {
+        if (!fileDone.contains(getFileName())) {
           fileDone.add(getFileName());
           statusWidget.setStatus(IUploadStatus.Status.SUCCESS);
         }
@@ -1126,11 +1126,6 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     } else {
       statusWidget.setStatus(IUploadStatus.Status.ERROR);
     }
-    if (!autoSubmit) {
-      statusWidget.setVisible(false);
-    } else {
-      uploaderPanel.remove(uploadForm);
-    }
     onFinishUpload();
   }
 
@@ -1140,9 +1135,6 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     }
     boolean valid = Utils.validateExtension(validExtensions, filename);
     if (!valid) {
-      if (autoSubmit) {
-        uploaderPanel.remove(uploadForm);
-      }
       statusWidget.setError(i18nStrs.uploaderInvalidExtension() + validExtensionsMsg);
     }
     return valid;

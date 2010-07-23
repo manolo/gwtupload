@@ -143,6 +143,7 @@ public class DecoratedFileUpload extends Composite implements HasText, HasName, 
         ((HasMouseOverHandlers) button).addMouseOverHandler(new MouseOverHandler() {
           public void onMouseOver(MouseOverEvent event) {
             button.addStyleDependentName(STYLE_BUTTON_OVER_SUFFIX);
+            container.addStyleDependentName(STYLE_BUTTON_OVER_SUFFIX);
           }
         });
       }
@@ -150,6 +151,7 @@ public class DecoratedFileUpload extends Composite implements HasText, HasName, 
         ((HasMouseOutHandlers) button).addMouseOutHandler(new MouseOutHandler() {
           public void onMouseOut(MouseOutEvent event) {
             button.removeStyleDependentName(STYLE_BUTTON_OVER_SUFFIX);
+            container.removeStyleDependentName(STYLE_BUTTON_OVER_SUFFIX);
           }
         });
       }
@@ -397,6 +399,14 @@ public class DecoratedFileUpload extends Composite implements HasText, HasName, 
    */
   public void setName(String fieldName) {
     input.setName(fieldName);
+  }
+  
+  /* (non-Javadoc)
+   * @see com.google.gwt.user.client.ui.UIObject#setSize(java.lang.String, java.lang.String)
+   */
+  public void setSize(String width, String height){
+    button.setSize(width, height);
+    updateSize();
   }
 
   /**

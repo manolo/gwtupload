@@ -18,6 +18,8 @@ package gwtupload.client;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.dom.client.Style.Position;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -43,14 +45,31 @@ import java.util.Vector;
  */
 public class MultiUploader extends Composite implements IUploader {
 
-  IUploader.OnStartUploaderHandler startHandler = new IUploader.OnStartUploaderHandler() {
-    public void onStart(IUploader uploader) {
-      newUploaderInstance();
-    }
-  };
   IUploader.OnStatusChangedHandler statusChangeHandler = new IUploader.OnStatusChangedHandler() {
     public void onStatusChanged(IUploader uploader) {
-      if (statusWidget.getStatus() != Status.INPROGRESS) {
+      Uploader u = (Uploader) uploader;
+      if (u.getStatus() == Status.CHANGED) {
+        u.getFileInput().setVisible(false);
+        u.getStatusWidget().setVisible(true);
+      } else if (u.getStatus() == Status.SUBMITING) {
+        // For security reasons, most browsers don't submit files if fileInput is hidden or has a size of 0,
+        // so, before sending the form, it is necessary to show the fileInput, we put it out of the viewable
+        // area.
+        Widget w = u.getFileInput().getWidget();
+        w.getElement().getStyle().setPosition(Position.ABSOLUTE);
+        w.getElement().getStyle().setLeft(-4000, Unit.PX);
+        u.getFileInput().setVisible(true);
+      } else if (u.getStatus() == Status.REPEATED) {
+        u.getFileInput().setVisible(true);
+        u.getStatusWidget().setVisible(false);
+      } else if (u.getStatus() == Status.INPROGRESS) {
+        u.getFileInput().setVisible(false); 
+      } else {
+        // We don't need any more all the stuff related with the FormPanel when the upload has finished
+        if (u.isFinished() && u.getForm().isAttached()) {
+          u.getForm().removeFromParent();
+        }
+        u.getStatusWidget().setVisible(true);
         newUploaderInstance();
       }
     }
@@ -373,7 +392,7 @@ public class MultiUploader extends Composite implements IUploader {
   public Iterator<Widget> iterator() {
     return currentUploader.iterator();
   }
-
+  
   /* (non-Javadoc)
    * @see com.google.gwt.user.client.ui.HasWidgets#remove(com.google.gwt.user.client.ui.Widget)
    */
@@ -462,7 +481,7 @@ public class MultiUploader extends Composite implements IUploader {
   /* (non-Javadoc)
   * @see gwtupload.client.IUploader#setValidExtensions(java.lang.String[])
   */
-  public void setValidExtensions(String[] ext) {
+  public void setValidExtensions(String... ext) {
     validExtensions = ext;
     currentUploader.setValidExtensions(ext);
   }
@@ -510,7 +529,6 @@ public class MultiUploader extends Composite implements IUploader {
     currentUploader.avoidRepeatFiles(avoidRepeat);
     currentUploader.setI18Constants(i18nStrs);
     // Set the handlers
-    currentUploader.addOnStartUploadHandler(startHandler);
     currentUploader.addOnStatusChangedHandler(statusChangeHandler);
     
     if (onChangeHandler != null) {

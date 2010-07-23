@@ -361,7 +361,7 @@ public interface IUploader extends HasJsData, HasWidgets {
    * 
    * @param ext
    */
-  void setValidExtensions(String[] ext);
+  void setValidExtensions(String... ext);
   
   /**
    * Submit the form to the server.

@@ -2,3 +2,48 @@
 @import url("GWTCAlert.css");
 @import url("GWTCWait.css");
 @import url("Upload.css");
+
+/*
+ * GWTChismes ProgressBar
+ */
+.upld-status .GWTCProgress .prg-bar-element {
+  height: 2px;
+}
+
+.upld-status .GWTCProgress .prg-title {
+  font-size: 12px;
+  margin-top: -3px;
+  margin-left: 5px;
+}
+.upld-multiple .GWTCProgress .prg-time {
+	height: 0px;
+}
+
+/*
+ * Incubator ProgressBar 
+ */
+.gwt-ProgressBar-shell {
+  margin: 2px;
+  background-color: #EEEEEE;
+  height: 12px;
+  width: 250px;
+  -moz-border-radius-bottomleft: 4px;
+  -moz-border-radius-bottomright: 4px;
+  -moz-border-radius-topleft: 4px;
+  -moz-border-radius-topright: 4px;
+  border: 1px solid #DDDDDD;
+}
+
+.gwt-ProgressBar-shell .gwt-ProgressBar-bar {
+  background-color: #F6A828;
+  -moz-border-radius-bottomleft: 4px;
+  -moz-border-radius-topleft: 4px;
+}
+
+.gwt-ProgressBar-shell .gwt-ProgressBar-text {
+  padding: 0px;
+  margin: 0px;
+  color: grey;
+  white-space: nowrap;
+  font-size: 8px;
+}

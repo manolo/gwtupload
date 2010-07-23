@@ -43,7 +43,7 @@ import java.util.Set;
 public class BaseUploadStatus implements IUploadStatus {
 
   /**
-   * A basic progress bar implementation used when the user doesn't provide anyone.
+   * A basic progress bar implementation used when the user doesn't provide any.
    */
   public class BasicProgressBar extends FlowPanel implements HasProgress {
 
@@ -211,7 +211,7 @@ public class BaseUploadStatus implements IUploadStatus {
     statusLabel.removeStyleDependentName(statusName);
     statusLabel.addStyleDependentName(statusName);
     switch (stat) {
-      case QUEUED:
+      case CHANGED: case QUEUED:
         updateStatusPanel(false, i18nStrs.uploadStatusQueued());
         break;
       case SUBMITING:

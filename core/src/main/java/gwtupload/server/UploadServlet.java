@@ -536,6 +536,7 @@ public class UploadServlet extends HttpServlet implements Servlet {
   protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
     perThreadRequest.set(request);
     if (request.getParameter(PARAM_SESSION) != null) {
+      request.getSession();
       renderXmlResponse(request, response, "<" + TAG_BLOBSTORE + ">" + (isAppEngine() && useBlobstore) + "</" + TAG_BLOBSTORE + ">");
     } else if (request.getParameter(PARAM_BLOBSTORE) != null) {
       renderXmlResponse(request, response, "<" + TAG_BLOBSTORE_PATH + ">" + getBlobstorePath(request)  + "</" + TAG_BLOBSTORE_PATH + ">");

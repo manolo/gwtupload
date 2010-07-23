@@ -22,6 +22,7 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FormPanel;
 
 import gwtupload.client.IFileInput.FileInputType;
+import gwtupload.client.IUploadStatus.Status;
 
 /**
  * <p>
@@ -180,9 +181,17 @@ public class SingleUploader extends Uploader {
   @Override
   protected void onFinishUpload() {
     super.onFinishUpload();
+    if (getStatus() == Status.REPEATED) {
+      getStatusWidget().setError(getI18NConstants().uploaderAlreadyDone());
+    }
+    getStatusWidget().setStatus(Status.UNINITIALIZED);
+    reuse();
+    assignNewNameToFileInput();
     button.setEnabled(true);
     button.removeStyleName("changed");
-    reset();
+    if (autoSubmit) {
+      getFileInput().setText(i18nStrs.uploaderBrowse());
+    }
   }
   
   /* (non-Javadoc)
@@ -193,6 +202,15 @@ public class SingleUploader extends Uploader {
     super.onStartUpload();
     button.setEnabled(false);
     button.removeStyleName("changed");
+  }
+  
+  /* (non-Javadoc)
+   * @see gwtupload.client.Uploader#setAutoSubmit(boolean)
+   */
+  @Override
+  public void setAutoSubmit(boolean b) {
+    button.setVisible(!b);
+    super.setAutoSubmit(b);
   }
 
 }
