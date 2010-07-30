@@ -21,6 +21,7 @@
   </parent>
 
   <properties>
+    <main.basedir>${project.parent.basedir}</main.basedir>
     <maven.compiler.source>1.5</maven.compiler.source>
     <maven.compiler.target>1.5</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -253,7 +254,14 @@
           </execution>
         </executions>
       </plugin>
-
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <version>2.0</version>
+        <configuration>
+          <configLocation>${main.basedir}/gwt-checkstyle.xml</configLocation>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 
