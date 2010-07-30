@@ -1,14 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-    This configuration file was written by the eclipse-cs plugin configuration editor
+  This configuration file was written by the eclipse-cs plugin configuration editor
 -->
 <!--
-    Checkstyle-Configuration: GWT Checks
-    Description: none
+Checkstyle-Configuration: GWT Checks
+Description:
+
 -->
 <!DOCTYPE module PUBLIC "-//Puppy Crawl//DTD Check Configuration 1.2//EN" "http://www.puppycrawl.com/dtds/configuration_1_2.dtd">
 <module name="Checker">
     <property name="severity" value="warning"/>
+    <module name="RegexpSingleline">
+        <metadata name="com.atlassw.tools.eclipse.checkstyle.comment" value="bad // comment"/>
+        <property name="severity" value="error"/>
+        <property name="format" value="  [/][/][A-z]"/>
+        <property name="message" value="// comments must be followed by a space and be on their own line"/>
+    </module>
+    <module name="RegexpHeader">
+        <property name="severity" value="error"/>
+        <property name="header" value="/\*\n \* Copyright 20(0[6789]|1[0]) Google Inc\.\n \*[ ]*\n \* Licensed under the Apache License, Version 2\.0 \(the &quot;License&quot;\); you may not\n \* use this file except in compliance with the License\. You may obtain a copy of\n \* the License at\n \*[ ]*\n \* http://www\.apache\.org/licenses/LICENSE-2\.0\n \*[ ]*\n \* Unless required by applicable law or agreed to in writing, software\n \* distributed under the License is distributed on an &quot;AS IS&quot; BASIS, WITHOUT\n \* WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied\. See the\n \* License for the specific language governing permissions and limitations under\n \* the License\.\n \*/"/>            
+    </module>
+    <module name="FileTabCharacter">
+        <metadata name="com.atlassw.tools.eclipse.checkstyle.comment" value="no tabs"/>
+        <property name="severity" value="error"/>
+    </module>
     <module name="TreeWalker">
         <module name="FileContentsHolder"/>
         <module name="InterfaceIsType">
@@ -66,7 +81,6 @@
         <module name="NeedBraces">
             <metadata name="com.atlassw.tools.eclipse.checkstyle.comment" value="make sure if has braces"/>
         </module>
-<!--
         <module name="JavadocMethod">
             <metadata name="com.atlassw.tools.eclipse.checkstyle.lastEnabledSeverity" value="info"/>
             <property name="severity" value="info"/>
@@ -80,21 +94,11 @@
             <property name="logLoadErrors" value="true"/>
             <property name="tokens" value="METHOD_DEF"/>
         </module>
--->
-        <module name="RegexpHeader">
-            <property name="severity" value="error"/>
-            <property name="header" value="/\*\n \* Copyright 20(0[6789]|1[0])"/>
-        </module>
         <module name="ImportOrder">
-            <metadata name="com.atlassw.tools.eclipse.checkstyle.lastEnabledSeverity" value="error"/>
-            <property name="severity" value="ignore"/>
+            <property name="severity" value="error"/>
             <property name="groups" value="com.google, com,  junit, net,org, java,javax"/>
             <property name="ordered" value="false"/>
             <property name="separated" value="true"/>
-        </module>
-        <module name="TabCharacter">
-            <metadata name="com.atlassw.tools.eclipse.checkstyle.comment" value="no tabs"/>
-            <property name="severity" value="error"/>
         </module>
         <module name="DefaultComesLast">
             <property name="severity" value="error"/>
@@ -143,19 +147,13 @@
             <property name="severity" value="error"/>
         </module>
 <!--
-        <module name="com.google.gwt.checkstyle.OrderCheck">
+        <module name="com.google.gwt.checkstyle.Order">
             <property name="severity" value="error"/>
         </module>
-        <module name="com.google.gwt.checkstyle.FieldCheck">
+        <module name="com.google.gwt.checkstyle.Field">
             <property name="severity" value="error"/>
         </module>
 -->
-        <module name="GenericIllegalRegexp">
-            <metadata name="com.atlassw.tools.eclipse.checkstyle.comment" value="bad // comment"/>
-            <property name="severity" value="error"/>
-            <property name="format" value="  [/][/][A-z]"/>
-            <property name="message" value="// comments must be followed by a space and be on their own line"/>
-        </module>
         <module name="DoubleCheckedLocking">
             <property name="severity" value="error"/>
         </module>
@@ -171,8 +169,7 @@
         </module>
         <module name="TodoComment">
             <metadata name="com.atlassw.tools.eclipse.checkstyle.comment" value="Author tags"/>
-            <metadata name="com.atlassw.tools.eclipse.checkstyle.lastEnabledSeverity" value="error"/>
-            <property name="severity" value="ignore"/>
+            <property name="severity" value="error"/>
             <property name="format" value="@author"/>
         </module>
         <module name="Regexp">
@@ -203,9 +200,11 @@
         <module name="RedundantModifier"/>
         <module name="EqualsHashCode"/>
     </module>
+<!--
     <module name="PackageHtml">
         <property name="severity" value="ignore"/>
     </module>
+-->
     <module name="SuppressionCommentFilter">
         <property name="offCommentFormat" value="CHECKSTYLE_OFF"/>
         <property name="onCommentFormat" value="CHECKSTYLE_ON"/>
