@@ -48,6 +48,7 @@ import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.FileUploadBase.SizeLimitExceededException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 
 /**
@@ -165,19 +166,7 @@ public class UploadServlet extends HttpServlet implements Servlet {
    * @throws IOException
    */
   public static void copyFromInputStreamToOutputStream(InputStream in, OutputStream out) throws IOException {
-    byte[] buffer = new byte[100000];
-    while (true) {
-      synchronized (buffer) {
-        int amountRead = in.read(buffer);
-        if (amountRead == -1) {
-          break;
-        }
-        out.write(buffer, 0, amountRead);
-      }
-    }
-    in.close();
-    out.flush();
-    out.close();
+    IOUtils.copy(in, out);
   }
 
   /**
