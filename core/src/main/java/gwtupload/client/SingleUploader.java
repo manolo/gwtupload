@@ -18,6 +18,7 @@ package gwtupload.client;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.uibinder.client.UiConstructor;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FormPanel;
 
@@ -58,6 +59,7 @@ public class SingleUploader extends Uploader {
    * @param type
    *        file input to use
    */
+  @UiConstructor
   public SingleUploader(FileInputType type) {
     this(type, null);
   }
@@ -202,6 +204,10 @@ public class SingleUploader extends Uploader {
     super.onStartUpload();
     button.setEnabled(false);
     button.removeStyleName("changed");
+  }
+  
+  public void setAvoidRepeatFiles(boolean b){
+    this.avoidRepeatFiles(b);
   }
   
   /* (non-Javadoc)

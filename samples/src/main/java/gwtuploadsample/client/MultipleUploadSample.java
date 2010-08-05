@@ -83,6 +83,9 @@ public class MultipleUploadSample implements EntryPoint {
     MultiUploader chismesUploader = new MultiUploader(FileInputType.BUTTON, new ChismesUploadProgress(false));//, new DecoratedFileInput(new GWTCButton()));
     chismesUploader.addOnFinishUploadHandler(onFinishUploaderHandler);
     RootPanel.get("chismes").add(chismesUploader);
+    
+    MUpld m = new MUpld("abcde");
+    RootPanel.get("uibinder").add(m);
   }
 
 }

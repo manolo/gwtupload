@@ -1,0 +1,13 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui"
+	xmlns:up="urn:import:gwtupload.client"
+	>
+	<ui:style>
+		.myup div {
+			font-style: italic;
+		}
+	</ui:style>
+  	<up:MultiUploader type="LABEL" ui:field="uploader" 
+  	                  styleName="{style.myup}" maximumFiles="2" avoidRepeatFiles="true"/>
+</ui:UiBinder> 

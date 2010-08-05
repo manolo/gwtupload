@@ -21,6 +21,7 @@ import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.dom.client.Style.Position;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.uibinder.client.UiConstructor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -118,6 +119,7 @@ public class MultiUploader extends Composite implements IUploader {
    * @param type
    *   file input to use
    */
+  @UiConstructor
   public MultiUploader(FileInputType type) {
     this(type, new BaseUploadStatus());
   }
@@ -409,6 +411,10 @@ public class MultiUploader extends Composite implements IUploader {
     uploaders = new Vector<IUploader>();
     multiUploaderPanel.clear();
     newUploaderInstance();
+  }
+  
+  public void setAvoidRepeatFiles(boolean b){
+    this.avoidRepeatFiles(b);
   }
 
   /* (non-Javadoc)
