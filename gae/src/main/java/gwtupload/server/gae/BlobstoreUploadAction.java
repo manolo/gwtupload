@@ -16,18 +16,11 @@
  */
 package gwtupload.server.gae;
 
-import com.google.appengine.api.blobstore.BlobKey;
-import com.google.appengine.api.blobstore.BlobstoreService;
-import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
-
 import gwtupload.server.AbstractUploadListener;
 import gwtupload.server.UploadAction;
 import gwtupload.server.exceptions.UploadActionException;
 import gwtupload.server.exceptions.UploadCanceledException;
 import gwtupload.server.gae.BlobstoreFileItemFactory.BlobstoreFileItem;
-
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileItemFactory;
 
 import java.io.IOException;
 import java.util.List;
@@ -39,6 +32,13 @@ import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileItemFactory;
+
+import com.google.appengine.api.blobstore.BlobKey;
+import com.google.appengine.api.blobstore.BlobstoreService;
+import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
 
 /**
  * <p>
@@ -53,6 +53,10 @@ public class BlobstoreUploadAction extends UploadAction {
   protected static BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService();
   
   private static final long serialVersionUID = -2569300604226532811L;
+  
+  // This must exist in the web.xml, it seems that in last versions 
+  // wildcards don't work nor anything other than /upload
+  private String servletPath = "/upload";
   
   @Override
   public void checkRequest(HttpServletRequest request) {
@@ -97,9 +101,21 @@ public class BlobstoreUploadAction extends UploadAction {
 
   @Override
   protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-    if (request.getParameter("redirect") != null) {
-      renderXmlResponse(request, response, "OK");
+    if (request.getParameter("blob-key") != null) {
+      blobstoreService.serve(new BlobKey(request.getParameter("blob-key")), response);
+    } else if (request.getParameter("redirect") != null) {
+      String ret = TAG_ERROR;
+      Map<String, String> stat = getUploadStatus(request, null, null);
+      for (FileItem i : getSessionFileItems(request)) {
+        stat.put("blobkey", ((BlobstoreFileItem) i).getKey().getKeyString());
+        stat.put("type", ((BlobstoreFileItem) i).getContentType());
+        stat.put("size", "" + ((BlobstoreFileItem) i).getSize());
+        stat.put("name", "" + ((BlobstoreFileItem) i).getName());
+      }
+      stat.put(TAG_FINISHED, "ok");
+      ret = statusToString(stat);
       finish(request);
+      renderXmlResponse(request, response, ret, true);
     } else {
       super.doGet(request, response);
     }
@@ -117,7 +133,7 @@ public class BlobstoreUploadAction extends UploadAction {
       }
     } catch (UploadCanceledException e) {
       finish(request);
-      response.sendRedirect("/servlet.gupld?redirect=true&cancelled=true");
+      redirect(response, "cancelled=true");
       return;
     } catch (UploadActionException e) {
       logger.info("ExecuteUploadActionException: " + e);
@@ -136,7 +152,7 @@ public class BlobstoreUploadAction extends UploadAction {
       }
       removeSessionFileItems(request);
       finish(request);
-      response.sendRedirect("/servlet.gupld?redirect=true&error=" + error);
+      redirect(response, "error=" + error);
     } else {
       Map<String, BlobKey> blobs = blobstoreService.getUploadedBlobs(request);
       List<FileItem> items = getSessionFileItems(request);
@@ -146,6 +162,7 @@ public class BlobstoreUploadAction extends UploadAction {
           FileItem i = findItemByFieldName(items, s);
           if (i != null) {
             ((BlobstoreFileItem) i).setKey(blobKey);
+            logger.info("BLOB-STORE-SERVLET: received file: " + blobKey );
           }
         }
       } else if (blobs != null && blobs.size() > 0) {
@@ -161,16 +178,22 @@ public class BlobstoreUploadAction extends UploadAction {
       }
       if (message != null) {
         finish(request);
-        response.sendRedirect("/servlet.gupld?redirect=true&message=" + message);
+        redirect(response, "message=" + message);
       } else {
         finish(request);
-        response.sendRedirect("/servlet.gupld?redirect=true");
+        redirect(response, null);
       }
     }
   }
+  
+  protected void redirect(HttpServletResponse response, String params) throws IOException {
+    String url = servletPath + "?redirect=true" + (params != null ? "&" + params : "");
+    logger.info("BLOB-STORE-SERVLET: redirecting to -> : " + url);
+    response.sendRedirect(url);
+  }
 
   protected String getBlobstorePath(HttpServletRequest request) {
-    String ret = blobstoreService.createUploadUrl("servlet.gupld");
+    String ret = blobstoreService.createUploadUrl(servletPath);
     ret = ret.replaceAll("^https*://[^/]+", "");
     return ret;
   }

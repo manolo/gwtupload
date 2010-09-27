@@ -383,7 +383,7 @@ public class UploadServlet extends HttpServlet implements Servlet {
    */
   protected static void renderXmlResponse(HttpServletRequest request, HttpServletResponse response, String message, boolean post) throws IOException {
     
-    String contentType = post ? "text/plain" : "text/xml";
+    String contentType = post ? "text/plain" : "text/html";
 
     // TODO: this is here for testing purposes, it must be removed
     String ctype = request.getParameter("ctype");
@@ -398,6 +398,9 @@ public class UploadServlet extends HttpServlet implements Servlet {
     }
     
     String xml = XML_TPL.replace("%%MESSAGE%%", message != null ? message : "");
+    if (post) {
+      xml = "%%%INI%%%" + xml.replaceAll("<", "@@@").replaceAll(">", "___") + "%%%END%%%";
+    }
     
     renderMessage(response, xml, contentType);
   }
@@ -543,18 +546,22 @@ public class UploadServlet extends HttpServlet implements Servlet {
       }
       renderXmlResponse(request, response, FINISHED_OK);
     } else {
-      String message = "";
-      Map<String, String> status = getUploadStatus(request, request.getParameter(PARAM_FILENAME));
-      for (Entry<String, String> e : status.entrySet()) {
-        if (e.getValue() != null) {
-          String k = e.getKey();
-          String v = e.getValue().replaceAll("</*pre>", "").replaceAll("&lt;", "<").replaceAll("&gt;", ">");
-          message += "<" + k + ">" + v + "</" + k + ">\n";
-        }
-      }
+      String message = statusToString(getUploadStatus(request, request.getParameter(PARAM_FILENAME), null)); 
       renderXmlResponse(request, response, message);
     }
     perThreadRequest.set(null);
+  }
+  
+  protected String statusToString(Map<String, String> status) {
+    String message = "";
+    for (Entry<String, String> e : status.entrySet()) {
+      if (e.getValue() != null) {
+        String k = e.getKey();
+        String v = e.getValue().replaceAll("</*pre>", "").replaceAll("&lt;", "<").replaceAll("&gt;", ">");
+        message += "<" + k + ">" + v + "</" + k + ">\n";
+      }
+    }
+    return message;
   }
 
   /**
@@ -635,13 +642,16 @@ public class UploadServlet extends HttpServlet implements Servlet {
    * @param fieldname
    * @return a map of tag/values to be rendered 
    */
-  protected Map<String, String> getUploadStatus(HttpServletRequest request, String fieldname) {
+  protected Map<String, String> getUploadStatus(HttpServletRequest request, String fieldname, Map<String, String> ret) {
 
     perThreadRequest.set(request);
 
     HttpSession session = request.getSession();
 
-    Map<String, String> ret = new HashMap<String, String>();
+    if (ret == null) {
+      ret = new HashMap<String, String>();
+    }
+    
     long currentBytes = 0;
     long totalBytes = 0;
     long percent = 0;

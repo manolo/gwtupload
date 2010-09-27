@@ -306,12 +306,10 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     }
 
     public void onResponseReceived(Request request, Response response) {
-      
       waitingForResponse = false;
       if (finished == true && !uploading) {
         return;
       }
-      
       parseAjaxResponse(response.getText());
     }
 
@@ -320,6 +318,11 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
   private SubmitCompleteHandler onSubmitCompleteHandler = new SubmitCompleteHandler() {
     public void onSubmitComplete(SubmitCompleteEvent event) {
       serverResponse = event.getResults();
+      if (serverResponse != null) {
+        serverResponse = serverResponse.replaceFirst(".*%%%INI%%%([\\s\\S]*?)%%%END%%%.*", "$1");
+        serverResponse = serverResponse.replaceAll("@@@","<").replaceAll("___", ">");
+      }
+//      uploadFinished();
       log("onSubmitComplete: " + serverResponse, null);
     }
   };
@@ -757,7 +760,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     this.uploadForm.reset();
     updateStatusTimer.finish();
     uploading = cancelled = finished = successful = false;
-    basename = serverResponse = null;
+    //basename = serverResponse = null;
   }
 
   /**
@@ -997,9 +1000,12 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
   }
 
   private void parseAjaxResponse(String responseTxt) {
+    if (responseTxt == null) {
+      return;
+    }
+    
     String error = null;
     Document doc = null;
-
     try {
       doc = XMLParser.parse(responseTxt);
       error = Utils.getXmlNodeValue(doc, "error");
