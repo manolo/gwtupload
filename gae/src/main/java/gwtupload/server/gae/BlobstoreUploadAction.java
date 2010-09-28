@@ -36,9 +36,13 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
 
+import com.google.appengine.api.blobstore.BlobInfo;
+import com.google.appengine.api.blobstore.BlobInfoFactory;
 import com.google.appengine.api.blobstore.BlobKey;
 import com.google.appengine.api.blobstore.BlobstoreService;
 import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
 
 /**
  * <p>
@@ -51,6 +55,8 @@ import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
 public class BlobstoreUploadAction extends UploadAction {
 
   protected static BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService();
+  protected static DatastoreService datastoreService = DatastoreServiceFactory.getDatastoreService();
+  protected static BlobInfoFactory  blobInfoFactory = new BlobInfoFactory(datastoreService);
   
   private static final long serialVersionUID = -2569300604226532811L;
   
@@ -73,6 +79,8 @@ public class BlobstoreUploadAction extends UploadAction {
     String parameter = request.getParameter(PARAM_SHOW);
     FileItem item = findFileItem(getSessionFileItems(request), parameter);
     if (item != null) {
+      BlobInfo i = blobInfoFactory.loadBlobInfo(((BlobstoreFileItem) item).getKey());
+      System.out.println("BlobInfo----> " + i);
       blobstoreService.serve(((BlobstoreFileItem) item).getKey(), response);
     } else {
       logger.info("UPLOAD-SERVLET (" + request.getSession().getId() + ") getUploadedFile: " + parameter + " file isn't in session.");
@@ -106,11 +114,13 @@ public class BlobstoreUploadAction extends UploadAction {
     } else if (request.getParameter("redirect") != null) {
       String ret = TAG_ERROR;
       Map<String, String> stat = getUploadStatus(request, null, null);
-      for (FileItem i : getSessionFileItems(request)) {
-        stat.put("blobkey", ((BlobstoreFileItem) i).getKey().getKeyString());
-        stat.put("type", ((BlobstoreFileItem) i).getContentType());
-        stat.put("size", "" + ((BlobstoreFileItem) i).getSize());
-        stat.put("name", "" + ((BlobstoreFileItem) i).getName());
+      for (FileItem item : getSessionFileItems(request)) {
+        BlobKey k = ((BlobstoreFileItem) item).getKey();
+        BlobInfo i = blobInfoFactory.loadBlobInfo(k);
+        stat.put("blobkey", k.getKeyString());
+        stat.put("ctype", i.getContentType());
+        stat.put("size", "" + i.getSize());
+        stat.put("name", "" + i.getFilename());
       }
       stat.put(TAG_FINISHED, "ok");
       ret = statusToString(stat);
