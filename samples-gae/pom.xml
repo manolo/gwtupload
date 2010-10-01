@@ -145,6 +145,7 @@
       <plugin>
          <groupId>net.kindleit</groupId>
          <artifactId>maven-gae-plugin</artifactId>
+         <configuration><port>6666</port></configuration>
          <executions>
            <execution>
              <phase>deploy</phase>
