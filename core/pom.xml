@@ -39,6 +39,7 @@
       <groupId>log4j</groupId>
       <artifactId>log4j</artifactId>
       <version>${log4jVersion}</version>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 

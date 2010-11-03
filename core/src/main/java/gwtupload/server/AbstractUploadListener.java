@@ -16,13 +16,12 @@
  */
 package gwtupload.server;
 
-import org.apache.commons.fileupload.ProgressListener;
-import org.apache.log4j.Logger;
-
 import java.io.Serializable;
 import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.fileupload.ProgressListener;
 
 /**
  * 
@@ -41,7 +40,7 @@ public abstract class AbstractUploadListener implements ProgressListener, Serial
 
   protected static int DEFAULT_SAVE_INTERVAL = 3000;
 
-  protected static Logger logger = Logger.getLogger(AbstractUploadListener.class);
+  protected static UploadLogger logger = UploadLogger.getLogger(AbstractUploadListener.class);
 
   protected static final long serialVersionUID = -6431275569719042836L;
 
@@ -79,7 +78,7 @@ public abstract class AbstractUploadListener implements ProgressListener, Serial
 
   private AbstractUploadListener() {
     className = this.getClass().getName().replaceAll("^.+\\.", "");
-    logger = Logger.getLogger(this.getClass());
+    logger = UploadLogger.getLogger(this.getClass());
   }
 
   /**

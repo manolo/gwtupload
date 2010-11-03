@@ -272,6 +272,11 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
       try {
         String s = Utils.getXmlNodeValue(XMLParser.parse(response.getText()), "blobstore");
         blobstore = "true".equalsIgnoreCase(s);
+        // with blobstore status does not make sense
+        if (blobstore) {
+          updateStatusTimer.setInterval(5000);
+          uploadTimeout = 60000;
+        }
         uploadForm.submit();
       } catch (Exception e) {
         String message = i18nStrs.uploaderServerError() + "\nAction: " + getServletPath() + "\nException: " + e.getMessage() + response.getText();
@@ -322,6 +327,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
         serverResponse = serverResponse.replaceFirst(".*%%%INI%%%([\\s\\S]*?)%%%END%%%.*", "$1");
         serverResponse = serverResponse.replaceAll("@@@","<").replaceAll("___", ">");
       }
+      updateStatusTimer.run();
 //      uploadFinished();
       log("onSubmitComplete: " + serverResponse, null);
     }
@@ -1080,7 +1086,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
    * When the response with the session comes, it submits the form.
    */
   private void sendAjaxRequestToGetBlobstorePath() throws RequestException {
-    RequestBuilder reqBuilder = new RequestBuilder(RequestBuilder.GET, composeURL("blobstore=true"));
+    RequestBuilder reqBuilder = new RequestBuilder(RequestBuilder.GET, getServletPath());//composeURL("blobstore=true"));
     reqBuilder.setTimeoutMillis(DEFAULT_AJAX_TIMEOUT);
     reqBuilder.sendRequest("blobstore", onBlobstoreReceivedCallback);
   }

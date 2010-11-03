@@ -25,8 +25,8 @@ import gwtupload.server.gae.BlobstoreFileItemFactory.BlobstoreFileItem;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 import java.util.Map.Entry;
+import java.util.Vector;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -49,6 +49,15 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory;
  * Upload servlet for the GwtUpload library's deployed in Google App-engine using blobstore.
  * </p>
  * 
+ * <p>
+ * Constrains:
+ * <ul>
+ *   <li>It seems that the redirected servlet path must be /upload because wildcards don't work.</li>
+ *   <li>After of blobstoring, our doPost receives a request size = -1.</li>
+ *   <li>If the upload fails, our doPost is never called.</li>
+ * </ul>
+ * </p>
+ * 
  * @author Manolo Carrasco Moñino
  * 
  */
@@ -60,18 +69,12 @@ public class BlobstoreUploadAction extends UploadAction {
   
   private static final long serialVersionUID = -2569300604226532811L;
   
-  // This must exist in the web.xml, it seems that in last versions 
-  // wildcards don't work nor anything other than /upload
+  // See constrain 1
   private String servletPath = "/upload";
   
   @Override
   public void checkRequest(HttpServletRequest request) {
-    super.checkRequest(request);
-    if (request.getContentLength() > MemCacheFileItemFactory.DEFAULT_REQUEST_SIZE + 1024) {
-      throw new RuntimeException(
-          "Google appengine doesn't allow requests with a size greater than "
-              + MemCacheFileItemFactory.DEFAULT_REQUEST_SIZE + " Bytes");
-    }
+    logger.debug("BLOBSTORE-UPLOAD-SERVLET: (" + request.getSession().getId() + ") procesing a request with size: " + request.getContentLength() + " bytes.");
   }
 
   @Override
@@ -80,10 +83,14 @@ public class BlobstoreUploadAction extends UploadAction {
     FileItem item = findFileItem(getSessionFileItems(request), parameter);
     if (item != null) {
       BlobInfo i = blobInfoFactory.loadBlobInfo(((BlobstoreFileItem) item).getKey());
-      System.out.println("BlobInfo----> " + i);
-      blobstoreService.serve(((BlobstoreFileItem) item).getKey(), response);
+      if (i != null) {
+        logger.debug("BLOBSTORE-UPLOAD-SERVLET: (" + request.getSession().getId() + ") getUploadedFile: " + parameter + " serving blobstore: " + i);
+        blobstoreService.serve(((BlobstoreFileItem) item).getKey(), response);
+      } else {
+        logger.error("BLOBSTORE-UPLOAD-SERVLET: (" + request.getSession().getId() + ") getUploadedFile: " + parameter + " file isn't in blobstore.");
+      }
     } else {
-      logger.info("UPLOAD-SERVLET (" + request.getSession().getId() + ") getUploadedFile: " + parameter + " file isn't in session.");
+      logger.info("BLOBSTORE-UPLOAD-SERVLET: (" + request.getSession().getId() + ") getUploadedFile: " + parameter + " file isn't in session.");
       renderXmlResponse(request, response, ERROR_ITEM_NOT_FOUND);
     }
   }
@@ -91,11 +98,12 @@ public class BlobstoreUploadAction extends UploadAction {
   @Override
   public void init(ServletConfig config) throws ServletException {
     super.init(config);
+    logger.info("Initializing Blobstore servlet." );
     if (isAppEngine()) {
       uploadDelay = 0;
       maxSize = 50 * 1024 * 1024;
       useBlobstore = true;
-      logger.info("BLOBSTORE-UPLOAD-SERVLET init: maxSize=" + maxSize
+      logger.info("BLOBSTORE-UPLOAD-SERVLET: init: maxSize=" + maxSize
           + ", slowUploads=" + uploadDelay + ", isAppEngine=" + isAppEngine()
           + ", useBlobstore=" + useBlobstore);
     }
@@ -112,20 +120,30 @@ public class BlobstoreUploadAction extends UploadAction {
     if (request.getParameter("blob-key") != null) {
       blobstoreService.serve(new BlobKey(request.getParameter("blob-key")), response);
     } else if (request.getParameter("redirect") != null) {
+      perThreadRequest.set(request);
       String ret = TAG_ERROR;
       Map<String, String> stat = getUploadStatus(request, null, null);
-      for (FileItem item : getSessionFileItems(request)) {
-        BlobKey k = ((BlobstoreFileItem) item).getKey();
-        BlobInfo i = blobInfoFactory.loadBlobInfo(k);
-        stat.put("blobkey", k.getKeyString());
-        stat.put("ctype", i.getContentType());
-        stat.put("size", "" + i.getSize());
-        stat.put("name", "" + i.getFilename());
+      List <FileItem> items = getSessionFileItems(request);
+      int nitems = 0;
+      if (items != null) {
+          nitems = items.size();
+          for (FileItem item : getSessionFileItems(request)) {
+              BlobKey k = ((BlobstoreFileItem) item).getKey();
+              BlobInfo i = blobInfoFactory.loadBlobInfo(k);
+              stat.put("blobkey", k.getKeyString());
+              if (i != null) {
+                stat.put("ctype", i.getContentType() !=null ? i.getContentType() : "unknown");
+                stat.put("size", "" + i.getSize());
+                stat.put("name", "" + i.getFilename());
+              }
+            }
       }
       stat.put(TAG_FINISHED, "ok");
       ret = statusToString(stat);
       finish(request);
+      logger.debug("BLOB-STORE-SERVLET: (" + request.getSession().getId() + ") redirect nitems=" + nitems + "\n" + ret);
       renderXmlResponse(request, response, ret, true);
+      perThreadRequest.set(null);
     } else {
       super.doGet(request, response);
     }
@@ -135,76 +153,65 @@ public class BlobstoreUploadAction extends UploadAction {
   protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
     String error = null;
     String message = null;
-    perThreadRequest.set(request);
-    try {
-      error = super.parsePostRequest(request, response);
-      if (error == null) {
-        message = executeAction(request, getSessionFileItems(request));
+    
+    if (request.getContentLength() > 0) {
+      perThreadRequest.set(request);
+      try {
+        error = super.parsePostRequest(request, response);
+      } catch (UploadCanceledException e) {
+        finish(request);
+        redirect(response, "cancelled=true");
+        return;
+      } catch (Exception e) {
+        logger.info("BLOB-STORE-SERVLET: Exception " + e);
+        error = e.getMessage();
+      } finally {
+        perThreadRequest.set(null);
       }
-    } catch (UploadCanceledException e) {
-      finish(request);
-      redirect(response, "cancelled=true");
-      return;
-    } catch (UploadActionException e) {
-      logger.info("ExecuteUploadActionException: " + e);
-      error =  e.getMessage();
-    } catch (Exception e) {
-      logger.info("Exception " + e);
-      error = e.getMessage();
-    } finally {
-      perThreadRequest.set(null);
     }
 
     if (error != null) {
-      AbstractUploadListener listener = getCurrentListener(request);
-      if (listener != null) {
-        listener.setException(new RuntimeException(error));
-      }
       removeSessionFileItems(request);
-      finish(request);
       redirect(response, "error=" + error);
+      return;
+    } 
+
+    Map<String, BlobKey> blobs = blobstoreService.getUploadedBlobs(request);
+    if (blobs != null && blobs.size() > 0) {
+      List<FileItem> items = new Vector<FileItem>();
+      for (Entry<String, BlobKey> e: blobs.entrySet()) {
+        BlobstoreFileItem i = new BlobstoreFileItem(e.getKey(), "unknown", false, "");
+        logger.info("BLOB-STORE-SERVLET: received file: " + e.getKey() + " " + e.getValue().getKeyString());
+        i.setKey(e.getValue());
+        items.add(i);
+      }
+      logger.info("BLOB-STORE-SERVLET: putting in sesssion elements -> " + items.size());
+      request.getSession().setAttribute(ATTR_FILES, items);
     } else {
-      Map<String, BlobKey> blobs = blobstoreService.getUploadedBlobs(request);
-      List<FileItem> items = getSessionFileItems(request);
-      if (items != null) {
-        for (String s : blobs.keySet()) {
-          BlobKey blobKey = blobs.get(s);
-          FileItem i = findItemByFieldName(items, s);
-          if (i != null) {
-            ((BlobstoreFileItem) i).setKey(blobKey);
-            logger.info("BLOB-STORE-SERVLET: received file: " + blobKey );
-          }
-        }
-      } else if (blobs != null && blobs.size() > 0) {
-        items = new Vector<FileItem>();
-        for (Entry<String, BlobKey> e: blobs.entrySet()) {
-          BlobstoreFileItem i = new BlobstoreFileItem(e.getKey(), "unknown", false, "");
-          logger.info("BLOB-STORE-SERVLET: received file: " + e.getKey() + " " + e.getValue().getKeyString());
-          i.setKey(e.getValue());
-          items.add(i);
-        }
-        logger.info("BLOB-STORE-SERVLET: putting in sesssion elements -> " + items.size());
-        request.getSession().setAttribute(ATTR_FILES, items);
-      }
-      if (message != null) {
-        finish(request);
-        redirect(response, "message=" + message);
-      } else {
-        finish(request);
-        redirect(response, null);
-      }
+      error = getMessage("no_data");
     }
+      
+    try {
+      message = executeAction(request, getSessionFileItems(request));
+    } catch (UploadActionException e) {
+      logger.info("ExecuteUploadActionException: " + e);
+      error =  e.getMessage();
+    }
+      
+    redirect(response, message != null ? "message=" + message : null);
   }
   
   protected void redirect(HttpServletResponse response, String params) throws IOException {
-    String url = servletPath + "?redirect=true" + (params != null ? "&" + params : "");
+    String url = servletPath + "?redirect=true" + (params != null ? "&" + params.replaceAll("[\n\r]+", " ") : "");
     logger.info("BLOB-STORE-SERVLET: redirecting to -> : " + url);
     response.sendRedirect(url);
   }
 
   protected String getBlobstorePath(HttpServletRequest request) {
     String ret = blobstoreService.createUploadUrl(servletPath);
+	logger.error("BLOB-STORE-SERVLET: generated new upload-url -> " + servletPath + " : " + ret);
     ret = ret.replaceAll("^https*://[^/]+", "");
+	logger.error("BLOB-STORE-SERVLET: returning blobstore path -> : " + ret);
     return ret;
   }
 
@@ -218,7 +225,7 @@ public class BlobstoreUploadAction extends UploadAction {
   protected final FileItemFactory getFileItemFactory(int requestSize) {
     return new BlobstoreFileItemFactory();
   }
-
+  
 //  @SuppressWarnings("unchecked")
 //  public class ProxyHttpServletRequest implements HttpServletRequest {
 //

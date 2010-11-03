@@ -31,9 +31,9 @@ import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.ResourceBundle;
 import java.util.Vector;
-import java.util.Map.Entry;
 
 import javax.servlet.Servlet;
 import javax.servlet.ServletConfig;
@@ -49,7 +49,6 @@ import org.apache.commons.fileupload.FileUploadBase.SizeLimitExceededException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
 
 /**
  * <p>
@@ -122,7 +121,7 @@ public class UploadServlet extends HttpServlet implements Servlet {
 
   protected static final String FINISHED_OK = "<finished>OK</finished>";
 
-  protected static Logger logger = Logger.getLogger(UploadServlet.class);
+  protected static UploadLogger logger = UploadLogger.getLogger(UploadServlet.class);
 
   protected static String PARAM_BLOBSTORE = "blobstore";
 
@@ -437,6 +436,7 @@ public class UploadServlet extends HttpServlet implements Servlet {
    * @param request
    */
   public void cancelUpload(HttpServletRequest request) {
+    logger.debug("UPLOAD-SERVLET (" + request.getSession().getId() + ") cancelling Upload");
     AbstractUploadListener listener = getCurrentListener(request);
     if (listener != null && !listener.isCanceled()) {
       listener.setException(new UploadCanceledException());
@@ -528,10 +528,13 @@ public class UploadServlet extends HttpServlet implements Servlet {
   protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
     perThreadRequest.set(request);
     if (request.getParameter(PARAM_SESSION) != null) {
+      logger.debug("UPLOAD-SERVLET (" + request.getSession().getId() + ") new session, blobstore=" + (isAppEngine() && useBlobstore));
       request.getSession();
       renderXmlResponse(request, response, "<" + TAG_BLOBSTORE + ">" + (isAppEngine() && useBlobstore) + "</" + TAG_BLOBSTORE + ">");
-    } else if (request.getParameter(PARAM_BLOBSTORE) != null) {
-      renderXmlResponse(request, response, "<" + TAG_BLOBSTORE_PATH + ">" + getBlobstorePath(request)  + "</" + TAG_BLOBSTORE_PATH + ">");
+    } else if (isAppEngine() && (request.getParameter(PARAM_BLOBSTORE) != null || request.getParameterMap().size() == 0)) {
+      String blobStorePath = getBlobstorePath(request);
+      logger.debug("UPLOAD-SERVLET (" + request.getSession().getId() + ") getBlobstorePath=" + blobStorePath);
+      renderXmlResponse(request, response, "<" + TAG_BLOBSTORE_PATH + ">" + blobStorePath + "</" + TAG_BLOBSTORE_PATH + ">");
     } else if (request.getParameter(PARAM_SHOW) != null) {
       getUploadedFile(request, response);
     } else if (request.getParameter(PARAM_CANCEL) != null) {
@@ -540,6 +543,7 @@ public class UploadServlet extends HttpServlet implements Servlet {
     } else if (request.getParameter(PARAM_REMOVE) != null) {
       removeUploadedFile(request, response);
     } else if (request.getParameter(PARAM_CLEAN) != null) {
+      logger.debug("UPLOAD-SERVLET (" + request.getSession().getId() + ") cleanListener");
       AbstractUploadListener listener = getCurrentListener(request);
       if (listener != null) {
         listener.remove();
@@ -736,12 +740,12 @@ public class UploadServlet extends HttpServlet implements Servlet {
         return error;
       }
     }
+    // Create a file upload progress listener, and put it in the user session,
+    // so the browser can use ajax to query status of the upload process
+    listener = createNewListener(request);
 
     List<FileItem> uploadedItems;
     try {
-      // Create a file upload progress listener, and put it in the user session,
-      // so the browser can use ajax to query status of the upload process
-      listener = createNewListener(request);
 
       // Call to a method which the user can override
       checkRequest(request);
