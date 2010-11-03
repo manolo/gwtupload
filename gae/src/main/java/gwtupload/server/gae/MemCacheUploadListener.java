@@ -61,7 +61,7 @@ public class MemCacheUploadListener extends AbstractUploadListener {
         listener = (MemCacheUploadListener) o;
       }
     }
-    logger.info(className + " " + sessionId + " get " +  listener);
+    logger.debug(className + " " + sessionId + " get " +  listener);
     return listener;
   }
   
@@ -94,7 +94,7 @@ public class MemCacheUploadListener extends AbstractUploadListener {
       getCacheInstance().remove(KEY_LISTENER + sessionId + i);
     }
     counter = 0;
-    logger.info(className + " " + sessionId + " Remove " + this.toString());
+    logger.debug(className + " " + sessionId + " Remove " + this.toString());
   }
 
   @SuppressWarnings("unchecked")
@@ -111,7 +111,7 @@ public class MemCacheUploadListener extends AbstractUploadListener {
       getCacheInstance().put(KEY_LISTENER + sessionId + counter, this);
       
       saved = new Date();
-      logger.info(className + " " + sessionId + " Saved " + this.toString());
+      logger.debug(className + " " + sessionId + " Saved " + this.toString());
       counter++;
     }
   }
