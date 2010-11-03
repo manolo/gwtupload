@@ -42,7 +42,7 @@ public class MemoryUploadListener extends AbstractUploadListener {
 
   public static MemoryUploadListener current(String sessionId) {
     MemoryUploadListener listener = listeners.get(sessionId);
-    logger.info(className + " " + sessionId + " get " + listener);
+    logger.debug(className + " " + sessionId + " get " + listener);
     return listener;
   }
 
@@ -59,6 +59,6 @@ public class MemoryUploadListener extends AbstractUploadListener {
   public void save() {
     listeners.put(sessionId, this);
     saved = new Date();
-    logger.info(className + " " + sessionId + " Saved " + this.toString());
+    logger.debug(className + " " + sessionId + " Saved " + this.toString());
   }
 }
