@@ -209,9 +209,8 @@ public class BlobstoreUploadAction extends UploadAction {
 
   protected String getBlobstorePath(HttpServletRequest request) {
     String ret = blobstoreService.createUploadUrl(servletPath);
-	logger.error("BLOB-STORE-SERVLET: generated new upload-url -> " + servletPath + " : " + ret);
     ret = ret.replaceAll("^https*://[^/]+", "");
-	logger.error("BLOB-STORE-SERVLET: returning blobstore path -> : " + ret);
+    logger.info("BLOB-STORE-SERVLET: generated new upload-url -> " + servletPath + " : " + ret);
     return ret;
   }
 
