@@ -127,12 +127,41 @@ public class DecoratedFileUpload extends Composite implements HasText, HasName, 
       this.input = input;
     }
 
+    public void setSize(String width, String height) {
+       button.setSize(width, height);
+       container.setSize(width, height);
+    }
+    
+    
+    // TODO: computed size
     public void resize() {
       if (button != null) {
-        // When the widget is attached to a hidden panel, the reported button size is 0,
-        // so we put a default size.
-        int w = button.getOffsetWidth() > 0 ? button.getOffsetWidth() : DEFAULT_WIDTH;
-        int h = button.getOffsetHeight() > 0 ? button.getOffsetHeight() : DEFAULT_HEIGHT;
+        int w = button.getElement().getOffsetWidth();
+        int h = button.getElement().getOffsetHeight();
+        if (w <= 0) {
+          String ws = button.getElement().getAttribute("width");
+          if (ws != null) {
+            try {
+              w = Integer.parseInt(ws);
+            } catch (Exception e) {
+            }
+          }
+          if (w <= 0) {
+            w = DEFAULT_WIDTH;
+          }
+        }
+        if (h <= 0) {
+          String hs = button.getElement().getAttribute("height");
+          if (hs != null) {
+            try {
+              h = Integer.parseInt(hs);
+            } catch (Exception e) {
+            }
+          }
+          if (h <= 0) {
+            h = DEFAULT_HEIGHT;
+          }
+        }
         container.setSize(w + "px", h + "px");
       }
     }
@@ -156,6 +185,7 @@ public class DecoratedFileUpload extends Composite implements HasText, HasName, 
         });
       }
     }
+
   }
 
   /**
@@ -261,6 +291,11 @@ public class DecoratedFileUpload extends Composite implements HasText, HasName, 
       super.resize();
       wrapper.setWidth(container.getOffsetWidth() + "px");
       wrapper.setHeight(container.getOffsetHeight() + "px");
+    }
+    
+    public void setSize(String width, String height) {
+      super.setSize(width, height);
+      wrapper.setSize(width, height);
     }
   }
 
