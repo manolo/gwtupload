@@ -108,6 +108,7 @@ import org.apache.commons.io.IOUtils;
 public class UploadServlet extends HttpServlet implements Servlet {
 
   protected static final String ATTR_FILES = "FILES";
+  protected static final String ATTR_LAST_FILES = "LAST_FILES";
   protected static final String CANCELED_TRUE = "<canceled>true</canceled>";
   protected static final int DEFAULT_REQUEST_LIMIT_KB = 5 * 1024 * 1024;
 
@@ -583,7 +584,13 @@ public class UploadServlet extends HttpServlet implements Servlet {
     try {
       error = parsePostRequest(request, response);
       finish(request);
-      renderXmlResponse(request, response, error != null && error.length() > 0 ? "<error>" + error + "</error>" : FINISHED_OK, true);
+      Map<String, String> stat = new HashMap<String, String>();
+      if (error != null && error.length() > 0 ) {
+        stat.put(TAG_ERROR, error);
+      } else {
+        getFileItemsSummary(request, stat);
+      }
+      renderXmlResponse(request, response, statusToString(stat), true);
     } catch (UploadCanceledException e) {
       renderXmlResponse(request, response, CANCELED_TRUE, true);
     } catch (UploadTimeoutException e) {
@@ -598,7 +605,27 @@ public class UploadServlet extends HttpServlet implements Servlet {
       perThreadRequest.set(null);
     }
   }
-
+  
+  protected Map<String, String> getFileItemsSummary(HttpServletRequest request, Map<String, String> ret) {
+    if (ret == null) {
+      ret = new HashMap<String, String>();
+    }
+    @SuppressWarnings("unchecked")
+    List<FileItem> s = (List<FileItem>)request.getSession().getAttribute(ATTR_LAST_FILES);
+    if (s != null) {
+      for (FileItem i : s) {
+        if (false == i.isFormField()) {
+          ret.put("ctype", i.getContentType() !=null ? i.getContentType() : "unknown");
+          ret.put("size", "" + i.getSize());
+          ret.put("name", "" + i.getName());
+          ret.put("field", "" + i.getFieldName());
+        }
+      }
+      ret.put(TAG_FINISHED, "ok");
+    }
+    return ret;
+  }
+  
   /**
    * Notify to the listener that the upload has finished.
    * 
@@ -768,6 +795,7 @@ public class UploadServlet extends HttpServlet implements Servlet {
       }
 
       String error = "";
+      session.setAttribute(ATTR_LAST_FILES, uploadedItems);
 
       for (FileItem fileItem : uploadedItems) {
         if (fileItem.isFormField() || fileItem.getSize() > 0) {

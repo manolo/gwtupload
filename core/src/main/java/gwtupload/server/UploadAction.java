@@ -33,17 +33,17 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.fileupload.FileItem;
 
 /** 
- * <p>Abstract class used to manipulate the data received in the server side.</p>
+ * <p>Class used to manipulate the data received in the server side.</p>
  * 
- * The user has to implement the method doAction which receives a list of the FileItems
+ * The user has to implement the method executeAction which receives the list of the FileItems
  * sent to the server. Each FileItem represents a file or a form field. 
  * 
- * <p>Note: After this method is called, the FileItem is deleted from the session.</p>
+ * <p>Note: Temporary files are not deleted until the user calls removeSessionFiles(request).</p>
  * 
  * @author Manolo Carrasco Moñino
  *
  */
-public abstract class UploadAction extends UploadServlet {
+public class UploadAction extends UploadServlet {
   private static final long serialVersionUID = -6790246163691420791L;
 
   /**
@@ -208,18 +208,8 @@ public abstract class UploadAction extends UploadServlet {
     } else if (message != null) {
       renderHtmlMessage(response, message);
     } else {
-      int cont = 0;
       Map<String, String> stat = new HashMap<String, String>();
-      for (FileItem i : getSessionFileItems(request)) {
-        if (false == i.isFormField()) {
-          cont ++;
-          stat.put("ctype", i.getContentType() !=null ? i.getContentType() : "unknown");
-          stat.put("size", "" + i.getSize());
-          stat.put("name", "" + i.getName());
-          stat.put("field", "" + i.getFieldName());
-        }
-      }
-      stat.put(TAG_FINISHED, "ok");
+      getFileItemsSummary(request, stat);
       renderXmlResponse(request, response, statusToString(stat), true);
     }
     
