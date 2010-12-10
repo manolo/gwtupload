@@ -132,6 +132,15 @@ public class DecoratedFileUpload extends Composite implements HasText, HasName, 
        container.setSize(width, height);
     }
     
+    protected int width = 0, height = 0;
+    
+    public void onAttach() {
+      if (width != 0 && height != 0) {
+        container.setSize(width + "px", height + "px");
+      } else {
+        resize();
+      }
+    }
     
     // TODO: computed size
     public void resize() {
@@ -139,10 +148,11 @@ public class DecoratedFileUpload extends Composite implements HasText, HasName, 
         int w = button.getElement().getOffsetWidth();
         int h = button.getElement().getOffsetHeight();
         if (w <= 0) {
-          String ws = button.getElement().getAttribute("width");
+          String ws = button.getElement().getStyle().getWidth();
+          System.out.println(ws);
           if (ws != null) {
             try {
-              w = Integer.parseInt(ws);
+              w = Integer.parseInt(ws.replaceAll("[^\\d]", ""));
             } catch (Exception e) {
             }
           }
@@ -151,10 +161,10 @@ public class DecoratedFileUpload extends Composite implements HasText, HasName, 
           }
         }
         if (h <= 0) {
-          String hs = button.getElement().getAttribute("height");
+          String hs = button.getElement().getStyle().getHeight();
           if (hs != null) {
             try {
-              h = Integer.parseInt(hs);
+              h = Integer.parseInt(hs.replaceAll("[^\\d]", ""));
             } catch (Exception e) {
             }
           }
@@ -162,6 +172,8 @@ public class DecoratedFileUpload extends Composite implements HasText, HasName, 
             h = DEFAULT_HEIGHT;
           }
         }
+        width = w;
+        height = h;
         container.setSize(w + "px", h + "px");
       }
     }
@@ -286,11 +298,15 @@ public class DecoratedFileUpload extends Composite implements HasText, HasName, 
         }
       });
     }
+    
+    public void onAttach() {
+      super.onAttach();
+      wrapper.setSize(width + "px", height + "px");
+    }
 
     public void resize() {
       super.resize();
-      wrapper.setWidth(container.getOffsetWidth() + "px");
-      wrapper.setHeight(container.getOffsetHeight() + "px");
+      wrapper.setSize(width + "px", height + "px");
     }
     
     public void setSize(String width, String height) {
@@ -386,12 +402,13 @@ public class DecoratedFileUpload extends Composite implements HasText, HasName, 
    */
   @Override
   public void onAttach() {
+    System.out.println("onAttach ..... " + button);
     super.onAttach();
     if (button == null) {
       button = new Button(text);
       setButton(button);
     } else {
-      updateSize();
+      impl.onAttach();
     }
   }
 
