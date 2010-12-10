@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Manuel Carrasco Moñino. (manolo at apache/org) 
+ * Copyright 2007 Manuel Carrasco Moñino. (manolo at apache/org)
  * http://code.google.com/p/gwtupload
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -30,18 +30,18 @@ import gwtupload.client.DecoratedFileUpload.FileUploadWithMouseEvents;
 
 /**
  * Interface used by Uploaders to use and configure a customized file input.
- *  
- * Widgets implementing this interface have to render a file input tag because 
+ * 
+ * Widgets implementing this interface have to render a file input tag because
  * it will be added to the form which is sent to the server.
  * 
  * This interface has thought to let the user the option to create customizable
  * panels for file inputs.
  * 
  * @author Manolo Carrasco Moñino
- *
+ * 
  */
 public interface IFileInput extends HasChangeHandlers {
-  
+
   /**
    * A HyperLinkFileInput implementing the IFileInput interface
    * 
@@ -51,12 +51,12 @@ public interface IFileInput extends HasChangeHandlers {
       super(new Anchor());
     }
   }
-  
-  
+
   /**
    * Just a FileUpload which implements the interface IFileInput
    */
-  public class BrowserFileInput extends FileUploadWithMouseEvents implements IFileInput {
+  public class BrowserFileInput extends FileUploadWithMouseEvents implements
+      IFileInput {
 
     public BrowserFileInput() {
       super();
@@ -75,38 +75,48 @@ public interface IFileInput extends HasChangeHandlers {
     }
 
     /**
-     * It is not possible to change the button text in a input type=file 
+     * It is not possible to change the button text in a input type=file
      */
     public void setText(String text) {
     }
-    
+
     public void updateSize() {
     }
   }
-  
+
   /**
    * A DecoratedFileInput implementing the IFileInput interface
    * 
    */
   public class ButtonFileInput extends DecoratedFileUpload implements IFileInput {
-    public ButtonFileInput() {
-      super(Uploader.I18N_CONSTANTS.uploaderBrowse());
-    }
+    
+    boolean i18n = true;
 
     public ButtonFileInput(Widget w) {
+      this(w, true);
+    }
+    
+    public ButtonFileInput(Widget w, boolean i18n) {
       super(w);
+      this.i18n = i18n;
+      if (i18n) {
+        super.setText(Uploader.I18N_CONSTANTS.uploaderBrowse());
+      }
     }
 
     public IFileInput newInstance() {
-      ButtonFileInput ret = new ButtonFileInput();
       Widget widget = button != null ? button : new Button(this.getText());
-      ret.setButton(widget);
-      return ret;
+      return new ButtonFileInput(widget, i18n);
     }
 
     public void setLength(int length) {
     }
-
+    
+    public void setText(String text) {
+      if (i18n) {
+        super.setText(text);
+      }
+    }
   }
 
   /**
@@ -117,29 +127,72 @@ public interface IFileInput extends HasChangeHandlers {
       public IFileInput getInstance() {
         return GWT.create(AnchorFileInput.class);
       }
+      public FileInputType with(Widget w, boolean hasText) {
+        return this;
+      }
+      public FileInputType with(Widget w) {
+        return this;
+      }
     },
     BROWSER_INPUT {
       public IFileInput getInstance() {
         return GWT.create(BrowserFileInput.class);
+      }
+      public FileInputType with(Widget w, boolean hasText) {
+        return this;
+      }
+      public FileInputType with(Widget w) {
+        return this;
       }
     },
     BUTTON {
       public IFileInput getInstance() {
         return GWT.create(ButtonFileInput.class);
       }
+      public FileInputType with(Widget w, boolean hasText) {
+        return this;
+      }
+      public FileInputType with(Widget w) {
+        return this;
+      }
     },
     LABEL {
       public IFileInput getInstance() {
         return GWT.create(LabelFileInput.class);
       }
+      public FileInputType with(Widget w, boolean hasText) {
+        return this;
+      }
+      public FileInputType with(Widget w) {
+        return this;
+      }
+    },
+    CUSTOM {
+      Widget widget;
+      boolean hasText = false;
+
+      public IFileInput getInstance() {
+        return new ButtonFileInput(widget, hasText);
+      }
+
+      public FileInputType with(Widget widget, boolean hasText) {
+        this.widget = widget;
+        this.hasText = hasText;
+        return this;
+      }
+      public FileInputType with(Widget w) {
+        return with(w, false);
+      }
     }
   }
-  
+
   /**
    * interface for FileInputType enum
    */
   interface HasFileInputType {
-    IFileInput getInstance(); 
+    IFileInput getInstance();
+    FileInputType with(Widget w, boolean hasText);
+    FileInputType with(Widget w);
   }
 
   /**
@@ -179,7 +232,7 @@ public interface IFileInput extends HasChangeHandlers {
 
   /**
    * return whether the input is or not enabled.
-   */  
+   */
   boolean isEnabled();
 
   /**
@@ -191,7 +244,7 @@ public interface IFileInput extends HasChangeHandlers {
 
   /**
    * Enable the file input.
-   */  
+   */
   void setEnabled(boolean b);
 
   /**
@@ -202,9 +255,9 @@ public interface IFileInput extends HasChangeHandlers {
   void setLength(int length);
 
   /**
-   * Sets the html name for this input element. 
-   * It is the name of the form parameter sent to the server.
-   *  
+   * Sets the html name for this input element. It is the name of the form
+   * parameter sent to the server.
+   * 
    * @param fieldName
    */
   void setName(String fieldName);
@@ -216,16 +269,16 @@ public interface IFileInput extends HasChangeHandlers {
    * @param height
    */
   void setSize(String width, String height);
-  
+
   /**
    * Set the text for the link which opens the browse file dialog.
    * 
    * @param text
    */
   void setText(String text);
-  
+
   void setVisible(boolean b);
-  
+
   void updateSize();
 
 }
