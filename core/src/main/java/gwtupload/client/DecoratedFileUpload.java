@@ -16,6 +16,8 @@
  */
 package gwtupload.client;
 
+import java.util.HashMap;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
@@ -40,8 +42,6 @@ import com.google.gwt.user.client.ui.HasName;
 import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
-
-import java.util.HashMap;
 
 /**
  * A widget which hides a FileUpload showing a clickable, customizable
@@ -356,7 +356,7 @@ public class DecoratedFileUpload extends Composite implements HasText, HasName, 
       button = new Button(text);
       setButton(button);
     } else {
-      impl.resize();
+      updateSize();
     }
   }
 
@@ -371,7 +371,7 @@ public class DecoratedFileUpload extends Composite implements HasText, HasName, 
     this.button = button;
     container.add(button, 0, 0);
     impl.setButton(button);
-    impl.resize();
+    updateSize();
   }
 
   /**
@@ -379,7 +379,7 @@ public class DecoratedFileUpload extends Composite implements HasText, HasName, 
    */
   public void setButtonSize(String width, String height) {
     button.setSize(width, height);
-    impl.resize();
+    updateSize();
   }
 
   /**
@@ -405,8 +405,7 @@ public class DecoratedFileUpload extends Composite implements HasText, HasName, 
    * @see com.google.gwt.user.client.ui.UIObject#setSize(java.lang.String, java.lang.String)
    */
   public void setSize(String width, String height){
-    button.setSize(width, height);
-    updateSize();
+    setButtonSize(width, height);
   }
 
   /**
@@ -416,7 +415,7 @@ public class DecoratedFileUpload extends Composite implements HasText, HasName, 
     this.text = text;
     if (button instanceof HasText) {
       ((HasText) button).setText(text);
-      impl.resize();
+      updateSize();
     }
   }  
   

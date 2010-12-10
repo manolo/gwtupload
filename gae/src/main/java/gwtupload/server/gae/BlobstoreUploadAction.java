@@ -74,7 +74,7 @@ public class BlobstoreUploadAction extends UploadAction {
   
   @Override
   public void checkRequest(HttpServletRequest request) {
-    logger.debug("BLOBSTORE-UPLOAD-SERVLET: (" + request.getSession().getId() + ") procesing a request with size: " + request.getContentLength() + " bytes.");
+    logger.debug("BLOB-STORE-SERVLET: (" + request.getSession().getId() + ") procesing a request with size: " + request.getContentLength() + " bytes.");
   }
 
   @Override
@@ -84,13 +84,13 @@ public class BlobstoreUploadAction extends UploadAction {
     if (item != null) {
       BlobInfo i = blobInfoFactory.loadBlobInfo(((BlobstoreFileItem) item).getKey());
       if (i != null) {
-        logger.debug("BLOBSTORE-UPLOAD-SERVLET: (" + request.getSession().getId() + ") getUploadedFile: " + parameter + " serving blobstore: " + i);
+        logger.debug("BLOB-STORE-SERVLET: (" + request.getSession().getId() + ") getUploadedFile: " + parameter + " serving blobstore: " + i);
         blobstoreService.serve(((BlobstoreFileItem) item).getKey(), response);
       } else {
-        logger.error("BLOBSTORE-UPLOAD-SERVLET: (" + request.getSession().getId() + ") getUploadedFile: " + parameter + " file isn't in blobstore.");
+        logger.error("BLOB-STORE-SERVLET: (" + request.getSession().getId() + ") getUploadedFile: " + parameter + " file isn't in blobstore.");
       }
     } else {
-      logger.info("BLOBSTORE-UPLOAD-SERVLET: (" + request.getSession().getId() + ") getUploadedFile: " + parameter + " file isn't in session.");
+      logger.info("BLOB-STORE-SERVLET: (" + request.getSession().getId() + ") getUploadedFile: " + parameter + " file isn't in session.");
       renderXmlResponse(request, response, ERROR_ITEM_NOT_FOUND);
     }
   }
@@ -103,7 +103,7 @@ public class BlobstoreUploadAction extends UploadAction {
       uploadDelay = 0;
       maxSize = 50 * 1024 * 1024;
       useBlobstore = true;
-      logger.info("BLOBSTORE-UPLOAD-SERVLET: init: maxSize=" + maxSize
+      logger.info("BLOB-STORE-SERVLET: init: maxSize=" + maxSize
           + ", slowUploads=" + uploadDelay + ", isAppEngine=" + isAppEngine()
           + ", useBlobstore=" + useBlobstore);
     }

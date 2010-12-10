@@ -88,6 +88,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>gwt-maven-plugin</artifactId>
+        <version>${gwtMaven}</version>
         <executions>
           <execution>
             <phase>prepare-package</phase>

@@ -25,7 +25,8 @@
     <maven.compiler.source>1.5</maven.compiler.source>
     <maven.compiler.target>1.5</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <gwtVersion>2.0.3</gwtVersion>
+    <gwtVersion>2.1.0</gwtVersion>
+    <gwtMaven>2.1.0</gwtMaven>
     <commonsFileuploadVersion>1.2.1</commonsFileuploadVersion>
     <commonsIoVersion>1.4</commonsIoVersion>
     <gwtChismesVersion>0.9.7</gwtChismesVersion>
@@ -35,13 +36,20 @@
     <log4jVersion>1.2.16</log4jVersion>
     <downloadLabel>Beta</downloadLabel>
     <localMavenRepo>file:${env.HOME}/workspace/GWTUpload-mavenrepo</localMavenRepo>
-    <gae.version>1.3.2</gae.version>
+    <gae.version>1.3.7</gae.version>
     <sonatypeRepoId>sonatype-nexus-snapshots</sonatypeRepoId>
     <sonatypeUrl>http://oss.sonatype.org/content/repositories/snapshots</sonatypeUrl>
     <wikiSvnExec>true</wikiSvnExec>
   </properties>
 
   <profiles>
+     <profile>
+       <id>2.0.4</id>
+       <properties>
+         <gwtVersion>2.0.4</gwtVersion>
+         <gwtMaven>1.3-SNAPSHOT</gwtMaven>
+       </properties>
+     </profile>
      <profile>
        <id>prod</id>
        <properties>
@@ -63,6 +71,7 @@
       <groupId>log4j</groupId>
       <artifactId>log4j</artifactId>
       <version>${log4jVersion}</version>
+      <scope>provided</scope>
     </dependency>    
     <dependency>
       <groupId>commons-fileupload</groupId>
@@ -179,6 +188,10 @@
     <pluginRepository>
       <id>gwtupload</id>
       <url>http://gwtupload.googlecode.com/svn/mavenrepo/</url>
+    </pluginRepository>
+    <pluginRepository>
+      <id>codehaus.snapshots</id>
+      <url>http://snapshots.repository.codehaus.org/</url>
     </pluginRepository>
   </pluginRepositories>
 
