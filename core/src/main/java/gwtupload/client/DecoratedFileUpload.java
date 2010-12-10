@@ -420,7 +420,7 @@ public class DecoratedFileUpload extends Composite implements HasText, HasName, 
    * Set the button the user has to click on to show the browse dialog. 
    */
   public void setButton(Widget button) {
-    assert button instanceof HasClickHandlers : "Button should extend HasClickHandlers";
+    assert button instanceof HasClickHandlers : "Button should implement HasClickHandlers";
     if (this.button != null) {
       container.remove(this.button);
     }

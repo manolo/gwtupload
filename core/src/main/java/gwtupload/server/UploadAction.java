@@ -19,16 +19,18 @@ package gwtupload.server;
 import gwtupload.server.exceptions.UploadActionException;
 import gwtupload.server.exceptions.UploadCanceledException;
 
-import org.apache.commons.fileupload.FileItem;
-
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.fileupload.FileItem;
 
 /** 
  * <p>Abstract class used to manipulate the data received in the server side.</p>
@@ -206,7 +208,19 @@ public abstract class UploadAction extends UploadServlet {
     } else if (message != null) {
       renderHtmlMessage(response, message);
     } else {
-      renderXmlResponse(request, response, "OK", true);
+      int cont = 0;
+      Map<String, String> stat = new HashMap<String, String>();
+      for (FileItem i : getSessionFileItems(request)) {
+        if (false == i.isFormField()) {
+          cont ++;
+          stat.put("ctype", i.getContentType() !=null ? i.getContentType() : "unknown");
+          stat.put("size", "" + i.getSize());
+          stat.put("name", "" + i.getName());
+          stat.put("field", "" + i.getFieldName());
+        }
+      }
+      stat.put(TAG_FINISHED, "ok");
+      renderXmlResponse(request, response, statusToString(stat), true);
     }
     
     finish(request);
