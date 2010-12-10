@@ -16,6 +16,14 @@
  */
 package gwtupload.client;
 
+import gwtupload.client.IFileInput.FileInputType;
+import gwtupload.client.IUploadStatus.Status;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.dom.client.Style.Position;
@@ -25,12 +33,6 @@ import com.google.gwt.uibinder.client.UiConstructor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
-
-import gwtupload.client.IFileInput.FileInputType;
-import gwtupload.client.IUploadStatus.Status;
-
-import java.util.Iterator;
-import java.util.Vector;
 
 /**
  * 
@@ -99,8 +101,12 @@ public class MultiUploader extends Composite implements IUploader {
 
   private IUploadStatus statusWidget = null;
   
-  private Vector<IUploader> uploaders = new Vector<IUploader>();
+  private List<IUploader> uploaders = new ArrayList<IUploader>();
   
+  public List<IUploader> getUploaders() {
+    return uploaders;
+  }
+
   private String[] validExtensions = null;
 
   /**
