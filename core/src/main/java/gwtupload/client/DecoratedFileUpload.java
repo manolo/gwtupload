@@ -34,6 +34,7 @@ import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
@@ -149,7 +150,6 @@ public class DecoratedFileUpload extends Composite implements HasText, HasName, 
         int h = button.getElement().getOffsetHeight();
         if (w <= 0) {
           String ws = button.getElement().getStyle().getWidth();
-          System.out.println(ws);
           if (ws != null) {
             try {
               w = Integer.parseInt(ws.replaceAll("[^\\d]", ""));
@@ -158,6 +158,8 @@ public class DecoratedFileUpload extends Composite implements HasText, HasName, 
           }
           if (w <= 0) {
             w = DEFAULT_WIDTH;
+          } else {
+            width = w;
           }
         }
         if (h <= 0) {
@@ -170,10 +172,10 @@ public class DecoratedFileUpload extends Composite implements HasText, HasName, 
           }
           if (h <= 0) {
             h = DEFAULT_HEIGHT;
+          } else {
+            height = h;
           }
         }
-        width = w;
-        height = h;
         container.setSize(w + "px", h + "px");
       }
     }
@@ -402,14 +404,16 @@ public class DecoratedFileUpload extends Composite implements HasText, HasName, 
    */
   @Override
   public void onAttach() {
-    System.out.println("onAttach ..... " + button);
     super.onAttach();
     if (button == null) {
       button = new Button(text);
       setButton(button);
-    } else {
-      impl.onAttach();
     }
+    new Timer(){
+      public void run() {
+        impl.onAttach();
+      }
+    }.schedule(5);
   }
 
   /**
