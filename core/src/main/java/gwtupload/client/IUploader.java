@@ -142,6 +142,8 @@ public interface IUploader extends HasJsData, HasWidgets {
         Node n = textNodes.item(i);
         if (n.getNodeType() == Node.TEXT_NODE && n.getNodeValue().replaceAll("[ \\n\\t\\r]", "").length() > 0) {
           ret += n.getNodeValue();
+        } else if (n.getNodeType() == Node.CDATA_SECTION_NODE) {
+          ret += n.getNodeValue();
         }
       }
       return ret.length() == 0 ? null : ret.replaceAll("^\\s+", "").replaceAll("\\s+$", "");
@@ -169,6 +171,32 @@ public interface IUploader extends HasJsData, HasWidgets {
       }
       return valid;
     }
+  }
+  
+  
+  public static class UploadedInfo {
+    /**
+     * File name sent by the client
+     */
+    public String name;
+    /**
+     * Content-type sent by the client
+     */
+    public String ctype;
+    /**
+     * Size in bytes calculated in the server
+     */
+    public int size = 0;
+    /**
+     * Field name
+     */
+    public String field;
+    /**
+     * Additional message sent by the server.
+     * It is the return string of the UploadAction.executeAction method.
+     * It can be null;
+     */
+    public String message;
   }
 
   /**
@@ -270,12 +298,21 @@ public interface IUploader extends HasJsData, HasWidgets {
    * process has finished.
    * 
    * It is the raw content of the hidden iframe.
+   * 
+   * If you are extending or using servlets provided by gwtupload, it should be
+   * a xml string.
    *
    * It can return null in the case of unaccessible content or when the
    * upload process has not finished.
    * 
    */
   String getServerResponse();
+  
+  /**
+   * Returns the file info provided by the server or null
+   * if the server did not return a valid xml message.
+   */
+  UploadedInfo getServerInfo();
 
   /**
    * Return the status of the upload process.

@@ -16,6 +16,16 @@
  */
 package gwtupload.client;
 
+import gwtupload.client.IFileInput.FileInputType;
+import gwtupload.client.IUploadStatus.Status;
+
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.Vector;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -32,27 +42,17 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FormPanel;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
 import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
 import com.google.gwt.user.client.ui.FormPanel.SubmitHandler;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.XMLParser;
 import com.google.gwt.xml.client.impl.DOMParseException;
-
-import gwtupload.client.IFileInput.FileInputType;
-import gwtupload.client.IUploadStatus.Status;
-
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Vector;
-import java.util.Map.Entry;
 
 /**
  * <p>
@@ -332,11 +332,21 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
         serverResponse = serverResponse.replaceAll("@@@","<").replaceAll("___", ">");
       }
       try {
-        // If the server response is a valid xml parse it
-        XMLParser.parse(serverResponse);
+        // Parse the xml and extract serverInfo
+        Document doc = XMLParser.parse(serverResponse);
+        serverInfo.name = Utils.getXmlNodeValue(doc, "name");
+        serverInfo.ctype = Utils.getXmlNodeValue(doc, "ctype");
+        String size = Utils.getXmlNodeValue(doc, "size");
+        if (size != null) {
+          serverInfo.size = Integer.parseInt(size);
+        }
+        serverInfo.field = Utils.getXmlNodeValue(doc, "field");
+        serverInfo.message = Utils.getXmlNodeValue(doc, "message");
+        
+        // If the server response is a valid xml
         parseAjaxResponse(serverResponse);
       } catch (Exception e) {
-        // Otherwise force an ajax request
+        // Otherwise force an ajax request so as we have not to wait to the timer schedule
         updateStatusTimer.run();
       }
       log("onSubmitComplete: " + serverResponse, null);
@@ -404,6 +414,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
       uploading = true;
       finished = false;
       serverResponse = null;
+      serverInfo = new UploadedInfo();
 
       statusWidget.setVisible(true);
       updateStatusTimer.squeduleStart();
@@ -417,6 +428,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
   private int requestsCounter = 0;
 
   private String serverResponse = null;
+  private UploadedInfo serverInfo = new UploadedInfo();
   
   private String servletPath = "servlet.gupld";
 
@@ -666,7 +678,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
    * Because native javascript needs it
    */
   public JavaScriptObject getData() {
-    return getDataImpl(fileUrl(), getInputName(), getFileName(), getBasename(), getServerResponse(), getStatus().toString());
+    return getDataImpl(fileUrl(), getInputName(), getFileName(), getBasename(), getServerResponse(), getServerInfo().message, getStatus().toString());
   }
 
   public IFileInput getFileInput() {
@@ -700,6 +712,13 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
    */
   public String getServerResponse() {
     return serverResponse;
+  }
+  
+  /* (non-Javadoc)
+   * @see gwtupload.client.IUploader#getServerInfo()
+   */
+  public UploadedInfo getServerInfo() {
+    return serverInfo;
   }
 
   /**
@@ -763,7 +782,6 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     this.uploadForm.reset();
     updateStatusTimer.finish();
     uploading = cancelled = finished = successful = false;
-    //basename = serverResponse = null;
   }
 
   /**
@@ -987,13 +1005,14 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     return ret;
   }
 
-  private native JavaScriptObject getDataImpl(String url, String inputName, String fileName, String baseName, String serverResponse, String status) /*-{
+  private native JavaScriptObject getDataImpl(String url, String inputName, String fileName, String baseName, String serverResponse, String serverMessage, String status) /*-{
     return {
        url: url,
        name: inputName,
        filename: fileName,
        basename: baseName,
        response: serverResponse,
+       message: serverMessage,
        status:  status
     };
   }-*/;

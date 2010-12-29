@@ -322,6 +322,13 @@ public class MultiUploader extends Composite implements IUploader {
   }
 
   /* (non-Javadoc)
+   * @see gwtupload.client.IUploader#getServerInfo()
+   */
+  public UploadedInfo getServerInfo() {
+    return lastUploader.getServerInfo();
+  }
+
+  /* (non-Javadoc)
    * @see gwtupload.client.IUploader#getServletPath()
    */
   public String getServletPath() {

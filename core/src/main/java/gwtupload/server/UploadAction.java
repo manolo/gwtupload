@@ -76,23 +76,6 @@ public class UploadAction extends UploadServlet {
    * 
    * Temporary files are not deleted until the user calls removeSessionFiles(request)
    * 
-   * @deprecated use executeAction 
-   * 
-   * @param sessionFiles
-   * @return the error message
-   *       return an error string in the case of errors 
-   *       or null in the case of success.
-   * 
-   */
-  public String doAction(Vector<FileItem> sessionFiles) throws IOException, ServletException {
-    return null;
-  }
-  
-  /**
-   * This method is called when all data is received in the server.
-   * 
-   * Temporary files are not deleted until the user calls removeSessionFiles(request)
-   * 
    * Override this method to customize the behavior
    * 
    * @param request
@@ -157,7 +140,7 @@ public class UploadAction extends UploadServlet {
           removeItem(request, item);
         }
       } catch (Exception e) {
-        renderXmlResponse(request, response, "<error>" + e.getMessage() + "</error>");
+        renderXmlResponse(request, response, "<" + TAG_ERROR + ">" + e.getMessage() + "</" + TAG_ERROR + ">");
         return;
       }
       super.removeUploadedFile(request, response);
@@ -174,17 +157,10 @@ public class UploadAction extends UploadServlet {
     try {
       // Receive the files and form elements, updating the progress status
       error = super.parsePostRequest(request, response);
-
       if (error == null) {
-        // This call is going to be removed in a new release
-        error = doAction((Vector<FileItem>) getSessionFileItems(request));
-
-        if (error == null) {
-          // Call to the user code 
-          message = executeAction(request, getSessionFileItems(request));
-        }
+        // Call to the user code 
+        message = executeAction(request, getSessionFileItems(request));
       }
-      
     } catch (UploadCanceledException e) {
       renderXmlResponse(request, response, "<cancelled>true</cancelled>");
       return;
@@ -205,11 +181,12 @@ public class UploadAction extends UploadServlet {
         listener.setException(new RuntimeException(error));
       }
       UploadServlet.removeSessionFileItems(request);
-    } else if (message != null) {
-      renderHtmlMessage(response, message);
     } else {
       Map<String, String> stat = new HashMap<String, String>();
       getFileItemsSummary(request, stat);
+      if (message != null) {
+        stat.put("message", "\n<![CDATA[\n" + message + "\n]]>\n");
+      }
       renderXmlResponse(request, response, statusToString(stat), true);
     }
     
