@@ -91,6 +91,10 @@ public interface IFileInput extends HasChangeHandlers {
   public class ButtonFileInput extends DecoratedFileUpload implements IFileInput {
     
     boolean i18n = true;
+    
+    public ButtonFileInput() {
+      this(new Button());
+    }
 
     public ButtonFileInput(Widget w) {
       this(w, true);
