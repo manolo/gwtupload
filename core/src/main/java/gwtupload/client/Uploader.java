@@ -316,6 +316,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     public void onResponseReceived(Request request, Response response) {
       waitingForResponse = false;
       if (finished == true && !uploading) {
+        updateStatusTimer.cancel();
         return;
       }
       parseAjaxResponse(response.getText());
@@ -330,8 +331,14 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
         serverResponse = serverResponse.replaceFirst(".*%%%INI%%%([\\s\\S]*?)%%%END%%%.*", "$1");
         serverResponse = serverResponse.replaceAll("@@@","<").replaceAll("___", ">");
       }
-      updateStatusTimer.run();
-//      uploadFinished();
+      try {
+        // If the server response is a valid xml parse it
+        XMLParser.parse(serverResponse);
+        parseAjaxResponse(serverResponse);
+      } catch (Exception e) {
+        // Otherwise force an ajax request
+        updateStatusTimer.run();
+      }
       log("onSubmitComplete: " + serverResponse, null);
     }
   };
@@ -394,27 +401,14 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
       receivedBlobPath = false;
 
       addToQueue();
-
       uploading = true;
       finished = false;
       serverResponse = null;
 
-      if (autoSubmit) {
-        (new Timer() {
-          public void run() {
-            statusWidget.setVisible(true);
-            updateStatusTimer.start();
-            statusWidget.setStatus(IUploadStatus.Status.INPROGRESS);
-            lastData = now();
-          }
-        }).schedule(200);
-      } else {
-        statusWidget.setVisible(true);
-        // wait a time before asking the server status
-        updateStatusTimer.squeduleStart();
-        statusWidget.setStatus(IUploadStatus.Status.INPROGRESS);
-        lastData = now();
-      }
+      statusWidget.setVisible(true);
+      updateStatusTimer.squeduleStart();
+      statusWidget.setStatus(IUploadStatus.Status.INPROGRESS);
+      lastData = now();
     }
   };
   
@@ -1035,11 +1029,13 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
         uploadFinished();
       }
     } else if (Utils.getXmlNodeValue(doc, TAG_CANCELED) != null) {
+      log("server response is: cancelled " + getFileName(), null);
       successful = false;
       cancelled = true;
       uploadFinished();
       return;
     } else if (Utils.getXmlNodeValue(doc, TAG_FINISHED) != null) {
+      log("server response is: finished " + getFileName(), null);
       successful = true;
       uploadFinished();
       return;
@@ -1048,6 +1044,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
       int transferredKB = Integer.valueOf(Utils.getXmlNodeValue(doc, TAG_CURRENT_BYTES)) / 1024;
       int totalKB = Integer.valueOf(Utils.getXmlNodeValue(doc, TAG_TOTAL_BYTES)) / 1024;
       statusWidget.setProgress(transferredKB, totalKB);
+      log("server response transferred  " + transferredKB + "/" + totalKB + " " + getFileName(), null);
       return;
     } else {
       log("incorrect response: " + getFileName() + " " + responseTxt, null);
@@ -1125,14 +1122,14 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     finished = true;
     uploading = false;
     updateStatusTimer.finish();
-
     statusWidget.setVisible(false);
+    
     if (successful) {
       if (avoidRepeatedFiles) {
         if (!fileDone.contains(getFileName())) {
           fileDone.add(getFileName());
-          statusWidget.setStatus(IUploadStatus.Status.SUCCESS);
         }
+        statusWidget.setStatus(IUploadStatus.Status.SUCCESS);
       } else {
         statusWidget.setStatus(IUploadStatus.Status.SUCCESS);
       }
@@ -1141,6 +1138,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     } else {
       statusWidget.setStatus(IUploadStatus.Status.ERROR);
     }
+    
     onFinishUpload();
   }
 
