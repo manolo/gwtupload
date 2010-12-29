@@ -157,7 +157,7 @@ public class UploadAction extends UploadServlet {
           removeItem(request, item);
         }
       } catch (Exception e) {
-        renderXmlResponse(request, response, "<error>" + e.getMessage() + "<error>");
+        renderXmlResponse(request, response, "<error>" + e.getMessage() + "</error>");
         return;
       }
       super.removeUploadedFile(request, response);
