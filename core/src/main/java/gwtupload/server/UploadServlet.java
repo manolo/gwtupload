@@ -504,6 +504,14 @@ public class UploadServlet extends HttpServlet implements Servlet {
         }
       }
     }
+    
+    String timeout = config.getServletContext().getInitParameter("noDataTimeout");
+    if (timeout != null){
+      try {
+        UploadListener.setNoDataTimeout(Integer.parseInt(timeout));
+      } catch (NumberFormatException e) {
+      }
+    }
 
     logger.info("UPLOAD-SERVLET init: maxSize=" + maxSize + ", slowUploads=" + slow + ", isAppEngine=" + isAppEngine());
   }

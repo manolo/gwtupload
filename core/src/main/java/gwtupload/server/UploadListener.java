@@ -73,7 +73,7 @@ public class UploadListener extends AbstractUploadListener {
           if (isFrozen()) {
             logger.info(className + " " + sessionId + " TimeoutWatchDog: the recepcion seems frozen: " + listener.getBytesRead() + "/" + listener.getContentLength() + " bytes ("
                   + listener.getPercent() + "%) ");
-            exception = new UploadTimeoutException("No new data received after " + MAX_TIME_WITHOUT_DATA / 1000 + " seconds");
+            exception = new UploadTimeoutException("No new data received after " + noDataTimeout / 1000 + " seconds");
           } else {
             run();
           }
@@ -86,18 +86,22 @@ public class UploadListener extends AbstractUploadListener {
       if (bytesRead > lastBytesRead) {
         lastData = now;
         lastBytesRead = bytesRead;
-      } else if (now - lastData > MAX_TIME_WITHOUT_DATA) { return true; }
+      } else if (now - lastData > noDataTimeout) { return true; }
       return false;
     }
   }
 
   protected static final String ATTR_LISTENER = "LISTENER";
 
-  private static final int MAX_TIME_WITHOUT_DATA = 20000;
+  private static int noDataTimeout = 20000;
 
   private static final long serialVersionUID = -6431275569719042836L;
 
   private static final int WATCHER_INTERVAL = 5000;
+  
+  public static void setNoDataTimeout(int i) {
+    noDataTimeout = i;
+  }
 
   public static AbstractUploadListener current(HttpServletRequest request) {
     return (AbstractUploadListener) request.getSession().getAttribute(ATTR_LISTENER);
