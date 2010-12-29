@@ -39,8 +39,14 @@
         <include>jsupload/assembly.xml</include>
         <include>samples/src/**</include>
         <include>samples/pom.xml</include>
+        <include>core/target/site/apidocs/**</include>
       </includes>
     </fileSet>
+    <fileSet>
+      <directory>core/target/site/apidocs</directory>
+      <outputDirectory>/docs</outputDirectory>
+    </fileSet>
+
   </fileSets>
 
 </assembly>
