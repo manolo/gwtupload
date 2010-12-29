@@ -797,13 +797,8 @@ public class UploadServlet extends HttpServlet implements Servlet {
       String error = "";
       session.setAttribute(ATTR_LAST_FILES, uploadedItems);
 
-      for (FileItem fileItem : uploadedItems) {
-        if (fileItem.isFormField()) {
-          sessionFiles.add(fileItem);
-        }
-      }
-
-      if (sessionFiles.size() > 0) {
+      if (uploadedItems.size() > 0) {
+        sessionFiles.addAll(uploadedItems);
         String msg = "";
         for (FileItem i : sessionFiles) {
           msg += i.getFieldName() + " => " + i.getName() + "(" + i.getSize() + " bytes),";
