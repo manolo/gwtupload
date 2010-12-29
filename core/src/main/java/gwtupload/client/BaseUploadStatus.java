@@ -223,11 +223,14 @@ public class BaseUploadStatus implements IUploadStatus {
           cancelLabel.setVisible(false);
         }
         break;
-      case SUCCESS: case REPEATED:
+      case SUCCESS: case REPEATED: 
         updateStatusPanel(false, i18nStrs.uploadStatusSuccess());
         if (!cancelCfg.contains(CancelBehavior.REMOVE_REMOTE)) {
           cancelLabel.setVisible(false);
         }
+        break;
+      case INVALID:
+        getWidget().removeFromParent();
         break;
       case CANCELING:
         updateStatusPanel(false, i18nStrs.uploadStatusCanceling());

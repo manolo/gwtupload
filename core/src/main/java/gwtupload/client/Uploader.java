@@ -253,7 +253,10 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
         statusWidget.setStatus(Status.REPEATED);
         return;
       }
-      if (autoSubmit && validateExtension(basename) && basename.length() > 0) {
+      if (autoSubmit && !validateExtension(basename)) {
+        return;
+      }
+      if (autoSubmit && basename.length() > 0) {
         automaticUploadTimer.scheduleRepeating(DEFAULT_AUTOUPLOAD_DELAY);
       }
       onChangeInput();
@@ -1147,6 +1150,8 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     }
     boolean valid = Utils.validateExtension(validExtensions, filename);
     if (!valid) {
+      finished = true;
+      statusWidget.setStatus(Status.INVALID);
       statusWidget.setError(i18nStrs.uploaderInvalidExtension() + validExtensionsMsg);
     }
     return valid;
