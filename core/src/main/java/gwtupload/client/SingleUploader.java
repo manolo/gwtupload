@@ -16,14 +16,19 @@
  */
 package gwtupload.client;
 
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.uibinder.client.UiConstructor;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.FormPanel;
-
 import gwtupload.client.IFileInput.FileInputType;
 import gwtupload.client.IUploadStatus.Status;
+
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.HasClickHandlers;
+import com.google.gwt.uibinder.client.UiConstructor;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.Focusable;
+import com.google.gwt.user.client.ui.FormPanel;
+import com.google.gwt.user.client.ui.HasEnabled;
+import com.google.gwt.user.client.ui.HasText;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * <p>
@@ -40,7 +45,7 @@ import gwtupload.client.IUploadStatus.Status;
  */
 public class SingleUploader extends Uploader {
 
-  private Button button;
+  private Widget button;
 
   /**
    * Default constructor.
@@ -83,11 +88,11 @@ public class SingleUploader extends Uploader {
    *        file input to use
    * @param status
    *        Customized status widget to use
-   * @param button
+   * @param submitButton
    *        Customized button which submits the form
    */
-  public SingleUploader(FileInputType type, IUploadStatus status, Button button) {
-    this(type, status, button, null);
+  public SingleUploader(FileInputType type, IUploadStatus status, Widget submitButton) {
+    this(type, status, submitButton, null);
   }
 
   /**
@@ -97,12 +102,12 @@ public class SingleUploader extends Uploader {
    *        file input to use
    * @param status
    *        Customized status widget to use
-   * @param button
+   * @param submitButton
    *        Customized button which submits the form
    * @param form
    *        Customized form panel
    */
-  public SingleUploader(FileInputType type, IUploadStatus status, Button button, FormPanel form) {
+  public SingleUploader(FileInputType type, IUploadStatus status, Widget submitButton, FormPanel form) {
     super(type, form);
 
     final Uploader thisInstance = this;
@@ -111,22 +116,24 @@ public class SingleUploader extends Uploader {
       status = new ModalUploadStatus();
     }
     super.setStatusWidget(status);
-
-    this.button = button;
-    if (button.getText().length() == 0) {
-      button.setText(I18N_CONSTANTS.uploaderSend());
-    }
-
-    button.addStyleName("submit");
-    button.addClickHandler(new ClickHandler() {
-      public void onClick(ClickEvent event) {
-        thisInstance.submit();
+    
+    this.button = submitButton;
+    if (submitButton != null) {
+      submitButton.addStyleName("submit");
+      if (submitButton instanceof HasClickHandlers) {
+        ((HasClickHandlers)submitButton).addClickHandler(new ClickHandler() {
+          public void onClick(ClickEvent event) {
+            thisInstance.submit();
+          }
+        });
       }
-    });
-
-    // The user could have attached the button anywhere in the page.
-    if (button.getParent() == null) {
-      super.add(button);
+      if (submitButton instanceof HasText) {
+        ((HasText)submitButton).setText(I18N_CONSTANTS.uploaderSend());
+      }
+      // The user could have attached the button anywhere in the page.
+      if (!submitButton.isAttached()) {
+        super.add(submitButton);
+      }
     }
   }
 
@@ -145,17 +152,19 @@ public class SingleUploader extends Uploader {
    * 
    * @param status
    *        Customized status widget to use
-   * @param button
+   * @param submitButton
    *        Customized button which submits the form
    */
-  public SingleUploader(IUploadStatus status, Button button) {
-    this(FileInputType.BROWSER_INPUT, status, button, null);
+  public SingleUploader(IUploadStatus status, Widget submitButton) {
+    this(FileInputType.BROWSER_INPUT, status, submitButton, null);
   }
 
   @Override
   public void setEnabled(boolean b) {
     super.setEnabled(b);
-    button.setEnabled(b);
+    if (button != null && button instanceof HasEnabled) {
+      ((HasEnabled)button).setEnabled(b);
+    }
   }
 
   /* (non-Javadoc)
@@ -164,7 +173,9 @@ public class SingleUploader extends Uploader {
   @Override
   public void setI18Constants(UploaderConstants strs) {
     super.setI18Constants(strs);
-    button.setText(strs.uploaderSend());
+    if (button != null && button instanceof HasText) {
+      ((HasText)button).setText(strs.uploaderSend());
+    }
   }
 
   /* (non-Javadoc)
@@ -173,8 +184,12 @@ public class SingleUploader extends Uploader {
   @Override
   protected void onChangeInput() {
     super.onChangeInput();
-    button.addStyleName("changed");
-    button.setFocus(true);
+    if (button != null) {
+      button.addStyleName("changed");
+      if (button instanceof Focusable) {
+        ((Focusable)button).setFocus(true);
+      }
+    }
   }
 
   /* (non-Javadoc)
@@ -189,8 +204,12 @@ public class SingleUploader extends Uploader {
     getStatusWidget().setStatus(Status.UNINITIALIZED);
     reuse();
     assignNewNameToFileInput();
-    button.setEnabled(true);
-    button.removeStyleName("changed");
+    if (button != null) {
+      if (button instanceof HasEnabled) {
+        ((HasEnabled)button).setEnabled(true);
+      }
+      button.removeStyleName("changed");
+    }
     if (autoSubmit) {
       getFileInput().setText(i18nStrs.uploaderBrowse());
     }
@@ -202,8 +221,12 @@ public class SingleUploader extends Uploader {
   @Override
   protected void onStartUpload() {
     super.onStartUpload();
-    button.setEnabled(false);
-    button.removeStyleName("changed");
+    if (button != null) {
+      if (button instanceof HasEnabled) {
+        ((HasEnabled)button).setEnabled(false);
+      }
+      button.removeStyleName("changed");
+    }
   }
   
   public void setAvoidRepeatFiles(boolean b){
@@ -215,7 +238,9 @@ public class SingleUploader extends Uploader {
    */
   @Override
   public void setAutoSubmit(boolean b) {
-    button.setVisible(!b);
+    if (button != null) {
+      button.setVisible(!b);
+    }
     super.setAutoSubmit(b);
   }
 
