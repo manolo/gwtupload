@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module rename-to='compat'>
+
+  <inherits name="gwtupload.GWTUpload"/>
+  <stylesheet src="Upload.css"/>
+
+  <entry-point class='gwtupload.client.Compat'/>
+
+</module>
