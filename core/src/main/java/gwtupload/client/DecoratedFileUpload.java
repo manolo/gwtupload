@@ -93,7 +93,7 @@ public class DecoratedFileUpload extends Composite implements HasText, HasName, 
   /**
    * A FileUpload which implements onChange, onMouseOver and onMouseOut events.
    * 
-   * Note: although FileUpload implements HasChangeHandlers in version Gwt 2.0.x,
+   * Note: although FileUpload implements HasChangeHandlers and setEnabled in version Gwt 2.0.x,
    * we put it here in order to be compatible with older Gwt versions.
    *
    */
@@ -109,6 +109,14 @@ public class DecoratedFileUpload extends Composite implements HasText, HasName, 
 
     public HandlerRegistration addMouseOverHandler(final MouseOverHandler handler) {
       return addDomHandler(handler, MouseOverEvent.getType());
+    }
+    
+    public boolean isEnabled() {
+      return !getElement().getPropertyBoolean("disabled");
+    }
+    
+    public void setEnabled(boolean enabled) {
+      getElement().setPropertyBoolean("disabled", !enabled);
     }
   }
 
@@ -149,7 +157,8 @@ public class DecoratedFileUpload extends Composite implements HasText, HasName, 
         int w = button.getElement().getOffsetWidth();
         int h = button.getElement().getOffsetHeight();
         if (w <= 0) {
-          String ws = button.getElement().getStyle().getWidth();
+          // Using old way for compatibility
+          String ws = DOM.getStyleAttribute(button.getElement(), "width");
           if (ws != null) {
             try {
               w = Integer.parseInt(ws.replaceAll("[^\\d]", ""));
@@ -163,7 +172,8 @@ public class DecoratedFileUpload extends Composite implements HasText, HasName, 
           }
         }
         if (h <= 0) {
-          String hs = button.getElement().getStyle().getHeight();
+          // Using old way for compatibility
+          String hs = DOM.getStyleAttribute(button.getElement(), "height");
           if (hs != null) {
             try {
               h = Integer.parseInt(hs.replaceAll("[^\\d]", ""));

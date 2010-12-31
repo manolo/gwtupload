@@ -46,6 +46,17 @@ import com.google.gwt.user.client.ui.Widget;
 public class SingleUploader extends Uploader {
 
   private Widget button;
+  
+  private void setEnabledButton(boolean b) {
+    if (button != null) {
+      // HasEnabled is only available after gwt-2.1.x
+      if (button instanceof HasEnabled) {
+        ((HasEnabled)button).setEnabled(b);
+      } else if (button instanceof Button) {
+        ((Button)button).setEnabled(b);
+      }
+    }
+  }
 
   /**
    * Default constructor.
@@ -162,9 +173,7 @@ public class SingleUploader extends Uploader {
   @Override
   public void setEnabled(boolean b) {
     super.setEnabled(b);
-    if (button != null && button instanceof HasEnabled) {
-      ((HasEnabled)button).setEnabled(b);
-    }
+    setEnabledButton(b);
   }
 
   /* (non-Javadoc)
@@ -205,9 +214,7 @@ public class SingleUploader extends Uploader {
     reuse();
     assignNewNameToFileInput();
     if (button != null) {
-      if (button instanceof HasEnabled) {
-        ((HasEnabled)button).setEnabled(true);
-      }
+      setEnabledButton(true);
       button.removeStyleName("changed");
     }
     if (autoSubmit) {
@@ -222,9 +229,7 @@ public class SingleUploader extends Uploader {
   protected void onStartUpload() {
     super.onStartUpload();
     if (button != null) {
-      if (button instanceof HasEnabled) {
-        ((HasEnabled)button).setEnabled(false);
-      }
+      setEnabledButton(false);
       button.removeStyleName("changed");
     }
   }

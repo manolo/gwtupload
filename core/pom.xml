@@ -5,11 +5,12 @@
   <packaging>jar</packaging>
   <name>GwtUpload library</name>
   <description>GwtUpload library: client and server classes (compatible with: Gwt 1.6.x,1.7.x,2.0.x)</description>
+  <version>0.6.3-compat</version>
 
   <parent>
     <groupId>com.googlecode.gwtupload</groupId>
     <artifactId>gwtupload-project</artifactId>
-    <version>0.6.4-SNAPSHOT</version>
+    <version>0.6.3</version>
   </parent>
 
   <dependencies>
@@ -43,6 +44,16 @@
     </dependency>
   </dependencies>
 
+  <profiles>
+     <profile>
+       <id>1.6.4</id>
+       <properties>
+         <gwtVersion>1.6.4</gwtVersion>
+         <gwtMaven>1.3-SNAPSHOT</gwtMaven>
+       </properties>
+     </profile>
+  </profiles>
+
   <build>
     <resources>
       <resource><directory>${basedir}/src/main/java</directory></resource>
@@ -60,7 +71,6 @@
           </uploads>
         </configuration>
       </plugin>
-<!--
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
@@ -79,13 +89,16 @@
         <executions>
           <execution>
             <id>attach-javadocs</id>
+            <phase>package</phase>
             <goals>
               <goal>jar</goal>
             </goals>
           </execution>
         </executions>
+        <configuration>
+         <excludePackageNames>com.google.*</excludePackageNames>
+        </configuration>
       </plugin>
--->
     </plugins>
   </build>
 

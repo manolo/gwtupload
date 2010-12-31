@@ -26,10 +26,9 @@ import java.util.Vector;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
-import com.google.gwt.dom.client.Style.Position;
-import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiConstructor;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -59,8 +58,8 @@ public class MultiUploader extends Composite implements IUploader {
         // so, before sending the form, it is necessary to show the fileInput, we put it out of the viewable
         // area.
         Widget w = u.getFileInput().getWidget();
-        w.getElement().getStyle().setPosition(Position.ABSOLUTE);
-        w.getElement().getStyle().setLeft(-4000, Unit.PX);
+        DOM.setStyleAttribute(w.getElement(), "position", "absolute");
+        DOM.setStyleAttribute(w.getElement(), "left", "-4000px");
         u.getFileInput().setVisible(true);
       } else if (u.getStatus() == Status.REPEATED) {
         u.getFileInput().setVisible(true);
