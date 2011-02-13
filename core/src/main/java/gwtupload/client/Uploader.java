@@ -323,10 +323,14 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     }
 
   };
-  
+
+  private boolean onSubmitComplete;
+
   private SubmitCompleteHandler onSubmitCompleteHandler = new SubmitCompleteHandler() {
     public void onSubmitComplete(SubmitCompleteEvent event) {
+      onSubmitComplete = true;
       serverResponse = event.getResults();
+      log("onSubmitComplete: " + serverResponse, null);
       if (serverResponse != null) {
         serverResponse = serverResponse.replaceFirst(".*%%%INI%%%([\\s\\S]*?)%%%END%%%.*", "$1");
         serverResponse = serverResponse.replaceAll("@@@","<").replaceAll("___", ">");
@@ -349,7 +353,6 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
         // Otherwise force an ajax request so as we have not to wait to the timer schedule
         updateStatusTimer.run();
       }
-      log("onSubmitComplete: " + serverResponse, null);
     }
   };
   
@@ -781,7 +784,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
   public void reuse() {
     this.uploadForm.reset();
     updateStatusTimer.finish();
-    uploading = cancelled = finished = successful = false;
+    onSubmitComplete = uploading = cancelled = finished = successful = false;
   }
 
   /**
@@ -1056,7 +1059,10 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     } else if (Utils.getXmlNodeValue(doc, TAG_FINISHED) != null) {
       log("server response is: finished " + getFileName(), null);
       successful = true;
-      uploadFinished();
+      if (onSubmitComplete) {
+        log("response from server has been received", null);
+        uploadFinished();
+      }
       return;
     } else if (Utils.getXmlNodeValue(doc, TAG_PERCENT) != null) {
       lastData = now();
