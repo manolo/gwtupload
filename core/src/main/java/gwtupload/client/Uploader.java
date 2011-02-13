@@ -305,7 +305,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
         log("GWTUpload: onStatusReceivedCallback timeout error, asking the server again.", null);
       } else {
         log("GWTUpload: onStatusReceivedCallback error: " + exception.getMessage(), exception);
-        updateStatusTimer.finish();
+        updateStatusTimer.cancel();
         String message = removeHtmlTags(exception.getMessage());
         message += "\n" + exception.getClass().getName();
         message += "\n" + exception.toString();
@@ -328,13 +328,14 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
 
   private SubmitCompleteHandler onSubmitCompleteHandler = new SubmitCompleteHandler() {
     public void onSubmitComplete(SubmitCompleteEvent event) {
+      updateStatusTimer.cancel();
       onSubmitComplete = true;
       serverResponse = event.getResults();
-      log("onSubmitComplete: " + serverResponse, null);
       if (serverResponse != null) {
         serverResponse = serverResponse.replaceFirst(".*%%%INI%%%([\\s\\S]*?)%%%END%%%.*", "$1");
         serverResponse = serverResponse.replaceAll("@@@","<").replaceAll("___", ">");
       }
+      log("onSubmitComplete: " + serverResponse, null);
       try {
         // Parse the xml and extract serverInfo
         Document doc = XMLParser.parse(serverResponse);
@@ -641,7 +642,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     automaticUploadTimer.cancel();
     log("cancelling " +  uploading, null);
     if (uploading) {
-      updateStatusTimer.finish();
+      updateStatusTimer.cancel();
       try {
         sendAjaxRequestToCancelCurrentUpload();
       } catch (Exception e) {
@@ -783,7 +784,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
    */
   public void reuse() {
     this.uploadForm.reset();
-    updateStatusTimer.finish();
+    updateStatusTimer.cancel();
     onSubmitComplete = uploading = cancelled = finished = successful = false;
   }
 
@@ -1146,7 +1147,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     removeFromQueue();
     finished = true;
     uploading = false;
-    updateStatusTimer.finish();
+    updateStatusTimer.cancel();
     statusWidget.setVisible(false);
     
     if (successful) {

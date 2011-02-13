@@ -54,14 +54,8 @@ public class UpdateTimer extends Timer {
   @Override
   public void cancel() {
     isRunning = false;
+    delayedStarter.cancel();
     super.cancel();
-  }
-
-  /**
-   * stop the timer
-   */
-  public void finish() {
-    cancel();
   }
 
   /**
@@ -95,7 +89,7 @@ public class UpdateTimer extends Timer {
     if (this.interval != periodMillis) {
       this.interval = periodMillis;
       if (isRunning) {
-        finish();
+        cancel();
         start();
       }
     }
