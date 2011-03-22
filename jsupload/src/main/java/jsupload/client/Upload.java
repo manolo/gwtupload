@@ -136,12 +136,23 @@ public class Upload implements Exportable {
   }
   
   /**
-   * adds a javascript DOM element to the upload form.
+   * adds a DOM element to the upload form.
    */
   public void addElement(Element e) {
+    addElement(e, -1);
+  }
+
+  /**
+   * adds a DOM element to the upload form at the specified position
+   */
+  public void addElement(Element e, int index) {
     Widget wraper = new HTML();
     DOM.appendChild(wraper.getElement(), e);
-    uploader.add(wraper);
+    if (index < 1) {
+      uploader.add(wraper);
+    } else {
+      uploader.add(wraper, index);
+    }
   }
 
   /**

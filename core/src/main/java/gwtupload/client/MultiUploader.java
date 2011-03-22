@@ -31,6 +31,7 @@ import com.google.gwt.uibinder.client.UiConstructor;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Hidden;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -61,6 +62,19 @@ public class MultiUploader extends Composite implements IUploader {
         DOM.setStyleAttribute(w.getElement(), "position", "absolute");
         DOM.setStyleAttribute(w.getElement(), "left", "-4000px");
         u.getFileInput().setVisible(true);
+        
+        // Add the hidden input fields to the form being to submit 
+        for (Widget i : formWidgets) {
+          if (! (i instanceof IFileInput)) {
+            if (i instanceof Hidden) {
+              Hidden h = (Hidden)i;
+              if (h.getValue().startsWith(fileInputPrefix)) {
+                h.setValue(u.getInputName());
+              }
+            }
+            u.add(i, 0);
+          }
+        }
       } else if (u.getStatus() == Status.REPEATED) {
         u.getFileInput().setVisible(true);
         u.getStatusWidget().setVisible(false);
@@ -167,12 +181,22 @@ public class MultiUploader extends Composite implements IUploader {
     this(status);
     setFileInput(fileInput);
   }
+  
+  ArrayList<Widget> formWidgets = new ArrayList<Widget>();
 
   /* (non-Javadoc)
   * @see com.google.gwt.user.client.ui.HasWidgets#add(com.google.gwt.user.client.ui.Widget)
   */
   public void add(Widget w) {
-    currentUploader.add(w);
+    add(w, formWidgets.size());
+  }
+  
+  /* (non-Javadoc)
+   * @see gwtupload.client.IUploader#add(com.google.gwt.user.client.ui.Widget, int)
+   */
+  public void add(Widget w, int index) {
+    index = Math.max(0, Math.min(index, formWidgets.size()));
+    formWidgets.add(index, w);
   }
 
   /* (non-Javadoc)
@@ -275,7 +299,7 @@ public class MultiUploader extends Composite implements IUploader {
   public IFileInput getFileInput() {
     return currentUploader.getFileInput();
   }
-
+  
   /* (non-Javadoc)
    * @see gwtupload.client.IUploader#getFileName()
    */

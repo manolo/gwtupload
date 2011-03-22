@@ -59,6 +59,21 @@
        </properties>
      </profile>
      <profile>
+       <id>2.2.0</id>
+       <properties>
+         <gwtVersion>2.2.0</gwtVersion>
+         <gwtMaven>2.1.0-1</gwtMaven>
+       </properties>
+       <dependencies>
+       <dependency>
+         <groupId>com.google.gwt</groupId>
+         <artifactId>gwt-dev</artifactId>
+         <version>${gwtVersion}</version>
+         <scope>provided</scope>
+       </dependency>
+       </dependencies>
+     </profile>
+     <profile>
        <id>prod</id>
        <properties>
         <sonatypeRepoId>sonatype-nexus-staging</sonatypeRepoId>

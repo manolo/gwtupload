@@ -47,6 +47,7 @@ import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
 import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
 import com.google.gwt.user.client.ui.FormPanel.SubmitHandler;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.Hidden;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -95,9 +96,18 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
       formElements.setStyleName("upld-form-elements");
     }
     public void add(Widget w) {
-      formElements.add(w);
+      if (w instanceof Hidden) {
+        add(w, formElements.getWidgetCount());
+      } else {
+        formElements.add(w);        
+      }
+    }
+    public void add(Widget w, int index) {
+      index = Math.max(0,Math.min(index, formElements.getWidgetCount()));
+      formElements.insert(w, index);
     }
   }
+  
   public static final int DEFAULT_FILEINPUT_SIZE = 40;
   
   public static final UploaderConstants I18N_CONSTANTS = GWT.create(UploaderConstants.class);
@@ -545,6 +555,17 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
    */
   public void add(Widget w) {
     uploadForm.add(w);
+  }
+
+  /**
+   * Adds a widget to formPanel in a specified position.
+   */
+  public void add(Widget w, int index) {
+    if (uploadForm instanceof FormFlowPanel) {
+      ((FormFlowPanel)uploadForm).add(w, index);
+    } else {
+      add(w);
+    }
   }
 
   /* (non-Javadoc)

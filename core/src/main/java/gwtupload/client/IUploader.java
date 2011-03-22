@@ -16,15 +16,16 @@
  */
 package gwtupload.client;
 
+import gwtupload.client.IUploadStatus.Status;
+import gwtupload.client.IUploadStatus.UploadStatusConstants;
+
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.HasWidgets;
+import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Node;
 import com.google.gwt.xml.client.NodeList;
-
-import gwtupload.client.IUploadStatus.Status;
-import gwtupload.client.IUploadStatus.UploadStatusConstants;
 
 /**
  * <p>
@@ -203,6 +204,17 @@ public interface IUploader extends HasJsData, HasWidgets {
    * Get the url where the server application is installed.
    */
   String getServletPath();
+  
+  
+  /**
+   * Add a widget in the position specified by the index.
+   * 
+   * It is useful to order the form elements.
+   * 
+   * By default hidden elements are added at the top of the stack 
+   * so as you can read these values before the file is being received.
+   */
+  void add(Widget widget, int index);
 
   /**
    * Add a handler that will be called when the upload is canceled by the user.

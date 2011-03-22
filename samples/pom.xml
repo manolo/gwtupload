@@ -157,35 +157,22 @@
           </execution>
         </executions>
       </plugin>
-<!--
       <plugin>
-        <artifactId>maven-deploy-plugin</artifactId>
-        <executions>
-          <execution>
-            <phase>deploy</phase>
-            <goals>
-              <goal>deploy-file</goal>
-            </goals>
-            <configuration>
-              <repositoryId>${sonatypeRepoId}</repositoryId>
-              <file>${project.build.directory}/${project.artifactId}-${project.version}.jar</file>
-              <groupId>${project.groupId}</groupId>
-              <artifactId>${project.artifactId}</artifactId>
-              <version>${project.version}</version>
-              <packaging>jar</packaging>
-              <url>${sonatypeUrl}</url>
-              <uniqueVersion>false</uniqueVersion>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <artifactId>maven-deploy-plugin</artifactId>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-eclipse-plugin</artifactId>
         <configuration>
-          <skip>true</skip>
+           <downloadSources>true</downloadSources>
+           <downloadJavadocs>false</downloadJavadocs>
+           <additionalBuildcommands>
+             <buildCommand>
+               <name>com.google.gwt.eclipse.core.gwtProjectValidator</name>
+             </buildCommand>
+           </additionalBuildcommands>
+           <additionalProjectnatures>
+             <projectnature>com.google.gwt.eclipse.core.gwtNature</projectnature>
+           </additionalProjectnatures>
         </configuration>
       </plugin>
--->
     </plugins>
   </build>
 

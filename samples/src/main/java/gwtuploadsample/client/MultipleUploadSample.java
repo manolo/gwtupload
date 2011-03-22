@@ -16,18 +16,19 @@
  */
 package gwtuploadsample.client;
 
-import com.google.gwt.core.client.EntryPoint;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.RootPanel;
-
+import gwtupload.client.IFileInput.FileInputType;
+import gwtupload.client.IUploadStatus.Status;
 import gwtupload.client.IUploader;
 import gwtupload.client.MultiUploader;
 import gwtupload.client.PreloadedImage;
-import gwtupload.client.IFileInput.FileInputType;
-import gwtupload.client.IUploadStatus.Status;
 import gwtupload.client.PreloadedImage.OnLoadPreloadedImageHandler;
 import jsupload.client.ChismesUploadProgress;
 import jsupload.client.IncubatorUploadProgress;
+
+import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Hidden;
+import com.google.gwt.user.client.ui.RootPanel;
 
 /**
  * <p>
@@ -74,6 +75,8 @@ public class MultipleUploadSample implements EntryPoint {
     // You can add customized parameters to servlet call 
     defaultUploader.setServletPath(defaultUploader.getServletPath() + "?foo=bar");
     defaultUploader.avoidRepeatFiles(true);
+    // This enable php apc progress mechanism
+    defaultUploader.add(new Hidden("APC_UPLOAD_PROGRESS", defaultUploader.getInputName()));
 
     MultiUploader incubatorUploader = new MultiUploader(FileInputType.ANCHOR, new IncubatorUploadProgress());
     incubatorUploader.addOnFinishUploadHandler(onFinishUploaderHandler);

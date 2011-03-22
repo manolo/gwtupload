@@ -16,17 +16,18 @@
  */
 package gwtuploadsample.client;
 
-import com.google.gwt.core.client.EntryPoint;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.RootPanel;
-
-import gwtupload.client.IUploader;
-import gwtupload.client.PreloadedImage;
-import gwtupload.client.SingleUploader;
 import gwtupload.client.IFileInput.FileInputType;
 import gwtupload.client.IUploadStatus.Status;
+import gwtupload.client.IUploader;
 import gwtupload.client.IUploader.UploaderConstants;
+import gwtupload.client.PreloadedImage;
 import gwtupload.client.PreloadedImage.OnLoadPreloadedImageHandler;
+import gwtupload.client.SingleUploader;
+
+import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Hidden;
+import com.google.gwt.user.client.ui.RootPanel;
 
 /**
  *  * <p>
@@ -61,6 +62,9 @@ public class SingleUploadSample implements EntryPoint {
   public void onModuleLoad() {
     SingleUploader single1 = new SingleUploader();
     single1.addOnFinishUploadHandler(onFinishUploaderHandler);
+    
+    // This enable php apc progress mechanism
+    single1.add(new Hidden("APC_UPLOAD_PROGRESS", single1.getInputName()));
     RootPanel.get("single1").add(single1);
     
     SingleUploader single2 = new SingleUploader(FileInputType.LABEL);
