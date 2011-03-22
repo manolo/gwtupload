@@ -37,6 +37,7 @@ import java.util.Vector;
 
 import javax.servlet.Servlet;
 import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -430,7 +431,7 @@ public class UploadServlet extends HttpServlet implements Servlet {
   protected int uploadDelay = 0;
   
   protected boolean useBlobstore = false;
-
+  
   /**
    * Mark the current upload process to be cancelled.
    * 
@@ -485,7 +486,8 @@ public class UploadServlet extends HttpServlet implements Servlet {
   public void init(ServletConfig config) throws ServletException {
     super.init(config);
 
-    String size = config.getServletContext().getInitParameter("maxSize");
+    ServletContext ctx = config.getServletContext();
+    String size = ctx.getInitParameter("maxSize");
     if (size != null) {
       try {
         maxSize = Long.parseLong(size);
@@ -493,7 +495,7 @@ public class UploadServlet extends HttpServlet implements Servlet {
       }
     }
 
-    String slow = config.getServletContext().getInitParameter("slowUploads");
+    String slow = ctx.getInitParameter("slowUploads");
     if (slow != null) {
       if ("true".equalsIgnoreCase(slow)) {
         uploadDelay = DEFAULT_SLOW_DELAY_MILLIS;
@@ -505,13 +507,15 @@ public class UploadServlet extends HttpServlet implements Servlet {
       }
     }
     
-    String timeout = config.getServletContext().getInitParameter("noDataTimeout");
+    String timeout = ctx.getInitParameter("noDataTimeout");
     if (timeout != null){
       try {
         UploadListener.setNoDataTimeout(Integer.parseInt(timeout));
       } catch (NumberFormatException e) {
       }
     }
+    
+    appEngine = "true".equalsIgnoreCase(ctx.getInitParameter("appEngine")) ? Boolean.TRUE : isAppEngine();
 
     logger.info("UPLOAD-SERVLET init: maxSize=" + maxSize + ", slowUploads=" + slow + ", isAppEngine=" + isAppEngine());
   }

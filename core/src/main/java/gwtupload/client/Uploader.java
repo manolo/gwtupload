@@ -96,7 +96,6 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
       formElements.setStyleName("upld-form-elements");
     }
     public void add(Widget w) {
-      System.out.println("Adding " + w);
       if (w instanceof Hidden) {
         add(w, formElements.getWidgetCount());
       } else {
