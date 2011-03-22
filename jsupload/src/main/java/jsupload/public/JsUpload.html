@@ -71,7 +71,7 @@
           }
         });
 
-        new jsu.Upload({
+        var u = new jsu.Upload({
           type: "basic",
           containerId: "uploader4",
           onFinish: loadImage,
@@ -79,6 +79,13 @@
         	uploaderSend: "Send File."    
           }
         });
+        
+        // This enables php apc progress mechanism
+        var e = document.createElement("INPUT")
+        e.type = "hidden";
+        e.name = "APC_UPLOAD_PROGRESS";
+        e.value = u.data().name;
+        u.addElement(e, 0);
 
         new jsu.Upload({
           containerId: "uploader5",

@@ -16,22 +16,24 @@
  */
 package jsupload.client;
 
-import com.google.gwt.core.client.JavaScriptObject;
-import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Element;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.Panel;
-import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.Widget;
-
+import gwtupload.client.IFileInput.FileInputType;
 import gwtupload.client.IUploader;
 import gwtupload.client.MultiUploader;
 import gwtupload.client.SingleUploader;
-import gwtupload.client.IFileInput.FileInputType;
 
 import org.timepedia.exporter.client.Export;
 import org.timepedia.exporter.client.ExportPackage;
 import org.timepedia.exporter.client.Exportable;
+
+import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.Hidden;
+import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * @author Manolo Carrasco Moñino
@@ -136,23 +138,27 @@ public class Upload implements Exportable {
   }
   
   /**
-   * adds a DOM element to the upload form.
+   * adds a javascript DOM element to the upload form.
    */
   public void addElement(Element e) {
     addElement(e, -1);
   }
 
   /**
-   * adds a DOM element to the upload form at the specified position
+   * adds a javascript DOM element to the upload form at the specified position
    */
   public void addElement(Element e, int index) {
-    Widget wraper = new HTML();
-    DOM.appendChild(wraper.getElement(), e);
-    if (index < 1) {
-      uploader.add(wraper);
+    Widget w = null; 
+    if (e.getTagName().toLowerCase().equals("input") && e.getAttribute("type").toLowerCase().equals("hidden")) {
+      if (! Document.get().getBody().isOrHasChild(e)) {
+        Document.get().getBody().appendChild(e);
+      }
+      w = Hidden.wrap(e);
     } else {
-      uploader.add(wraper, index);
+      w = new HTML();
+      DOM.appendChild(w.getElement(), e);
     }
+    uploader.add(w, index);
   }
 
   /**

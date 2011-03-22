@@ -75,7 +75,7 @@ public class MultipleUploadSample implements EntryPoint {
     // You can add customized parameters to servlet call 
     defaultUploader.setServletPath(defaultUploader.getServletPath() + "?foo=bar");
     defaultUploader.avoidRepeatFiles(true);
-    // This enable php apc progress mechanism
+    // This enables php apc progress mechanism
     defaultUploader.add(new Hidden("APC_UPLOAD_PROGRESS", defaultUploader.getInputName()));
 
     MultiUploader incubatorUploader = new MultiUploader(FileInputType.ANCHOR, new IncubatorUploadProgress());
