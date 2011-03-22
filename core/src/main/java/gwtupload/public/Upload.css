@@ -36,13 +36,15 @@
 	overflow: hidden;
 	white-space: nowrap;
 	margin-left: 8px;
-	margin-right: 10px;
+	margin-right: 11px;
 	height: 100%;
+	font-size: 12px;
 }
 .GWTUpld .upld-status .status {
 	padding-left: 8px;
 	white-space: nowrap;
 	height: 100%;
+	font-size: 12px;
 }
 .GWTUpld .upld-status .status-success {
 	color: green;
@@ -136,5 +138,10 @@
 	color: grey;
 }
 
+.gwt-PopupPanelGlass {
+  background-color: #d4e4ff;
+  opacity: 0.3;
+  filter: alpha(opacity=30);
+}
     
 
