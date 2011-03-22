@@ -23,6 +23,7 @@ import gwtupload.client.IUploader.UploaderConstants;
 import gwtupload.client.PreloadedImage;
 import gwtupload.client.PreloadedImage.OnLoadPreloadedImageHandler;
 import gwtupload.client.SingleUploader;
+import gwtupload.client.SingleUploaderModal;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -60,7 +61,7 @@ public class SingleUploadSample implements EntryPoint {
   
   
   public void onModuleLoad() {
-    SingleUploader single1 = new SingleUploader();
+    SingleUploader single1 = new SingleUploaderModal();
     single1.addOnFinishUploadHandler(onFinishUploaderHandler);
     
     // This enables php apc progress mechanism

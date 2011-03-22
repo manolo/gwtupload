@@ -19,12 +19,14 @@
       <version>${gwtVersion}</version>
       <scope>provided</scope>
     </dependency>
+<!--
     <dependency>
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-servlet</artifactId>
       <version>${gwtVersion}</version>
-      <scope>runtime</scope>
+      <scope>provided</scope>
     </dependency>
+-->
     <dependency>
       <groupId>${groupId}</groupId>
       <artifactId>gwtupload</artifactId>
@@ -108,7 +110,7 @@
           <style>PRETTY</style>
           <!-- Modules to compile -->
           <modules>
-            <!-- <module>gwtuploadsample.ChismesUploadSample</module>-->
+            <module>gwtuploadsample.ChismesUploadSample</module>
             <module>gwtuploadsample.SingleUploadSample</module>
             <module>gwtuploadsample.MultipleUploadSample</module>
             <module>jsupload.JsUpload</module>
@@ -150,7 +152,7 @@
         <artifactId>maven-jar-plugin</artifactId>
         <executions>
           <execution>
-            <phase>package</phase>
+            <phase>deploy</phase>
             <goals>
               <goal>jar</goal>
             </goals>

@@ -45,7 +45,7 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class SingleUploader extends Uploader {
 
-  private Widget button;
+  protected Widget button;
   
   private void setEnabledButton(boolean b) {
     if (button != null) {
@@ -124,7 +124,8 @@ public class SingleUploader extends Uploader {
     final Uploader thisInstance = this;
 
     if (status == null) {
-      status = new ModalUploadStatus();
+      status = new BaseUploadStatus();
+      super.add(status.getWidget());
     }
     super.setStatusWidget(status);
     
@@ -213,9 +214,13 @@ public class SingleUploader extends Uploader {
     getStatusWidget().setStatus(Status.UNINITIALIZED);
     reuse();
     assignNewNameToFileInput();
+    getFileInput().getWidget().setVisible(true);
     if (button != null) {
       setEnabledButton(true);
       button.removeStyleName("changed");
+      if (!autoSubmit) {
+        button.setVisible(true);
+      } 
     }
     if (autoSubmit) {
       getFileInput().setText(i18nStrs.uploaderBrowse());
@@ -231,7 +236,9 @@ public class SingleUploader extends Uploader {
     if (button != null) {
       setEnabledButton(false);
       button.removeStyleName("changed");
+      button.setVisible(false);
     }
+    getFileInput().getWidget().setVisible(false);
   }
   
   public void setAvoidRepeatFiles(boolean b){
