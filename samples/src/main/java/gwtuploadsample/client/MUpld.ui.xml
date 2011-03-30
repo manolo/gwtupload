@@ -9,5 +9,5 @@
 		}
 	</ui:style>
   	<up:MultiUploader type="LABEL" ui:field="uploader" 
-  	                  styleName="{style.myup}" maximumFiles="2" avoidRepeatFiles="true"/>
+  	                  styleName="{style.myup}" maximumFiles="2" avoidRepeatFiles="true" validExtensions="mmm, ooo"/>
 </ui:UiBinder> 

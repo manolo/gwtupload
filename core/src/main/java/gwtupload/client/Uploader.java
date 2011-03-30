@@ -922,6 +922,10 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     }
   }
   
+  public void setValidExtensions(String ext) {
+    setValidExtensions(ext.split("[, ]+"));
+  }
+  
   /* (non-Javadoc)
    * @see gwtupload.client.IUploader#submit()
    */

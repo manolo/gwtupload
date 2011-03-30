@@ -528,6 +528,10 @@ public class MultiUploader extends Composite implements IUploader {
     currentUploader.setValidExtensions(ext);
   }
 
+  public void setValidExtensions(String ext) {
+    setValidExtensions(ext.split("[, ]+"));
+  }
+
   /* (non-Javadoc)
   * @see gwtupload.client.IUploader#submit()
   */

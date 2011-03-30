@@ -80,7 +80,7 @@ public class MultipleUploadSample implements EntryPoint {
 
     MultiUploader incubatorUploader = new MultiUploader(FileInputType.ANCHOR, new IncubatorUploadProgress());
     incubatorUploader.addOnFinishUploadHandler(onFinishUploaderHandler);
-    incubatorUploader.setValidExtensions(new String[] { "jpg", "jpeg", "png", "gif" });
+    incubatorUploader.setValidExtensions("jpg", "jpeg", "png", "gif");
     RootPanel.get("incubator").add(incubatorUploader);
 
     MultiUploader chismesUploader = new MultiUploader(FileInputType.BUTTON, new ChismesUploadProgress(false));//, new DecoratedFileInput(new GWTCButton()));
