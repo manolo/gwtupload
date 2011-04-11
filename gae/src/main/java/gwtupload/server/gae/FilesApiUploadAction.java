@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 Manuel Carrasco Moñino. (manolo at apache/org) 
+ * Copyright 2010 Manuel Carrasco Moñino. (manolo at apache/org)
  * http://code.google.com/p/gwtupload
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -38,7 +38,8 @@ import com.google.appengine.api.blobstore.BlobKey;
  * To use this servlet you need:
  * 
  * Add these lines to your web.xml
- <pre>
+ * 
+ * <pre>
   &lt;servlet>
     &lt;servlet-class>gwtupload.server.gae.FilesApiUploadAction&lt;/servlet-class>
   &lt;/servlet>
@@ -51,14 +52,16 @@ import com.google.appengine.api.blobstore.BlobKey;
     &lt;url-pattern>/upload&lt;/url-pattern>
   &lt;/servlet-mapping> 
  </pre>
- *
+ * 
  * Enable Session in your appengine-web.xml
-<pre>
+ * 
+ * <pre>
   &lt;sessions-enabled>true&lt;/sessions-enabled>
 </pre>
- *
+ * 
  * You can get the blob key in server client side using this code
-<pre>
+ * 
+ * <pre>
   uploader.addOnFinishUploadHandler(new OnFinishUploaderHandler() {
     public void onFinish(IUploader uploader) {
       if (uploader.getStatus() == Status.SUCCESS) {
@@ -72,31 +75,33 @@ import com.google.appengine.api.blobstore.BlobKey;
  * @author Manuel Carrasco
  */
 public class FilesApiUploadAction extends UploadAction {
-	private static final long serialVersionUID = 3683112300714613746L;
-	
-	@Override
-	public String executeAction(HttpServletRequest request,
-	    List<FileItem> sessionFiles) throws UploadActionException {
-	  String ret = "";
-	  for (FileItem i: sessionFiles) {
-	    ret += ((FilesAPIFileItem)i).getKey().getKeyString();
-	    logger.info("Received new file, stored in blobstore with the key: " + ret);
-	  }
-	  removeSessionFileItems(request);
-	  return ret;
-	}
-	
+  private static final long serialVersionUID = 3683112300714613746L;
+
   @Override
-	protected FileItemFactory getFileItemFactory(int requestSize) {
-		return new FilesApiFileItemFactory();
-	}
-	
+  public String executeAction(HttpServletRequest request,
+      List<FileItem> sessionFiles) throws UploadActionException {
+    String ret = "";
+    for (FileItem i : sessionFiles) {
+      ret += ((FilesAPIFileItem) i).getKey().getKeyString();
+      logger.info("Received new file, stored in blobstore with the key: " + ret);
+    }
+    removeSessionFileItems(request);
+    return ret;
+  }
+
   @Override
-  protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+  protected FileItemFactory getFileItemFactory(int requestSize) {
+    return new FilesApiFileItemFactory();
+  }
+
+  @Override
+  protected void doGet(HttpServletRequest request, HttpServletResponse response)
+      throws IOException, ServletException {
     String bkey = request.getParameter("blob-key");
     if (bkey != null) {
       logger.info("Serving a blobstore file with the key:" + bkey);
-      FilesAPIFileItem.getBlobstoreService().serve(new BlobKey(request.getParameter("blob-key")), response);
+      FilesAPIFileItem.getBlobstoreService().serve(
+          new BlobKey(request.getParameter("blob-key")), response);
     } else {
       super.doGet(request, response);
     }
