@@ -85,7 +85,6 @@ public class FilesApiUploadAction extends UploadAction {
       ret += ((FilesAPIFileItem) i).getKey().getKeyString();
       logger.info("Received new file, stored in blobstore with the key: " + ret);
     }
-    removeSessionFileItems(request);
     return ret;
   }
 

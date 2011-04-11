@@ -144,7 +144,6 @@ public class BlobstoreUploadAction extends UploadAction {
       finish(request);
       logger.debug("BLOB-STORE-SERVLET: (" + request.getSession().getId() + ") redirect nitems=" + nitems + "\n" + ret);
       renderXmlResponse(request, response, ret, true);
-      removeSessionFileItems(request);
       perThreadRequest.set(null);
     } else {
       super.doGet(request, response);

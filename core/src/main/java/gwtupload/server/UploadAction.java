@@ -26,11 +26,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.fileupload.FileItem;
+
 
 /** 
  * <p>Class used to manipulate the data received in the server side.</p>
@@ -45,6 +48,19 @@ import org.apache.commons.fileupload.FileItem;
  */
 public class UploadAction extends UploadServlet {
   private static final long serialVersionUID = -6790246163691420791L;
+
+  private boolean removeSessionFiles = false;
+  private boolean removeData = false;
+
+  @Override
+  public void init(ServletConfig config) throws ServletException {
+    super.init(config);
+    ServletContext ctx = config.getServletContext();
+    removeSessionFiles = "true".equalsIgnoreCase(ctx.getInitParameter("removeSessionFiles"));
+    removeData = "true".equalsIgnoreCase(ctx.getInitParameter("removeData"));
+    
+    logger.info("UPLOAD-ACTION init: removeSessionFiles=" + removeSessionFiles + ", removeData=" + removeData);
+  }
 
   /**
    * Returns the content of a file as an InputStream if it is found in the 
@@ -191,6 +207,9 @@ public class UploadAction extends UploadServlet {
     }
     
     finish(request);
+    if (removeSessionFiles) {
+      removeSessionFileItems(request, removeData);
+    }
   }
   
 }
