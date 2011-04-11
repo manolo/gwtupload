@@ -130,12 +130,13 @@ public class BlobstoreUploadAction extends UploadAction {
           for (FileItem item : getSessionFileItems(request)) {
               BlobKey k = ((BlobstoreFileItem) item).getKey();
               BlobInfo i = blobInfoFactory.loadBlobInfo(k);
-              stat.put("blobkey", k.getKeyString());
               if (i != null) {
                 stat.put("ctype", i.getContentType() !=null ? i.getContentType() : "unknown");
                 stat.put("size", "" + i.getSize());
                 stat.put("name", "" + i.getFilename());
               }
+              stat.put("blobkey", k.getKeyString());
+              stat.put("message", k.getKeyString());
             }
       }
       stat.put(TAG_FINISHED, "ok");
@@ -143,6 +144,7 @@ public class BlobstoreUploadAction extends UploadAction {
       finish(request);
       logger.debug("BLOB-STORE-SERVLET: (" + request.getSession().getId() + ") redirect nitems=" + nitems + "\n" + ret);
       renderXmlResponse(request, response, ret, true);
+      removeSessionFileItems(request);
       perThreadRequest.set(null);
     } else {
       super.doGet(request, response);

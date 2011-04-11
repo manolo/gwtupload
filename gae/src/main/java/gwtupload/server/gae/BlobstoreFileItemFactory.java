@@ -18,8 +18,6 @@ package gwtupload.server.gae;
 
 import com.google.appengine.api.blobstore.BlobKey;
 
-import gwtupload.server.gae.MemCacheFileItemFactory.CacheableByteArrayOutputStream;
-
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
 
@@ -114,7 +112,7 @@ public class BlobstoreFileItemFactory implements FileItemFactory, Serializable {
       return data != null;
     }
 
-    public void save(CacheableByteArrayOutputStream o) {
+    public void save(OutputStream o) {
     }
 
     public void setFieldName(String arg0) {

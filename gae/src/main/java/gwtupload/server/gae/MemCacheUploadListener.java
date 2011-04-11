@@ -69,7 +69,7 @@ public class MemCacheUploadListener extends AbstractUploadListener {
   public static Cache getCacheInstance() {
     if (cache == null) {
       try {
-        cache = CacheManager.getInstance().getCacheFactory().createCache(new HashMap() { {
+        cache = CacheManager.getInstance().getCacheFactory().createCache(new HashMap() {{
           put(GCacheFactory.EXPIRATION_DELTA, 60); 
         }});
       } catch (Exception e) {
