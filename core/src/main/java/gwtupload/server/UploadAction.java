@@ -74,7 +74,7 @@ public class UploadAction extends UploadServlet {
   /**
    * This method is called when all data is received in the server.
    * 
-   * Temporary files are not deleted until the user calls removeSessionFiles(request)
+   * Temporary files are not deleted until the user calls removeSessionFileItems(request)
    * 
    * Override this method to customize the behavior
    * 

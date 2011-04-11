@@ -36,7 +36,7 @@
     <log4jVersion>1.2.16</log4jVersion>
     <downloadLabel>Beta</downloadLabel>
     <localMavenRepo>file:${env.HOME}/workspace/GWTUpload-mavenrepo</localMavenRepo>
-    <gae.version>1.3.7</gae.version>
+    <gae.version>1.4.3</gae.version>
     <sonatypeRepoId>sonatype-nexus-snapshots</sonatypeRepoId>
     <sonatypeUrl>http://oss.sonatype.org/content/repositories/snapshots</sonatypeUrl>
     <wikiSvnExec>true</wikiSvnExec>
