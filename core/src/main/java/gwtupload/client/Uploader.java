@@ -343,7 +343,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
       serverResponse = event.getResults();
       if (serverResponse != null) {
         serverResponse = serverResponse.replaceFirst(".*%%%INI%%%([\\s\\S]*?)%%%END%%%.*", "$1");
-        serverResponse = serverResponse.replaceAll("@@@","<").replaceAll("___", ">");
+        serverResponse = serverResponse.replace("@@@","<").replace("___", ">").replace("&lt;", "<").replace("&gt;", ">");
       }
       log("onSubmitComplete: " + serverResponse, null);
       try {

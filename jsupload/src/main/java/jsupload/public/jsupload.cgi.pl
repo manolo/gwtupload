@@ -60,6 +60,8 @@
 ## *     /tmp/uploader/xxxx/yyyy.bin.
 ## *   * The application must create, handle, and clean $tmp_dir files.
 ############################################################################################
+# this script version.
+my $version = "0.6.4";
 
 use CGI;
 use Digest::MD5;
@@ -71,7 +73,10 @@ use Data::Dumper;
 my $idname   = "CGISESSID";
 my $tmp_dir  = "/tmp/uploader";
 my $max_size = 2000000;
-my $mkpath = 0;
+# Note that by default we set mkpath=1 to avoid problems to newbies. 
+# You should set it to 0 and make the server create the folder when the user is validated
+# and before uploading any file. 
+my $mkpath = 1;
 my $slow = 0;
 
 # Get the sessionId or create a new one
@@ -152,7 +157,7 @@ sub doPost {
            close(D);
            unlink($progress_file);
            unlink($data_file);
-           writeResponse("<canceled>true</canceled><finished>canceled</finished>");
+           writeResponse("<canceled>true</canceled><finished>canceled</finished>", 1);
         }
         $done += $n;
         updateProgress( $done, $len );
@@ -162,7 +167,7 @@ sub doPost {
     close(D);
 
     ## Process received data
-    my $msg = "OK\n";
+    my $msg = "<finished>ok</finished>\n";
     open( STDIN, "$data_file" );
     $cgi = new CGI();
     foreach my $key ( $cgi->param() ) {
@@ -170,22 +175,25 @@ sub doPost {
         if ( defined($value) ) {
             my $fh = $cgi->upload($key);
             if ( defined($fh) ) {
-                my $type = $cgi->uploadInfo($value)->{'Content-Type'}
-                  || 'unknown';
+                # In this variable you can send any information to the client side.
+                my $servermessage = "jsupload version: $version";
+
+                my $type = $cgi->uploadInfo($value)->{'Content-Type'} || 'unknown';
                 my $name = saveFile( $key, $value, $type, $fh );
-                my $size = -s $name;
-                $msg .= "<file><name>$key</name><value>$value</value>"
-                  . "<size>$size</size><type>$type</type></file>\n";
+                my $size = -s "$name";
+                $msg .= " <file>\n  <field>$key</field>\n  <name>$value</name>"
+                  . "\n  <size>$size</size>\n  <ctype>$type</ctype>"
+                  . "\n  <message>\n<![CDATA[\n$servermessage\n]]>\n  </message>\n </file>";
             } else {
                 saveFile($key, $value, "text/plain");
-                $msg .= "<parameter><name>$key</name>"
-                  . "<value>$value</value></parameter>\n";
+                $msg .= "<parameter><field>$key</field>"
+                  . "<value>$value</value></parameter>";
             }
         }
     }
     close(STDIN);
     unlink($data_file);
-    writeResponse($msg);
+    writeResponse($msg, 1);
 }
 
 ## Save each received file in the user folder.
@@ -216,11 +224,17 @@ sub saveFile {
 ## Sets the cookie if it wasn't found before
 ## Terminates the reception closing stdin and exits.
 sub writeResponse {
-    my $msg = shift;
+    my ($msg, $post) = @_;
     close(STDIN);
-    print "Content-Type: text/plain\n$set_cookie\n"
-        . "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>"
-        . "\n<response>\n  $msg\n</response>\n";
+    my $xml = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>"
+            . "\n<response>\n  $msg\n</response>\n";
+    if ($post) {
+      $xml =~ s/</@@@/g;
+      $xml =~ s/>/___/g;
+      $xml = '%%%INI%%%' . $xml . '%%%END%%%';
+    }
+    
+    print "Content-Type: text/plain\n$set_cookie\n$xml";
     exit;
 }
 
