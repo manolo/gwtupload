@@ -123,6 +123,8 @@ if($_SERVER['REQUEST_METHOD'] == 'GET') {
   } else if(isset($_GET['cancel'])) {
     $_SESSION['canceled'] = true;
     writeResponse("<canceled>true</canceled>", 0); 
+  } else {
+    writeResponse("<error>no parameter</error>", 0); 
   }
 } else { //POST
   $_SESSION['canceled'] = false;
