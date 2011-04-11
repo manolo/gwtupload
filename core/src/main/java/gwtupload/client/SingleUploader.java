@@ -19,6 +19,9 @@ package gwtupload.client;
 import gwtupload.client.IFileInput.FileInputType;
 import gwtupload.client.IUploadStatus.Status;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
@@ -28,6 +31,7 @@ import com.google.gwt.user.client.ui.Focusable;
 import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasText;
+import com.google.gwt.user.client.ui.Hidden;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -201,6 +205,19 @@ public class SingleUploader extends Uploader {
       }
     }
   }
+  
+  ArrayList<Widget> formWidgets = new ArrayList<Widget>();
+
+  public void add(Widget w) {
+    formWidgets.add(w);
+    super.add(w);
+  }
+  
+  public void add(Widget w, int index) {
+    formWidgets.add(w);
+    super.add(w, index);
+  }
+
 
   /* (non-Javadoc)
    * @see gwtupload.client.Uploader#onFinishUpload()
@@ -214,6 +231,26 @@ public class SingleUploader extends Uploader {
     getStatusWidget().setStatus(Status.UNINITIALIZED);
     reuse();
     assignNewNameToFileInput();
+    for (Widget i : formWidgets) {
+      if (i instanceof Hidden) {
+        Hidden h = (Hidden)i;
+        if (h.getValue().startsWith(fileInputPrefix)) {
+          h.setValue(getInputName());
+        }
+      }
+    }
+    
+    Iterator<Widget> i = getForm().iterator();
+    while (i.hasNext()) {
+      Widget w = i.next();
+      if (w instanceof Hidden) {
+        Hidden h = (Hidden)i;
+        if (h.getValue().startsWith(fileInputPrefix)) {
+          h.setValue(getInputName());
+        }
+      }
+      System.out.println(w.getClass().getName() + " " + w );
+    }
     getFileInput().getWidget().setVisible(true);
     if (button != null) {
       setEnabledButton(true);

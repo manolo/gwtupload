@@ -200,7 +200,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
   private boolean cancelled = false;
   private boolean enabled = true;
   private IFileInput fileInput;
-  private String fileInputPrefix = "GWTU";
+  protected String fileInputPrefix = "GWTU";
   private FileInputType fileInputType;
   private boolean finished = false;
   private boolean hasSession = false;
@@ -343,7 +343,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
       serverResponse = event.getResults();
       if (serverResponse != null) {
         serverResponse = serverResponse.replaceFirst(".*%%%INI%%%([\\s\\S]*?)%%%END%%%.*", "$1");
-        serverResponse = serverResponse.replace("@@@","<").replace("___", ">").replace("&lt;", "<").replace("&gt;", ">");
+        serverResponse = serverResponse.replace("@@@","<").replace("___", ">").replace("&lt;", "<").replaceAll("&gt;", ">");
       }
       log("onSubmitComplete: " + serverResponse, null);
       try {
