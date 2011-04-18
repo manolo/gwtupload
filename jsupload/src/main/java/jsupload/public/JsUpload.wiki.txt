@@ -22,8 +22,30 @@ _The library has been developed using java and exported to javascript using gwt-
       [...]
    });
    }}}
+   * PHP: Install PHP-APC and put the lines below in your php.ini file. Then install the provided script in any php folder enable in your web server. You have to add 
+   {{{
+    [APC]
+    apc.enabled=1
+    apc.shm_segments=1
+    apc.shm_size=64
+    apc.max_file_size=10M
+    apc.stat=1
+    apc.rfc1867="1"
+    apc.rfc1867_freq="0"
+   }}}
+   {{{
+   uploader = new jsu.Upload({
+      action: "[...]/jsupload.php" 
+      [...]
+   });
+   var e = document.createElement("INPUT")
+   e.type = "hidden";
+   e.name = "APC_UPLOAD_PROGRESS";
+   e.value = u.data().name;
+   uploader.addElement(e, 0);
+   }}}
    * Java: You can use the servlet provided with gwtupload.jar and setup it in WEB-INF/web.xml file.
-   * Rails: I'm planning to create a rails plugin soon, in the meanwhile you can use the cgi script provided.
+   * Rails: You can use the cgi script provided. If you wanted to collaborate in a port for rails, please let me know.
    * Others: Install the provided cgi script which leaves the files and information in a temporary folder. Them, use an ajax request to inform your application that the upload process has finished. 
    {{{
    uploader = new jsu.Upload({

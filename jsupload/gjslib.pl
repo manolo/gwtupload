@@ -131,7 +131,7 @@ sub processFile {
   my $on = 0;
   my $com = "";
   while(<F>) {
-   if ($on && /\s*\*\s+(.*)$/) {
+   if ($on && /\s*\*\s+(.*)$/ && !/\@author/) {
       $com .= $1 . "\n";
    }
    if (/\s*\/\*\*/) {
