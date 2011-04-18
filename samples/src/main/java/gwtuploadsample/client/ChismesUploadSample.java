@@ -96,7 +96,11 @@ public class ChismesUploadSample implements EntryPoint {
   private IUploader.OnFinishUploaderHandler onFinishHandler = new IUploader.OnFinishUploaderHandler() {
     public void onFinish(IUploader uploader) {
       if (uploader.getStatus() == Status.SUCCESS) {
-        new PreloadedImage(uploader.fileUrl(), uploader.getInputName(), uploader.getFileName(), addToThumbPanelHandler);
+        if (uploader.getStatus() == Status.SUCCESS) {
+          String msg = uploader.getServerInfo().message;
+          String url = msg != null && !msg.trim().isEmpty() ? uploader.getServletPath() + "?blob-key=" : uploader.fileUrl();
+          new PreloadedImage(url, uploader.getInputName(), uploader.getFileName(), addToThumbPanelHandler);
+        }        
       }
     }
   };

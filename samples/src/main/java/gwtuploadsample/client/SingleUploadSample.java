@@ -54,7 +54,9 @@ public class SingleUploadSample implements EntryPoint {
   private IUploader.OnFinishUploaderHandler onFinishUploaderHandler = new IUploader.OnFinishUploaderHandler() {
     public void onFinish(IUploader uploader) {
       if (uploader.getStatus() == Status.SUCCESS) {
-        new PreloadedImage(uploader.fileUrl(), showImage);
+        String msg = uploader.getServerInfo().message;
+        String url = msg != null && !msg.trim().isEmpty() ? uploader.getServletPath() + "?blob-key=" : uploader.fileUrl();
+        new PreloadedImage(url, showImage);      
       }
     }
   };

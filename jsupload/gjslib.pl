@@ -29,11 +29,7 @@ my $wikitpl = "src/main/java/jsupload/public/JsUpload.wiki.txt";
 # Output wiki page
 my $wikiout = "target/wiki/JsUpload_Documentation.wiki";
 
-
 ######## MAIN
-
-print docsample();
-exit;
 
 my %const = processConst($constants);
 my $txt = docheader();
