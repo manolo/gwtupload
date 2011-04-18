@@ -20,6 +20,8 @@ my $constants = 'Const';
 my $htmlsample = "src/main/java/jsupload/public/JsUpload.html";
 # Cgi-bin script
 my $cgifile = "src/main/java/jsupload/public/jsupload.cgi.pl";
+# Php script
+my $phpfile = "src/main/java/jsupload/public/jsupload.php";
 # Location of the sample aplication
 my $sample_location = "http://gwtupload.alcala.org/gupld/jsupload.JsUpload/JsUpload.html";
 # Wiki template with library description
@@ -29,6 +31,10 @@ my $wikiout = "target/wiki/JsUpload_Documentation.wiki";
 
 
 ######## MAIN
+
+print docsample();
+exit;
+
 my %const = processConst($constants);
 my $txt = docheader();
 $txt .= "= Library API =\n";
@@ -36,7 +42,8 @@ $txt .= printConst("Const");
 foreach my $cl (@classes) {
    $txt .= printClass($cl, processFile($cl));
 }
-$txt .= doccgi();
+$txt .= doccgi($cgifile);
+$txt .= doccgi($phpfile);
 $txt .= docsample();
 $txt .= "*Author:* _" . $author. "_\n\n";
 my $date = `date`;
@@ -269,7 +276,6 @@ sub printMethod {
      return "\n$com\n$rets$var.$func($args);\n";
 }
 
-
 sub docheader {
   my $ret = "";	
   open(W, $wikitpl) || die $! . " $wikitpl";
@@ -285,9 +291,9 @@ sub docsample {
    open(F, $htmlsample) || die $! . " $htmlsample" ;
    my $on = 0;
    while(<F>) {
-      $on = 0 if (/<\/script>/);
+      $on = 0 if (/<\/script/);
       $ret .= $_ if ($on);
-      $on = 1 if (/<script / && !/<\/script>/);
+      $on = 1 if (/<script\s+id='jsexample'>/);
    }
    close(F);
    $ret = "= Sample Code =\nYou can view this example  [$sample_location here]\n{{{\n$ret\n}}}\n";
@@ -295,8 +301,9 @@ sub docsample {
 }
 
 sub doccgi {
+   my $file = shift;
    my $ret = "";
-   open(F, $cgifile) || die $! . " $cgifile" ;
+   open(F, $file) || die $! . " $file" ;
    while(<F>) {
           if (/^## \*(\s*.*)\s*$/) {
             my $l = $1;
@@ -306,7 +313,7 @@ sub doccgi {
           }
    }
    close(F);
-   my $name = basename($cgifile);
+   my $name = basename($file);
    $ret = "= Server script ($name) =\n$ret\n";
    return $ret;
 }

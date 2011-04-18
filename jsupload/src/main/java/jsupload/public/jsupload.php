@@ -18,26 +18,26 @@
 #
 
 ############################################################################################
-## * * The provided server script has been written in php for the GWTUpload/JSUpload library.
+## * * Server script written in php for the GWTUpload/JSUpload library.
 ## *
-## * * This script requires PHP with and PHP-APC.
+## * * This script requires PHP with PHP-APC.
 ## *
 ## * * You have to put this file in a php enabled folder of your web server.
 ## *
 ## * # *Server Configuration*:
 ## * In order to enable the PHP APC extension to support file upload progress indication
 ## * you have to add the following section into php.ini:
-## *  [APC]                                                                                                                               
-## *  apc.enabled=1                                                                                                                       
-## *  apc.shm_segments=1                                                                                                                  
-## *  apc.shm_size=64                                                                                                                     
-## *  apc.max_file_size=10M                                                                                                               
-## *  apc.stat=1                                                                                                                          
-## *  apc.rfc1867="1"                                                                                                                     
-## *  apc.rfc1867_freq="0" 
+## *  [APC]
+## *  apc.enabled=1
+## *  apc.shm_segments=1
+## *  apc.shm_size=64
+## *  apc.max_file_size=10M
+## *  apc.stat=1
+## *  apc.rfc1867="1"
+## *  apc.rfc1867_freq="0"
 ## * 
 ## * # *Client side*:
-## * In the client have to add a hidden widget to the uploader in the first position.
+## * In the client you have to add a hidden widget to the uploader in the first position.
 ## *   * GwtUpload
 ## *      uploader.add(new Hidden("APC_UPLOAD_PROGRESS", uploader.getInputName()), 0);
 ## *   * JsUpload
@@ -47,7 +47,7 @@
 ## *      e.value = u.data().name;
 ## *      u.addElement(e, 0);
 ## *
-## * # *Configuration*: At the top of the script you one customizable variables.
+## * # *Configuration*: At the top of the script there is a customizable variable.
 ## *   * $uploaddir: is the prefix used in the path location to store the data received. By default
 ## *                 it is set to "/tmp/php_upload/", normally you have to change it to match the path
 ## *                 configured in your application. It is strongly recommended that this directory 
@@ -58,7 +58,11 @@
 ## *     where yyyy is the name of the element, with the original filename and its content-type.
 ## *   * The content of the file in the file will be in the /tmp/uploader/xxxx/yyyy.bin file.
 ## *   * The application must create, handle, and clean $tmp_dir files.
+## *   * You should check that the user session is valid in order to avoid that your server could
+## *     be used as a used as a surreptitious storage area.
 ############################################################################################
+
+session_start();
 
 $uploaddir = '/tmp/php_upload/' . session_id() . "/";
 $version  = '0.6.4';
@@ -69,6 +73,8 @@ function writeResponse($msg, $post) {
   if ($post) {
     # IE has issues when reading an XML in an iframe. We wrap the xml
     # message so as the client is able to compose the original one.
+    # client side will extract the text between %%%INI%%% and %%%END%%% tags
+    # and will restore '<' and '>' symbols.
     $xml = str_replace("<", "@@@", $xml);
     $xml = str_replace(">", "___", $xml);
     $xml = '%%%INI%%%' + $xml + '%%%END%%%';
@@ -76,10 +82,9 @@ function writeResponse($msg, $post) {
   die($xml);
 }
 
-session_start();
-
 if($_SERVER['REQUEST_METHOD'] == 'GET') {
- 
+  # Get is used to request percent while the file is uploaded.
+  # It is used also to remove the uploaded file, get it and cancel.
   if(isset($_GET['filename'])) {
     header('Expires: Tue, 08 Oct 1991 00:00:00 GMT');
     header('Cache-Control: no-cache, must-revalidate');
@@ -95,7 +100,8 @@ if($_SERVER['REQUEST_METHOD'] == 'GET') {
       $total = (int)$status['total'];
       $percent = round($done/$total*100);
 
-      $resp = sprintf("<percent>%d</percent><currentBytes>%d</currentBytes><totalBytes>%d</totalBytes>", $percent, $done, $total);
+      $resp = sprintf("<percent>%d</percent><currentBytes>%d</currentBytes><totalBytes>%d</totalBytes>", 
+              $percent, $done, $total);
       if($done==$total) $resp .= "<finished>ok</finished>";
         writeResponse($resp, 0);
       } else {
@@ -117,8 +123,11 @@ if($_SERVER['REQUEST_METHOD'] == 'GET') {
     }
   } else if(isset($_GET['remove'])) {
     $file = $uploaddir . $_GET['remove'] . ".bin";
+    $info = $uploaddir . $_GET['remove'] . ".info";
     if(file_exists($file))
       unlink($file);
+    if(file_exists($info))
+      unlink($info);
     writeResponse("<deleted>true</deleted>", 0);
   } else if(isset($_GET['cancel'])) {
     $_SESSION['canceled'] = true;
@@ -127,6 +136,8 @@ if($_SERVER['REQUEST_METHOD'] == 'GET') {
     writeResponse("<error>no parameter</error>", 0); 
   }
 } else { //POST
+  # Post is used to receive the files and move them to the user's
+  # session folder.
   $_SESSION['canceled'] = false;
   session_write_close();
 
@@ -136,7 +147,7 @@ if($_SERVER['REQUEST_METHOD'] == 'GET') {
   $key = $_POST['APC_UPLOAD_PROGRESS'];
 
   if(!$_FILES[$key]) {
-    writeResponse("<error>You have send an incorrect APC_UPLOAD_PROGRESS key:" . $key . "</error>", 1);
+    writeResponse("<error>You have sent an incorrect APC_UPLOAD_PROGRESS key:" . $key . "</error>", 1);
   }
 
   $uploadfile = $uploaddir . $key . ".bin";
@@ -158,7 +169,7 @@ if($_SERVER['REQUEST_METHOD'] == 'GET') {
 
     writeResponse($msg, 1);
   } else {
-    writeResponse("<error>Upload failed2</error>", 1);
+    writeResponse("<error>Unable to move: " . $_FILES[$key]['tmp_name'] . " to: " . $uploadfile . "</error>", 1);
   }
 }
 
