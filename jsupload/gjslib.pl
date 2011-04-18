@@ -56,8 +56,6 @@ print "Generated: $wikiout file\n";
 exit;
 ########
 
-
-
 sub processConst {
   my $class = shift;
   my %c;
@@ -299,16 +297,21 @@ sub docsample {
 sub doccgi {
    my $file = shift;
    my $ret = "";
+   my $in = 0;
    open(F, $file) || die $! . " $file" ;
    while(<F>) {
           if (/^## \*(\s*.*)\s*$/) {
             my $l = $1;
+            $in = 1 if ($l =~ /{{{$/);
             $ret .= "\n"     if ($ret =~ /[\.\:]$/ );
             $ret .= "\n  "   if ($l =~ /^[#\*] /);
+            $l = "\n$l\n" if ($in);
             $ret .= "$l";
+            $in = 0 if ($l =~ /}}}$/);
           }
    }
    close(F);
+   $ret =~ s/\n+/\n/g;
    my $name = basename($file);
    $ret = "= Server script ($name) =\n$ret\n";
    return $ret;

@@ -25,28 +25,32 @@
 ## * * You have to put this file in a php enabled folder of your web server.
 ## *
 ## * # *Server Configuration*:
-## * In order to enable the PHP APC extension to support file upload progress indication
-## * you have to add the following section into php.ini:
-## *  [APC]
-## *  apc.enabled=1
-## *  apc.shm_segments=1
-## *  apc.shm_size=64
-## *  apc.max_file_size=10M
-## *  apc.stat=1
-## *  apc.rfc1867="1"
-## *  apc.rfc1867_freq="0"
-## * 
+## *   In order to enable the PHP APC extension to support file upload progress indication
+## *   you have to add the following section into php.ini:
+## *   {{{
+## *    [APC]
+## *    apc.enabled=1
+## *    apc.shm_segments=1
+## *    apc.shm_size=64
+## *    apc.max_file_size=10M
+## *    apc.stat=1
+## *    apc.rfc1867="1"
+## *    apc.rfc1867_freq="0"
+## *   }}}
 ## * # *Client side*:
-## * In the client you have to add a hidden widget to the uploader in the first position.
-## *   * GwtUpload
-## *      uploader.add(new Hidden("APC_UPLOAD_PROGRESS", uploader.getInputName()), 0);
-## *   * JsUpload
-## *      var e = document.createElement("INPUT")
-## *      e.type = "hidden";
-## *      e.name = "APC_UPLOAD_PROGRESS";
-## *      e.value = u.data().name;
-## *      u.addElement(e, 0);
-## *
+## *   In the client you have to add a hidden widget to the uploader in the first position.
+## *   * Gwt-upload
+## *     {{{
+## *       uploader.add(new Hidden("APC_UPLOAD_PROGRESS", uploader.getInputName()), 0);
+## *     }}}
+## *   * Js-upload
+## *     {{{
+## *       var e = document.createElement("INPUT")
+## *       e.type = "hidden";
+## *       e.name = "APC_UPLOAD_PROGRESS";
+## *       e.value = u.data().name;
+## *       u.addElement(e, 0);
+## *     }}}
 ## * # *Configuration*: At the top of the script there is a customizable variable.
 ## *   * $uploaddir: is the prefix used in the path location to store the data received. By default
 ## *                 it is set to "/tmp/php_upload/", normally you have to change it to match the path
