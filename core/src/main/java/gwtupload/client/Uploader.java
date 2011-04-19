@@ -288,7 +288,6 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
         // with blobstore status does not make sense
         if (blobstore) {
           updateStatusTimer.setInterval(5000);
-          uploadTimeout = 60000;
         }
         uploadForm.submit();
       } catch (Exception e) {
@@ -703,7 +702,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
    * Because native javascript needs it
    */
   public JavaScriptObject getData() {
-    return getDataImpl(fileUrl(), getInputName(), getFileName(), getBasename(), getServerResponse(), getServerInfo().message, getStatus().toString());
+    return getDataImpl(fileUrl(), getInputName(), getFileName(), getBasename(), getServerResponse(), getServerInfo().message, getStatus().toString(), getServerInfo().size);
   }
 
   public IFileInput getFileInput() {
@@ -1034,7 +1033,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     return ret;
   }
 
-  private native JavaScriptObject getDataImpl(String url, String inputName, String fileName, String baseName, String serverResponse, String serverMessage, String status) /*-{
+  private native JavaScriptObject getDataImpl(String url, String inputName, String fileName, String baseName, String serverResponse, String serverMessage, String status, int size) /*-{
     return {
        url: url,
        name: inputName,
@@ -1042,7 +1041,8 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
        basename: baseName,
        response: serverResponse,
        message: serverMessage,
-       status:  status
+       status:  status,
+       size: size
     };
   }-*/;
 
