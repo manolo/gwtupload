@@ -20,7 +20,6 @@ import gwtupload.client.IFileInput.FileInputType;
 import gwtupload.client.IUploadStatus.Status;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -239,18 +238,7 @@ public class SingleUploader extends Uploader {
         }
       }
     }
-    
-    Iterator<Widget> i = getForm().iterator();
-    while (i.hasNext()) {
-      Widget w = i.next();
-      if (w instanceof Hidden) {
-        Hidden h = (Hidden)i;
-        if (h.getValue().startsWith(fileInputPrefix)) {
-          h.setValue(getInputName());
-        }
-      }
-      System.out.println(w.getClass().getName() + " " + w );
-    }
+
     getFileInput().getWidget().setVisible(true);
     if (button != null) {
       setEnabledButton(true);

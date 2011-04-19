@@ -167,7 +167,9 @@ public class Upload implements Exportable {
    *    upload.data().name     // The name of the input form element
    *    upload.data().filename // The name of the file selected by the user as is reported by the browser
    *    upload.data().basename // The name of the file selected by the user without path
-   *    upload.data().response // The server response
+   *    upload.data().response // All the server xml response
+   *    upload.data().message  // Just the server text in the message tag
+   *    upload.data().size     // The size of the file 
    *    upload.data().status   // The upload status (UNINITIALIZED, QUEUED, INPROGRESS, SUCCESS, ERROR, CANCELING, CANCELED, SUBMITING)
    */
   public JavaScriptObject data() {
