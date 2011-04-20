@@ -49,6 +49,7 @@ import com.google.gwt.user.client.ui.FormPanel.SubmitHandler;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Hidden;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.xml.client.Document;
@@ -171,7 +172,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
   private static long now() {
     return (new Date()).getTime();
   }
-  protected HorizontalPanel uploaderPanel;
+  protected Panel uploaderPanel;
   private final Timer automaticUploadTimer = new Timer() {
     private boolean firstTime = true;
     public void run() {
@@ -538,7 +539,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     uploadForm.addSubmitHandler(onSubmitFormHandler);
     uploadForm.addSubmitCompleteHandler(onSubmitCompleteHandler);
 
-    uploaderPanel = new HorizontalPanel();
+    uploaderPanel = getUploaderPanel();
     uploaderPanel.add(uploadForm);
     uploaderPanel.setStyleName(STYLE_MAIN);
 
@@ -547,6 +548,10 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     setStatusWidget(statusWidget);
 
     super.initWidget(uploaderPanel);
+  }
+  
+  protected Panel getUploaderPanel() {
+    return new HorizontalPanel();
   }
   
   /**

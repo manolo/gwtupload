@@ -76,23 +76,23 @@ public class BaseUploadStatus implements IUploadStatus {
   /**
    * Cancel button. 
    */
-  protected Label cancelLabel = new Label(" ");
+  protected Label cancelLabel = getCancelLabel();
   
   /**
    * Label with the original name of the uploaded file.
    */
-  protected Label fileNameLabel = new Label();
+  protected Label fileNameLabel = getFileNameLabel();
   
   /**
    * Main panel, attach it to the document using getWidget().
    */
-  protected Panel panel = new HorizontalPanel();
+  protected Panel panel = getPanel();
 
   /**
    * Label with the progress status.
    */
-  protected Label statusLabel = new Label();
-  private Set<CancelBehavior> cancelCfg = DEFAULT_CANCEL_CFG;
+  protected Label statusLabel = getStatusLabel();
+  protected Set<CancelBehavior> cancelCfg = DEFAULT_CANCEL_CFG;
   private boolean hasCancelActions = false;
 
   private UploadStatusConstants i18nStrs = GWT.create(UploadStatusConstants.class);
@@ -104,13 +104,33 @@ public class BaseUploadStatus implements IUploadStatus {
    * Default Constructor.
    */
   public BaseUploadStatus() {
-    panel.add(cancelLabel);
-    panel.add(fileNameLabel);
-    panel.add(statusLabel);
+    addElementsToPanel();
     fileNameLabel.setStyleName("filename");
     statusLabel.setStyleName("status");
     cancelLabel.setStyleName("cancel");
     cancelLabel.setVisible(true);
+  }
+  
+  protected void addElementsToPanel() {
+    panel.add(cancelLabel);
+    panel.add(fileNameLabel);
+    panel.add(statusLabel);
+  }
+  
+  protected Panel getPanel() {
+    return new HorizontalPanel();
+  }
+  
+  protected Label getStatusLabel() {
+    return new Label();
+  }
+  
+  protected Label getFileNameLabel() {
+    return new Label();
+  }
+  
+  protected Label getCancelLabel() {
+    return new Label(" ");
   }
 
   /* (non-Javadoc)
