@@ -16,7 +16,22 @@
  */
 package gwtupload.client;
 
-import static gwtupload.shared.UConsts.*;
+import static gwtupload.shared.UConsts.TAG_BLOBSTORE_PATH;
+import static gwtupload.shared.UConsts.TAG_CANCELED;
+import static gwtupload.shared.UConsts.TAG_CTYPE;
+import static gwtupload.shared.UConsts.TAG_CURRENT_BYTES;
+import static gwtupload.shared.UConsts.TAG_FIELD;
+import static gwtupload.shared.UConsts.TAG_FINISHED;
+import static gwtupload.shared.UConsts.TAG_MESSAGE;
+import static gwtupload.shared.UConsts.TAG_MSG_END;
+import static gwtupload.shared.UConsts.TAG_MSG_GT;
+import static gwtupload.shared.UConsts.TAG_MSG_LT;
+import static gwtupload.shared.UConsts.TAG_MSG_START;
+import static gwtupload.shared.UConsts.TAG_NAME;
+import static gwtupload.shared.UConsts.TAG_PERCENT;
+import static gwtupload.shared.UConsts.TAG_SIZE;
+import static gwtupload.shared.UConsts.TAG_TOTAL_BYTES;
+import static gwtupload.shared.UConsts.TAG_WAIT;
 import gwtupload.client.IFileInput.FileInputType;
 import gwtupload.client.IUploadStatus.Status;
 
@@ -38,6 +53,7 @@ import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.RequestTimeoutException;
 import com.google.gwt.http.client.Response;
+import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
@@ -206,7 +222,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
   private final RequestCallback onBlobstoreReceivedCallback = new RequestCallback() {
     public void onError(Request request, Throwable exception) {
       String message = removeHtmlTags(exception.getMessage());
-      cancelUpload(i18nStrs.uploaderServerUnavailable() + getServletPath() + "\n\n" + message);
+      cancelUpload(i18nStrs.uploaderServerUnavailable() + " (1) " + getServletPath() + "\n\n" + message);
     }
     public void onResponseReceived(Request request, Response response) {
       String text = response.getText();
@@ -278,7 +294,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
   private final RequestCallback onSessionReceivedCallback = new RequestCallback() {
     public void onError(Request request, Throwable exception) {
       String message = removeHtmlTags(exception.getMessage());
-      cancelUpload(i18nStrs.uploaderServerUnavailable() + getServletPath() + "\n\n" + message);
+      cancelUpload(i18nStrs.uploaderServerUnavailable() + " (2) " + getServletPath() + "\n\n" + message);
     }
     public void onResponseReceived(Request request, Response response) {
       hasSession = true;
@@ -291,8 +307,10 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
         }
         uploadForm.submit();
       } catch (Exception e) {
-        String message = i18nStrs.uploaderServerError() + "\nAction: " + getServletPath() + "\nException: " + e.getMessage() + response.getText();
-        cancelUpload(i18nStrs.uploaderServerUnavailable() + getServletPath() + "\n\n" + message);
+        String message = e.getMessage().contains("error:") 
+            ? i18nStrs.uploaderServerUnavailable() + " (3) " + getServletPath() + "\n\n" + i18nStrs.uploaderServerError() + "\nAction: " + getServletPath() + "\nException: " + e.getMessage() + response.getText()
+            : i18nStrs.submitError();
+        cancelUpload( message);
       }
     }
   };
@@ -318,7 +336,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
         String message = removeHtmlTags(exception.getMessage());
         message += "\n" + exception.getClass().getName();
         message += "\n" + exception.toString();
-        statusWidget.setError(i18nStrs.uploaderServerUnavailable() + getServletPath() + "\n\n" + message);
+        statusWidget.setError(i18nStrs.uploaderServerUnavailable() + " (4) " + getServletPath() + "\n\n" + message);
       }
     }
 
