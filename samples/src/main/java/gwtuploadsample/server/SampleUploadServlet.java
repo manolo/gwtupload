@@ -15,6 +15,8 @@
  * the License.
  */
 package gwtuploadsample.server;
+
+import static gwtupload.shared.UConsts.*;
 import gwtupload.server.UploadAction;
 import gwtupload.server.exceptions.UploadActionException;
 
@@ -108,7 +110,7 @@ public class SampleUploadServlet extends UploadAction {
       FileInputStream is = new FileInputStream(f);
       copyFromInputStreamToOutputStream(is, response.getOutputStream());
     } else {
-      renderXmlResponse(request, response, ERROR_ITEM_NOT_FOUND);
+      renderXmlResponse(request, response, XML_ERROR_ITEM_NOT_FOUND);
    }
   }
   

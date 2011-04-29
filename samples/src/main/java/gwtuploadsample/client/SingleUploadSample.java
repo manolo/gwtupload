@@ -68,7 +68,7 @@ public class SingleUploadSample implements EntryPoint {
     
     // This enables php apc progress mechanism
     single1.add(new Hidden("APC_UPLOAD_PROGRESS", single1.getInputName()), 0);
-    
+    single1.avoidEmptyFiles(false);
     RootPanel.get("single1").add(single1);
     
     SingleUploader single2 = new SingleUploader(FileInputType.LABEL);

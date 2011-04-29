@@ -122,7 +122,7 @@ public class UploadServlet extends HttpServlet implements Servlet {
   protected static final String XML_ERROR_ITEM_NOT_FOUND = "<" + TAG_ERROR + ">item not found</" + TAG_ERROR + ">";
   protected static final String XML_ERROR_TIMEOUT = "<" + TAG_ERROR + ">timeout receiving file</" + TAG_ERROR + ">";
   protected static final String XML_FINISHED_OK = "<" + TAG_FINISHED + ">OK</" + TAG_FINISHED + ">";
-
+  
   protected static UploadLogger logger = UploadLogger.getLogger(UploadServlet.class);
 
   protected static final ThreadLocal<HttpServletRequest> perThreadRequest = new ThreadLocal<HttpServletRequest>();

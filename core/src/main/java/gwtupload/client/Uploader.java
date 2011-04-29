@@ -184,7 +184,8 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
   
   protected boolean autoSubmit = false;  
   private boolean avoidRepeatedFiles = false;
-  private String basename = null;
+  private boolean avoidEmptyFile = true;
+  private String basename = "";
   private boolean blobstore = false;
   private IUploadStatus.UploadCancelHandler cancelHandler = new IUploadStatus.UploadCancelHandler() {
     public void onCancel() {
@@ -372,7 +373,6 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
    */
   private SubmitHandler onSubmitFormHandler = new SubmitHandler() {
     public void onSubmit(SubmitEvent event) {
-
       if (!finished && uploading) {
         uploading = false;
         statusWidget.setStatus(IUploadStatus.Status.CANCELED);
@@ -392,8 +392,8 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
         uploadFinished();
         return;
       }
-
-      if (basename == null || !validateExtension(basename)) {
+      
+      if (!validateExtension(basename)) {
         event.cancel();
         return;
       }
@@ -638,6 +638,18 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     this.avoidRepeatedFiles = avoidRepeat;
   }
 
+  /**
+   * Don't submit the form if the user has not selected any file.
+   * 
+   * It is useful in forms where the developer whats the user to submit
+   * information but the attachment is optional.
+   * 
+   * By default avoidEmptyFile is true.
+   */
+  public void avoidEmptyFiles(boolean b) {
+    this.avoidEmptyFile = b;
+  }
+  
   /**
    * Cancel the current upload process.
    */
@@ -1195,7 +1207,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
 
   private boolean validateExtension(String filename) {
     if (filename == null || filename.length() == 0) {
-      return false;
+      return !avoidEmptyFile;
     }
     boolean valid = Utils.validateExtension(validExtensions, filename);
     if (!valid) {
