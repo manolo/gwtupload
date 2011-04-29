@@ -16,8 +16,11 @@
  */
 package gwtupload.server;
 
+import static gwtupload.shared.UConsts.*;
+
 import gwtupload.server.exceptions.UploadActionException;
 import gwtupload.server.exceptions.UploadCanceledException;
+import gwtupload.shared.UConsts;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,7 +36,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.fileupload.FileItem;
-
 
 /** 
  * <p>Class used to manipulate the data received in the server side.</p>
@@ -147,7 +149,7 @@ public class UploadAction extends UploadServlet {
   }
 
   protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException  {
-    String parameter = request.getParameter(PARAM_REMOVE);
+    String parameter = request.getParameter(UConsts.PARAM_REMOVE);
     if (parameter != null) {
       try {
         removeItem(request, parameter);
@@ -178,7 +180,7 @@ public class UploadAction extends UploadServlet {
         message = executeAction(request, getSessionFileItems(request));
       }
     } catch (UploadCanceledException e) {
-      renderXmlResponse(request, response, "<cancelled>true</cancelled>");
+      renderXmlResponse(request, response, "<" + TAG_CANCELED + ">true</" + TAG_CANCELED + ">");
       return;
     } catch (UploadActionException e) {
       logger.info("ExecuteUploadActionException: " + e);

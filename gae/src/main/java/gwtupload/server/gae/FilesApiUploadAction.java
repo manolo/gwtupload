@@ -16,6 +16,8 @@
  */
 package gwtupload.server.gae;
 
+import static gwtupload.shared.UConsts.*;
+
 import gwtupload.server.UploadAction;
 import gwtupload.server.exceptions.UploadActionException;
 import gwtupload.server.gae.FilesApiFileItemFactory.FilesAPIFileItem;
@@ -108,11 +110,11 @@ public class FilesApiUploadAction extends UploadAction {
   @Override
   protected void doGet(HttpServletRequest request, HttpServletResponse response)
       throws IOException, ServletException {
-    String bkey = request.getParameter("blob-key");
+    String bkey = request.getParameter(PARAM_BLOBKEY);
     if (bkey != null) {
       logger.info("Serving a blobstore file with the key:" + bkey);
       FilesAPIFileItem.getBlobstoreService().serve(
-          new BlobKey(request.getParameter("blob-key")), response);
+          new BlobKey(request.getParameter(PARAM_BLOBKEY)), response);
     } else {
       super.doGet(request, response);
     }

@@ -16,6 +16,7 @@
  */
 package gwtupload.client;
 
+import static gwtupload.shared.UConsts.*;
 import gwtupload.client.IFileInput.FileInputType;
 import gwtupload.client.IUploadStatus.Status;
 
@@ -84,7 +85,7 @@ import com.google.gwt.xml.client.impl.DOMParseException;
  *         </ul>
  */
 public class Uploader extends Composite implements IsUpdateable, IUploader, HasJsData {
-  
+
   /**
    * FormPanel add method only can be called once.
    * This class override the add method to allow multiple additions
@@ -128,16 +129,8 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
   
   private static HashSet<String> fileDone = new HashSet<String>();
   private static Vector<String> fileQueue = new Vector<String>();
-  private static int statusInterval = DEFAULT_UPDATE_INTERVAL; 
-  private static final String TAG_CANCELED = "canceled";
-  private static final String TAG_CURRENT_BYTES = "currentBytes";
+  private static int statusInterval = DEFAULT_UPDATE_INTERVAL;
   
-  private static final String TAG_FINISHED = "finished";
-  private static final String TAG_PERCENT = "percent";
-
-  private static final String TAG_TOTAL_BYTES = "totalBytes";
-  private static final String TAG_WAIT = "wait";
-
   private static int uploadTimeout = DEFAULT_TIME_MAX_WITHOUT_RESPONSE;
   public static void log(String msg, Throwable e) {
     if (mlog == null) {
@@ -163,7 +156,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
   
   /**
    * Configure the maximal time without a valid response from the server.
-   * When this period is reached, the upload process is cancelled.
+   * When this period is reached, the upload process is canceled.
    */
   public static void setUploadTimeout(int uploadTimeout) {
     Uploader.uploadTimeout = uploadTimeout;
@@ -198,7 +191,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
       cancel();
     }
   };
-  private boolean cancelled = false;
+  private boolean canceled = false;
   private boolean enabled = true;
   private IFileInput fileInput;
   protected String fileInputPrefix = "GWTU";
@@ -215,10 +208,12 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
       String text = response.getText();
       String url = null;
       try {
-        url = Utils.getXmlNodeValue(XMLParser.parse(text), "blobpath");
+        url = Utils.getXmlNodeValue(XMLParser.parse(text), TAG_BLOBSTORE_PATH);
       } catch (DOMParseException e) {
-        if (text.contains("<blobpath>")) {
-          url = text.replaceAll("[\r\n]+","").replaceAll("^.*<blobpath>\\s*", "").replaceAll("\\s*</blobpath>.*$", "");
+        String bpath = "<" + TAG_BLOBSTORE_PATH + ">";
+        String sbpath = "</" + TAG_BLOBSTORE_PATH + ">";
+        if (text.contains(bpath)) {
+          url = text.replaceAll("[\r\n]+","").replaceAll("^.*" + bpath + "\\s*", "").replaceAll("\\s*" + sbpath + ".*$", "");
         }
       } catch (Exception e) {
         cancelUpload(i18nStrs.uploaderBlobstoreError() + "\n>>>\n" + e.getMessage() + "\n>>>>\n" + e);
@@ -342,21 +337,21 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
       onSubmitComplete = true;
       serverResponse = event.getResults();
       if (serverResponse != null) {
-        serverResponse = serverResponse.replaceFirst(".*%%%INI%%%([\\s\\S]*?)%%%END%%%.*", "$1");
-        serverResponse = serverResponse.replace("@@@","<").replace("___", ">").replace("&lt;", "<").replaceAll("&gt;", ">");
+        serverResponse = serverResponse.replaceFirst(".*" + TAG_MSG_START + "([\\s\\S]*?)" + TAG_MSG_END + ".*", "$1");
+        serverResponse = serverResponse.replace(TAG_MSG_LT, "<").replace(TAG_MSG_GT, ">").replace("&lt;", "<").replaceAll("&gt;", ">");
       }
       log("onSubmitComplete: " + serverResponse, null);
       try {
         // Parse the xml and extract serverInfo
         Document doc = XMLParser.parse(serverResponse);
-        serverInfo.name = Utils.getXmlNodeValue(doc, "name");
-        serverInfo.ctype = Utils.getXmlNodeValue(doc, "ctype");
-        String size = Utils.getXmlNodeValue(doc, "size");
+        serverInfo.name = Utils.getXmlNodeValue(doc, TAG_NAME);
+        serverInfo.ctype = Utils.getXmlNodeValue(doc, TAG_CTYPE);
+        String size = Utils.getXmlNodeValue(doc, TAG_SIZE);
         if (size != null) {
           serverInfo.size = Integer.parseInt(size);
         }
-        serverInfo.field = Utils.getXmlNodeValue(doc, "field");
-        serverInfo.message = Utils.getXmlNodeValue(doc, "message");
+        serverInfo.field = Utils.getXmlNodeValue(doc, TAG_FIELD);
+        serverInfo.message = Utils.getXmlNodeValue(doc, TAG_MESSAGE);
         
         // If the server response is a valid xml
         parseAjaxResponse(serverResponse);
@@ -659,11 +654,11 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
       return;
     }
       
-    if (cancelled) {
+    if (canceled) {
       return;
     }
     
-    cancelled = true;
+    canceled = true;
     automaticUploadTimer.cancel();
     log("cancelling " +  uploading, null);
     if (uploading) {
@@ -810,7 +805,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
   public void reuse() {
     this.uploadForm.reset();
     updateStatusTimer.cancel();
-    onSubmitComplete = uploading = cancelled = finished = successful = false;
+    onSubmitComplete = uploading = canceled = finished = successful = false;
   }
 
   /**
@@ -1082,9 +1077,9 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
         uploadFinished();
       }
     } else if (Utils.getXmlNodeValue(doc, TAG_CANCELED) != null) {
-      log("server response is: cancelled " + getFileName(), null);
+      log("server response is: canceled " + getFileName(), null);
       successful = false;
-      cancelled = true;
+      canceled = true;
       uploadFinished();
       return;
     } else if (Utils.getXmlNodeValue(doc, TAG_FINISHED) != null) {
@@ -1189,7 +1184,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
       } else {
         statusWidget.setStatus(IUploadStatus.Status.SUCCESS);
       }
-    } else if (cancelled) {
+    } else if (canceled) {
       statusWidget.setStatus(IUploadStatus.Status.CANCELED);
     } else {
       statusWidget.setStatus(IUploadStatus.Status.ERROR);
