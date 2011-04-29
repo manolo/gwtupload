@@ -97,6 +97,8 @@ public class Upload implements Exportable {
     
     if (multiple) {
       ((MultiUploader) uploader).setMaximumFiles(jsProp.getInt(Const.MAX_FILES));
+    } else if (jsProp.getBoolean(Const.EMPTY)){
+      ((SingleUploader) uploader).avoidEmptyFiles(false);
     }
     
     uploader.addOnStartUploadHandler(JsUtils.getOnStartUploaderHandler(jsProp.getClosure(Const.ON_START)));
