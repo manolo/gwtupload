@@ -842,6 +842,9 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
   }
 
   public void setFileInput(IFileInput input) {
+    if (fileInput != null) {
+      fileInput.getWidget().removeFromParent();
+    }
     fileInput = input;
     fileInput.addChangeHandler(onFileInputChanged);
     fileInput.setText(i18nStrs.uploaderBrowse());
