@@ -216,6 +216,11 @@ public class SingleUploader extends Uploader {
     formWidgets.add(w);
     super.add(w, index);
   }
+  
+  public void clear() {
+    formWidgets.clear();
+    super.clear();
+  }
 
 
   /* (non-Javadoc)

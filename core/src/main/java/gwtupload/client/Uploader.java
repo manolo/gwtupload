@@ -99,14 +99,17 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     }
     public void add(Widget w) {
       if (w instanceof Hidden) {
-        add(w, formElements.getWidgetCount());
+        formElements.insert(w, 0);     
       } else {
         formElements.add(w);        
       }
     }
     public void add(Widget w, int index) {
-      index = Math.max(0,Math.min(index, formElements.getWidgetCount()));
-      formElements.insert(w, index);
+      formElements.insert(w, Math.max(0, Math.min(index, formElements.getWidgetCount())));
+    }
+    public void clear() {
+      formElements.clear();
+      add(fileInput.getWidget());
     }
   }
   
@@ -839,9 +842,6 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
   }
 
   public void setFileInput(IFileInput input) {
-    if (fileInput != null) {
-      fileInput.getWidget().removeFromParent();
-    }
     fileInput = input;
     fileInput.addChangeHandler(onFileInputChanged);
     fileInput.setText(i18nStrs.uploaderBrowse());
