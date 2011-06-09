@@ -97,7 +97,7 @@ public interface IUploader extends HasJsData, HasWidgets {
     @DefaultStringValue("Invalid server response. Have you configured correctly your application in the server side?")
     String uploaderServerError();
     
-    @DefaultStringValue("Unable to auto submit the form, it seems your browser has security issues with this feature.\n Developer Info: If you are using jsupload and do not need crossdomain, try a version compiled with the standar linker?")
+    @DefaultStringValue("Unable to auto submit the form, it seems your browser has security issues with this feature.\n Developer Info: If you are using jsupload and you do not need cross-domain, try a version compiled with the standard linker?")
     String submitError();
     
     @DefaultStringValue("Unable to contact with the server: ")
