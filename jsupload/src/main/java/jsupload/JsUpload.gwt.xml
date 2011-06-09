@@ -1,6 +1,6 @@
 <module rename-to="jsupload">
-	<inherits name="jsupload.JsUploadLib" />
-        <add-linker name="xs"/> 
-	<entry-point class="jsupload.client.JsUpload"/>
-	<set-property name="export" value="yes" />
+  <inherits name="jsupload.JsUploadLib" />
+  <add-linker name="xs"/> 
+  <entry-point class="jsupload.client.JsUpload"/>
+  <set-property name="export" value="yes" />
 </module>

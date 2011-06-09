@@ -105,4 +105,7 @@ public class I18nConstants implements UploaderConstants {
   public String uploadStatusSuccess() {
     return or(strs.get(Const.TXT_SUCCESS), defaultStrs.uploadStatusSuccess());
   }
+  public String submitError() {
+    return or(strs.get(Const.TXT_SUBMIT_ERROR), defaultStrs.submitError());
+  }
 }
