@@ -11,12 +11,36 @@
     <artifactId>gwtupload-project</artifactId>
     <version>0.6.4-SNAPSHOT</version>
   </parent>
+  <properties>
+    <gwt.style>OBF</gwt.style>
+    <gwt.module.suffix></gwt.module.suffix>
+  </properties>
+  <profiles>
+     <profile>
+       <id>pretty</id>
+       <properties>
+         <gwt.style>PRETTY</gwt.style>
+       </properties>
+     </profile>
+     <profile>
+       <id>xs</id>
+       <properties>
+         <gwt.module.suffix>Xs</gwt.module.suffix>
+       </properties>
+     </profile>
+  </profiles>
 
   <dependencies>
     <dependency>
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-user</artifactId>
-      <version>${gwtVersion}</version>
+      <version>2.3.0</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.google.gwt</groupId>
+      <artifactId>gwt-dev</artifactId>
+      <version>2.3.0</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -28,7 +52,7 @@
     <dependency>
       <groupId>org.timepedia.exporter</groupId>
       <artifactId>gwtexporter</artifactId>
-      <version>${gwtExporterVersion}</version>
+      <version>2.3.0-2</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -41,6 +65,20 @@
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-incubator</artifactId>
       <version>${gwtIncubatorVersion}</version>
+      <scope>provided</scope>
+    </dependency>
+    <!-- gwt-2.3.0 needs these -->
+    <dependency>
+      <groupId>javax.validation</groupId>
+      <artifactId>validation-api</artifactId>
+      <version>1.0.0.GA</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.validation</groupId>
+      <artifactId>validation-api</artifactId>
+      <version>1.0.0.GA</version>
+      <classifier>sources</classifier>
       <scope>provided</scope>
     </dependency>
   </dependencies>
@@ -85,9 +123,8 @@
           <hostedWebapp>target/www</hostedWebapp>
           <out>target/www</out>
           <soyc>true</soyc>
-          <!-- Style OBFUSCATED PRETTY -->
-          <style>OBFUSCATED</style>
-          <module>jsupload.JsUpload</module>
+          <style>${gwt.style}</style>
+          <module>jsupload.JsUpload${gwt.module.suffix}</module>
         </configuration>
       </plugin>      
       <plugin>
