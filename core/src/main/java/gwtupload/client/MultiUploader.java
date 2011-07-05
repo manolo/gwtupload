@@ -96,7 +96,7 @@ public class MultiUploader extends Composite implements IUploader {
   private String fileInputPrefix = "GWTMU";
   private int fileInputSize = Uploader.DEFAULT_FILEINPUT_SIZE;
 
-  private FileInputType fileInputType;
+  protected FileInputType fileInputType;
   private UploaderConstants i18nStrs = Uploader.I18N_CONSTANTS;
   private IUploader lastUploader = null;
   private int maximumFiles = 0;
@@ -112,6 +112,8 @@ public class MultiUploader extends Composite implements IUploader {
 
   private String servletPath = null;
 
+  private boolean autoSubmit = false;
+  
   private IUploadStatus statusWidget = null;
   
   private List<IUploader> uploaders = new ArrayList<IUploader>();
@@ -540,10 +542,13 @@ public class MultiUploader extends Composite implements IUploader {
   }
 
   protected IUploader getUploaderInstance() {
-    return new Uploader(fileInputType, true);
+    return new Uploader(fileInputType, autoSubmit);
   }
 
-  private void newUploaderInstance() {
+  /**
+   * Create a new uploader, override it to add customized behaviours but remember to call super.
+   */
+  protected void newUploaderInstance() {
 
     if (maximumFiles > 0 && getNonErroneousUploads() >= maximumFiles) {
       GWT.log("Reached maximum number of files in MultiUploader widget: " + maximumFiles, null);
@@ -599,6 +604,20 @@ public class MultiUploader extends Composite implements IUploader {
     if (lastUploader == null) {
       lastUploader = currentUploader;
     }
+  }
+  
+  /**
+   * Return the current value of autoSubmit the new Uploader instances are created with
+   */
+  public boolean getAutoSubmit() {
+    return autoSubmit;
+  }
+  
+  /**
+  * Set the new value of autoSubmit the new Uploader instances are created with
+  */
+  public void setAutoSubmit(boolean autoSubmit) {
+    this.autoSubmit = autoSubmit;
   }
 
 }
