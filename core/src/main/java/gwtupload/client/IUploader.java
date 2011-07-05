@@ -420,4 +420,9 @@ public interface IUploader extends HasJsData, HasWidgets {
    */
   void submit();
 
+  /**
+   * Sets the uploader in uploaded state with given file info
+   * @param info
+   */
+  void setUploaded(UploadedInfo info);
 }

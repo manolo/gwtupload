@@ -540,6 +540,13 @@ public class MultiUploader extends Composite implements IUploader {
   public void submit() {
     currentUploader.submit();
   }
+  
+  /* (non-Javadoc)
+  * @see gwtupload.client.IUploader#setUploaded()
+  */
+  public void setUploaded(UploadedInfo info) {
+	currentUploader.setUploaded(info);
+  }
 
   protected IUploader getUploaderInstance() {
     return new Uploader(fileInputType, autoSubmit);

@@ -966,6 +966,17 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
   }
 
   /* (non-Javadoc)
+   * @see gwtupload.client.IUploader#setUploaded()
+   */
+  public void setUploaded(UploadedInfo info) {
+    serverInfo = info;
+    successful = true;
+    statusWidget.setFileName(info.name);
+    fileInput.setName(info.field);
+    uploadFinished();
+  }
+
+  /* (non-Javadoc)
    * @see gwtupload.client.IUpdateable#update()
    */
   public void update() {
