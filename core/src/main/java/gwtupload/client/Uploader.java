@@ -1134,7 +1134,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
       log("incorrect response: " + getFileName() + " " + responseTxt, null);
     }
     
-    if (now() - lastData >  uploadTimeout) {
+    if (uploadTimeout > 0 && now() - lastData >  uploadTimeout) {
       successful = false;
       cancelUpload(i18nStrs.uploaderTimeout());
       try {
