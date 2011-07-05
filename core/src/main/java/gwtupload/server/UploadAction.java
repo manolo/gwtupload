@@ -183,10 +183,10 @@ public class UploadAction extends UploadServlet {
       renderXmlResponse(request, response, "<" + TAG_CANCELED + ">true</" + TAG_CANCELED + ">");
       return;
     } catch (UploadActionException e) {
-      logger.info("ExecuteUploadActionException: " + e);
+      logger.info("ExecuteUploadActionException when receiving a file.", e);
       error =  e.getMessage();
     } catch (Exception e) {
-      logger.info("Exception " + e);
+      logger.info("Unknown Exception when receiving a file.", e);
       error = e.getMessage();
     } finally {
       perThreadRequest.set(null);
