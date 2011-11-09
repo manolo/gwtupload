@@ -4,11 +4,17 @@
   <inherits name='com.google.gwt.user.User' />
   <inherits name="com.google.gwt.xml.XML" />
 
-  <replace-with class="gwtupload.client.DecoratedFileUpload.DecoratedFileUploadImplClick">
+  <replace-with class="gwtupload.client.DecoratedFileUpload.DecoratedFileUploadImplIE">
     <when-type-is class="gwtupload.client.DecoratedFileUpload.DecoratedFileUploadImpl"/>
     <any>
       <when-property-is name="user.agent" value="ie6"/>
       <when-property-is name="user.agent" value="ie8" />
+    </any>
+  </replace-with>
+
+  <replace-with class="gwtupload.client.DecoratedFileUpload.DecoratedFileUploadImplClick">
+    <when-type-is class="gwtupload.client.DecoratedFileUpload.DecoratedFileUploadImpl"/>
+    <any>
       <when-property-is name="user.agent" value="ie9" />
       <when-property-is name="user.agent" value="safari"/>
     </any>

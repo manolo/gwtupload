@@ -134,6 +134,7 @@ public class DecoratedFileUpload extends Composite implements HasText, HasName, 
     public void init(AbsolutePanel container, FileUploadWithMouseEvents input) {
       this.container = container;
       this.input = input;
+      DOM.setStyleAttribute(container.getElement(), "cssFloat", "left");
     }
 
     public void setSize(String width, String height) {
@@ -234,10 +235,10 @@ public class DecoratedFileUpload extends Composite implements HasText, HasName, 
     public void init(AbsolutePanel container, FileUploadWithMouseEvents input) {
       super.init(container, input);
       container.add(input, 500, 500);
-      DOM.setStyleAttribute(container.getElement(), "position", "fixed");
-      DOM.setStyleAttribute(container.getElement(), "display", "inline");
-      DOM.setStyleAttribute(input.getElement(), "top", "-300px");
-      DOM.setStyleAttribute(input.getElement(), "left", "-300px");
+      DOM.setStyleAttribute(input.getElement(), "position", "fixed");
+      DOM.setStyleAttribute(input.getElement(), "display", "inline");
+      DOM.setStyleAttribute(input.getElement(), "top", "-1000px");
+      DOM.setStyleAttribute(input.getElement(), "left", "-1000px");
     }
 
     public void setButton(Widget widget) {
@@ -256,6 +257,17 @@ public class DecoratedFileUpload extends Composite implements HasText, HasName, 
           clickHandlerCache.put(widget, clickRegistration);
         }
       }
+    }
+  }
+
+  /**
+   * Implementation for IE6-8
+   */
+  @SuppressWarnings("unused")
+  private static class DecoratedFileUploadImplIE extends DecoratedFileUploadImplClick {
+    public void init(AbsolutePanel container, FileUploadWithMouseEvents input) {
+      super.init(container, input);
+      DOM.setStyleAttribute(input.getElement(), "position", "absolute");
     }
   }
 
@@ -287,7 +299,6 @@ public class DecoratedFileUpload extends Composite implements HasText, HasName, 
       
       // Not using the GWT 2.0.x way to set Style attributes in order to be
       // compatible with old GWT releases
-      DOM.setStyleAttribute(container.getElement(), "cssFloat", "left");
       DOM.setStyleAttribute(wrapper.getElement(), "textAlign", "left");
       DOM.setStyleAttribute(wrapper.getElement(), "zIndex", "1");
       DOM.setStyleAttribute(input.getElement(), "marginLeft", "-1500px");
