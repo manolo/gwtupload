@@ -40,7 +40,6 @@ import java.util.Vector;
 
 import javax.servlet.Servlet;
 import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -241,7 +240,7 @@ public class UploadServlet extends HttpServlet implements Servlet {
    *  
    * @return true if the case of the application is running in appengine
    */
-  public static final boolean isAppEngine() {
+  public boolean isAppEngine() {
     if (appEngine == null) {
       try {
         new Thread() { { run(); } };
@@ -453,6 +452,15 @@ public class UploadServlet extends HttpServlet implements Servlet {
       renderXmlResponse(request, response, XML_ERROR_ITEM_NOT_FOUND);
     }
   }
+  
+  @Override
+  public String getInitParameter(String name) {
+    String value = getServletContext().getInitParameter(name);
+    if (value == null) {
+      value = super.getInitParameter(name);
+    }
+    return value;
+  }
 
   /**
    * Read configurable parameters during the servlet initialization.
@@ -460,8 +468,7 @@ public class UploadServlet extends HttpServlet implements Servlet {
   public void init(ServletConfig config) throws ServletException {
     super.init(config);
 
-    ServletContext ctx = config.getServletContext();
-    String size = ctx.getInitParameter("maxSize");
+    String size = getInitParameter("maxSize");
     if (size != null) {
       try {
         maxSize = Long.parseLong(size);
@@ -469,7 +476,7 @@ public class UploadServlet extends HttpServlet implements Servlet {
       }
     }
 
-    String slow = ctx.getInitParameter("slowUploads");
+    String slow = getInitParameter("slowUploads");
     if (slow != null) {
       if ("true".equalsIgnoreCase(slow)) {
         uploadDelay = DEFAULT_SLOW_DELAY_MILLIS;
@@ -481,7 +488,7 @@ public class UploadServlet extends HttpServlet implements Servlet {
       }
     }
     
-    String timeout = ctx.getInitParameter("noDataTimeout");
+    String timeout = getInitParameter("noDataTimeout");
     if (timeout != null){
       try {
         UploadListener.setNoDataTimeout(Integer.parseInt(timeout));
@@ -489,7 +496,12 @@ public class UploadServlet extends HttpServlet implements Servlet {
       }
     }
     
-    appEngine = "true".equalsIgnoreCase(ctx.getInitParameter("appEngine")) ? Boolean.TRUE : isAppEngine();
+    String appe = getInitParameter("appEngine");
+    if (appe != null) {
+      appEngine = "true".equalsIgnoreCase(appe);
+    } else {
+      appEngine = isAppEngine();
+    }
 
     logger.info("UPLOAD-SERVLET init: maxSize=" + maxSize + ", slowUploads=" + slow + ", isAppEngine=" + isAppEngine());
   }
