@@ -24,7 +24,6 @@ import gwtupload.server.exceptions.UploadSizeLimitException;
 import gwtupload.server.exceptions.UploadTimeoutException;
 import gwtupload.shared.UConsts;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -126,7 +125,7 @@ public class UploadServlet extends HttpServlet implements Servlet {
 
   protected static final ThreadLocal<HttpServletRequest> perThreadRequest = new ThreadLocal<HttpServletRequest>();
 
-  private static Boolean appEngine = null;
+  private static boolean appEngine = false;
 
   private static final long serialVersionUID = 2740693677625051632L;
 
@@ -241,18 +240,7 @@ public class UploadServlet extends HttpServlet implements Servlet {
    * @return true if the case of the application is running in appengine
    */
   public boolean isAppEngine() {
-    if (appEngine == null) {
-      try {
-        new Thread() { { run(); } };
-        File f = File.createTempFile("upld", "tmp");
-        f.createNewFile();
-        f.delete();
-        appEngine = Boolean.FALSE;
-      } catch (Exception e) {
-        appEngine = Boolean.TRUE;
-      }
-    }
-    return appEngine.booleanValue();
+    return appEngine;
   }
 
   /**
