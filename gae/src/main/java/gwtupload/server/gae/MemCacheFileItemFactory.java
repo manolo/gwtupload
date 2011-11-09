@@ -40,8 +40,11 @@ import com.google.appengine.api.memcache.stdimpl.GCacheFactory;
  * </p>
  * 
  * This class in useful in App-engine where writing to file-system is not supported.
- * It has the limitation of not supporting large files due to App-engine request size 
- * is limited to 512 KB., and cache storage size to 1024 KB per object.
+ * Cache has a limit of 1024KB per object, so this class stores long files in multiple
+ * cache records. 
+ * 
+ * Some time ago GAE had the limitation a request size is limited to 512 KB.
+ * It seems it has changed and now it is possible larger sizes.
  * 
  * @author Manolo Carrasco Moñino
  * 
@@ -55,18 +58,19 @@ public class MemCacheFileItemFactory implements FileItemFactory, Serializable {
    * which is using this. 
    *
    */
-  public class CacheableByteArrayOutputStream extends OutputStream implements Serializable {
+  public static class CacheableByteArrayOutputStream extends OutputStream implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     Saveable<CacheableByteArrayOutputStream> saveable;
-    private byte[] buff = new byte[requestSize];
+    private byte[] buff;
 
     private int read = 0;
     private int size = 0;
 
-    public CacheableByteArrayOutputStream(Saveable<CacheableByteArrayOutputStream> object) {
+    public CacheableByteArrayOutputStream(Saveable<CacheableByteArrayOutputStream> object, int size) {
       saveable = object;
+      buff = new byte[size];
     }
 
     @Override
@@ -108,18 +112,20 @@ public class MemCacheFileItemFactory implements FileItemFactory, Serializable {
     String ctype;
     CacheableByteArrayOutputStream data = null;
     String fname;
+    int rSize;
     boolean formfield;
 
     String name;
 
     int size = 0;
 
-    public CacheableFileItem(String fieldName, String contentType, boolean isFormField, String fileName) {
+    public CacheableFileItem(String fieldName, String contentType, boolean isFormField, String fileName, int requestSize) {
       ctype = contentType;
       fname = fieldName;
       name = fileName;
       formfield = isFormField;
-      data = new CacheableByteArrayOutputStream(this);
+      rSize = requestSize;
+      data = new CacheableByteArrayOutputStream(this, rSize);
     }
 
     public void delete() {
@@ -129,11 +135,11 @@ public class MemCacheFileItemFactory implements FileItemFactory, Serializable {
         try {
           Cache cache = CacheManager.getInstance().getCacheFactory().createCache(Collections.emptyMap());
           String key = fname;
-          while (cache.remove(fname) != null) {
+          while (cache.remove(key) != null) {
             key += "X";
           }
         } catch (Exception e) { }
-        data = new CacheableByteArrayOutputStream(this);
+        data = new CacheableByteArrayOutputStream(this, rSize);
       }
     }
 
@@ -280,7 +286,7 @@ public class MemCacheFileItemFactory implements FileItemFactory, Serializable {
 
   private static final long serialVersionUID = 1L;
 
-  private int requestSize;
+  private int requestSize = 0;
   
   public MemCacheFileItemFactory() {
     this(DEFAULT_REQUEST_SIZE);
@@ -291,7 +297,7 @@ public class MemCacheFileItemFactory implements FileItemFactory, Serializable {
   }
 
   public FileItem createItem(String fieldName, String contentType, boolean isFormField, String fileName) {
-    return new CacheableFileItem(fieldName, contentType, isFormField, fileName);
+    return new CacheableFileItem(fieldName, contentType, isFormField, fileName, requestSize);
   }
 
 }
