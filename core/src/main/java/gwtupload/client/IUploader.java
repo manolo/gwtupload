@@ -352,7 +352,12 @@ public interface IUploader extends HasJsData, HasWidgets {
    * Reset the list of already uploaded files. 
    */
   void reset();
-
+  
+  /**
+   * Enable/disable automatic submit when the user selects a file.
+   */
+  void setAutoSubmit(boolean b);
+  
   /**
    * Enable the file input.
    */
@@ -425,4 +430,9 @@ public interface IUploader extends HasJsData, HasWidgets {
    * @param info
    */
   void setUploaded(UploadedInfo info);
+  
+  /**
+   * Return the widget instance.
+   */
+  Widget getWidget();
 }

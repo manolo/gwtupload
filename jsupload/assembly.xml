@@ -9,6 +9,8 @@
       <outputDirectory>/jsupload</outputDirectory>
       <excludes>
         <exclude>**/GWTC*css</exclude>
+        <exclude>**/*cache.png</exclude>
+        <exclude>**/Upload.css</exclude>
         <exclude>**/JsUpload.wiki.txt</exclude>
         <exclude>**/jsupload.cgi.pl</exclude>
       </excludes>

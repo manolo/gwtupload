@@ -16,14 +16,17 @@
  */
 package jsupload.client;
 
-import org.timepedia.exporter.client.Exporter;
+import gwtupload.client.IFileInput.FileInputType;
+import gwtupload.client.IUploader;
+import gwtupload.client.MultiUploader;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.ui.RootPanel;
 
 /**
- * @author Manolo Carrasco Moñino 
+ * @author Manolo Carrasco Moñino T
  * <p>
  * This class exports the gwtUpload library into native javascript library.
  * </p>
@@ -36,8 +39,9 @@ public class JsUpload implements EntryPoint {
    * Eventually the javascript method jsuOnLoad is called if it exists.
    */
   public void onModuleLoad() {
-    ((Exporter) GWT.create(Upload.class)).export();
-    ((Exporter) GWT.create(PreloadImage.class)).export();
+    GWT.create(Upload.class);
+    GWT.create(PreloadImage.class);
+    
     // Sleep for a while until all css stuff has been loaded
     new Timer() {
       public void run() {

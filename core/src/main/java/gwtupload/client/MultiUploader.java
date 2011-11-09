@@ -47,7 +47,11 @@ import com.google.gwt.user.client.ui.Widget;
  * </p>
  */
 public class MultiUploader extends Composite implements IUploader {
-
+  
+  public Widget getWidget() {
+    return this;
+  }
+  
   IUploader.OnStatusChangedHandler statusChangeHandler = new IUploader.OnStatusChangedHandler() {
     public void onStatusChanged(IUploader uploader) {
       Uploader u = (Uploader) uploader;
@@ -112,7 +116,7 @@ public class MultiUploader extends Composite implements IUploader {
 
   private String servletPath = null;
 
-  private boolean autoSubmit = false;
+  private boolean autoSubmit = true;
   
   private IUploadStatus statusWidget = null;
   
@@ -620,9 +624,9 @@ public class MultiUploader extends Composite implements IUploader {
     return autoSubmit;
   }
   
-  /**
-  * Set the new value of autoSubmit the new Uploader instances are created with
-  */
+  /* (non-Javadoc)
+   * @see gwtupload.client.IUploader#setAutoSubmit(boolean)
+   */
   public void setAutoSubmit(boolean autoSubmit) {
     this.autoSubmit = autoSubmit;
   }

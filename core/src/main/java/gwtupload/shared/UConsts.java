@@ -19,7 +19,9 @@ public class UConsts {
   public static final String TAG_WAIT = "wait";
   public static final String TAG_OK = "ok";
   
-  public static final String TAG_MSG_START = "%%%START%%%";
+  public static final String TAG_MSG_START = "%%%INI%%%";
+  @Deprecated
+  public static final String LEGACY_TAG_MSG_START = "%%%START%%%";
   public static final String TAG_MSG_END = "%%%END%%%";
   public static final String TAG_MSG_GT = "___";
   public static final String TAG_MSG_LT = "@@@";

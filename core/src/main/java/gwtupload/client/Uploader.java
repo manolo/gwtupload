@@ -28,6 +28,7 @@ import static gwtupload.shared.UConsts.TAG_MSG_GT;
 import static gwtupload.shared.UConsts.TAG_MSG_LT;
 import static gwtupload.shared.UConsts.TAG_MSG_START;
 import static gwtupload.shared.UConsts.TAG_NAME;
+import static gwtupload.shared.UConsts.LEGACY_TAG_MSG_START;
 import static gwtupload.shared.UConsts.TAG_PERCENT;
 import static gwtupload.shared.UConsts.TAG_SIZE;
 import static gwtupload.shared.UConsts.TAG_TOTAL_BYTES;
@@ -53,7 +54,6 @@ import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.RequestTimeoutException;
 import com.google.gwt.http.client.Response;
-import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
@@ -101,6 +101,10 @@ import com.google.gwt.xml.client.impl.DOMParseException;
  *         </ul>
  */
 public class Uploader extends Composite implements IsUpdateable, IUploader, HasJsData {
+  
+  public Widget getWidget(){
+    return this;
+  }
 
   /**
    * FormPanel add method only can be called once.
@@ -359,7 +363,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
       onSubmitComplete = true;
       serverResponse = event.getResults();
       if (serverResponse != null) {
-        serverResponse = serverResponse.replaceFirst(".*" + TAG_MSG_START + "([\\s\\S]*?)" + TAG_MSG_END + ".*", "$1");
+        serverResponse = serverResponse.replaceFirst(".*(" + TAG_MSG_START + "|" + LEGACY_TAG_MSG_START + ")([\\s\\S]*?)" + TAG_MSG_END + ".*", "$2");
         serverResponse = serverResponse.replace(TAG_MSG_LT, "<").replace(TAG_MSG_GT, ">").replace("&lt;", "<").replaceAll("&gt;", ">");
       }
       log("onSubmitComplete: " + serverResponse, null);
@@ -841,9 +845,8 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     onSubmitComplete = uploading = canceled = finished = successful = false;
   }
 
-  /**
-   * Enable/disable automatic submit when the user selects a file.
-   * @param b
+  /* (non-Javadoc)
+   * @see gwtupload.client.IUploader#setAutoSubmit(boolean)
    */
   public void setAutoSubmit(boolean b) {
     autoSubmit = b;

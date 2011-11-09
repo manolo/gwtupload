@@ -55,6 +55,8 @@ public class Const implements Exportable {
     protected static final String MAX_FILES = "maxFiles"; // [0] Only used if multiple=true. The maximum number of files which the user can send to the server. 0 means unlimited. Only successful uploads are counted.
     protected static final String CHOOSE_TYPE = "chooser"; // ["browser"] Choose file button type, options are: "browser", "button", "label", "anchor".
     
+    protected static final String AUTO = "auto"; // set autosubmit flag, by default is true for multiuploader and false for singleuploader.
+    
     protected static final String TXT_ACTIVE_UPLOAD = "uploaderActiveUpload"; // (Upload)["There is already an active upload, try later."]  
     protected static final String TXT_ALREADY_DONE = "uploaderAlreadyDone"; // (Upload)["This file was already uploaded."]  
     protected static final String TXT_INVALID_EXTENSION = "uploaderInvalidExtension"; // (Upload)["Invalid file.\nOnly these types are allowed:\n"] 

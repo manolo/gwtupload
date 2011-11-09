@@ -81,6 +81,7 @@ public class Upload implements Exportable {
     if ("incubator".equals(jsProp.get(Const.TYPE))) {
       if (multiple) {
         uploader = new MultiUploader(type, new IncubatorUploadProgress());
+        
       } else {
         uploader = new SingleUploader(type);
       }
@@ -100,6 +101,9 @@ public class Upload implements Exportable {
     } else if (jsProp.getBoolean(Const.EMPTY)){
       ((SingleUploader) uploader).avoidEmptyFiles(false);
     }
+    
+    boolean auto = jsProp.defined(Const.AUTO) ? jsProp.getBoolean(Const.AUTO) : multiple;
+    uploader.setAutoSubmit(auto);
     
     uploader.addOnStartUploadHandler(JsUtils.getOnStartUploaderHandler(jsProp.getClosure(Const.ON_START)));
     uploader.addOnChangeUploadHandler(JsUtils.getOnChangeUploaderHandler(jsProp.getClosure(Const.ON_CHANGE)));

@@ -16,12 +16,12 @@
  */
 package jsupload.client;
 
-import com.google.code.p.gwtchismes.client.GWTCAlert;
-import com.google.code.p.gwtchismes.client.GWTCProgress;
-import com.google.gwt.user.client.ui.Widget;
-
 import gwtupload.client.BaseUploadStatus;
 import gwtupload.client.IUploadStatus;
+
+import com.google.code.p.gwtchismes.client.GWTCProgress;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * <p>
@@ -35,7 +35,6 @@ public class ChismesUploadProgress extends BaseUploadStatus {
 
   public int prgBarElements = 40;
   public int prgBarOption = GWTCProgress.SHOW_NUMBERS | GWTCProgress.SHOW_TEXT;
-  GWTCAlert alert = new GWTCAlert();
 
   boolean asDialog = false;
 
@@ -64,7 +63,7 @@ public class ChismesUploadProgress extends BaseUploadStatus {
   public void setError(String error) {
     setStatus(IUploadStatus.Status.ERROR);
     if (error != null && error.length() > 0) {
-      alert.alert(error);
+      Window.alert(error);
     }
   }
   

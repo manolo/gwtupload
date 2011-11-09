@@ -2,4 +2,5 @@
   <inherits name="jsupload.JsUploadLib" />
   <entry-point class="jsupload.client.JsUpload"/>
   <set-property name="export" value="yes" />
+  <set-property name="compiler.stackMode" value="strip"/>
 </module>
