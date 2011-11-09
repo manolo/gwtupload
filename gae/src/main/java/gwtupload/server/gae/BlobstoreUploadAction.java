@@ -98,17 +98,19 @@ public class BlobstoreUploadAction extends UploadAction {
   }
   
   @Override
+  public boolean isAppEngine() {
+    return true;
+  }
+  
+  @Override
   public void init(ServletConfig config) throws ServletException {
     super.init(config);
     logger.info("Initializing Blobstore servlet." );
-    if (isAppEngine()) {
-      uploadDelay = 0;
-      maxSize = 50 * 1024 * 1024;
-      useBlobstore = true;
-      logger.info("BLOB-STORE-SERVLET: init: maxSize=" + maxSize
-          + ", slowUploads=" + uploadDelay + ", isAppEngine=" + isAppEngine()
-          + ", useBlobstore=" + useBlobstore);
-    }
+    uploadDelay = 0;
+    useBlobstore = true;
+    logger.info("BLOB-STORE-SERVLET: init: maxSize=" + maxSize
+        + ", slowUploads=" + uploadDelay + ", isAppEngine=" + isAppEngine()
+        + ", useBlobstore=" + useBlobstore); 
   }
   
   @Override

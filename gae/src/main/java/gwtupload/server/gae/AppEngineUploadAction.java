@@ -57,21 +57,25 @@ public class AppEngineUploadAction extends UploadAction {
               + MemCacheFileItemFactory.DEFAULT_REQUEST_SIZE + " Bytes");
     }
   }
+  
+
+  @Override
+  public boolean isAppEngine() {
+    return true;
+  }
 
   @Override
   public void init(ServletConfig config) throws ServletException {
     super.init(config);
-    if (isAppEngine()) {
-      useBlobstore = false;
-      if (uploadDelay > 0) {
-        uploadDelay = Math.max(50, uploadDelay);
-      }
-      if (maxSize > MemCacheFileItemFactory.DEFAULT_REQUEST_SIZE) {
-        maxSize = MemCacheFileItemFactory.DEFAULT_REQUEST_SIZE;
-        logger.info("GAEE-UPLOAD-SERVLET init: maxSize=" + maxSize
-            + ", slowUploads=" + uploadDelay + ", isAppEngine=" + isAppEngine()
-            + ", useBlobstore=" + useBlobstore);
-      }
+    useBlobstore = false;
+    if (uploadDelay > 0) {
+      uploadDelay = Math.max(50, uploadDelay);
+    }
+    if (maxSize > MemCacheFileItemFactory.DEFAULT_REQUEST_SIZE) {
+      maxSize = MemCacheFileItemFactory.DEFAULT_REQUEST_SIZE;
+      logger.info("GAEE-UPLOAD-SERVLET init: maxSize=" + maxSize
+          + ", slowUploads=" + uploadDelay + ", isAppEngine=" + isAppEngine()
+          + ", useBlobstore=" + useBlobstore);
     }
   }
   

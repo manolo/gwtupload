@@ -25,8 +25,6 @@ import gwtupload.server.gae.FilesApiFileItemFactory.FilesAPIFileItem;
 import java.io.IOException;
 import java.util.List;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -81,16 +79,12 @@ import com.google.appengine.api.blobstore.BlobKey;
 public class FilesApiUploadAction extends UploadAction {
   private static final long serialVersionUID = 3683112300714613746L;
   
-  private boolean useMemCache = false;
   
   @Override
-  public void init(ServletConfig config) throws ServletException {
-    super.init(config);
-    ServletContext ctx = config.getServletContext();
-    useMemCache = "true".equalsIgnoreCase(ctx.getInitParameter("memCache"));
-    logger.info("UPLOAD-FILES init: useMemCache=" + useMemCache);
+  public boolean isAppEngine() {
+    return true;
   }
-
+  
   @Override
   public String executeAction(HttpServletRequest request,
       List<FileItem> sessionFiles) throws UploadActionException {
