@@ -8,12 +8,10 @@
   <version>0.6.4-SNAPSHOT</version>
 
   <modules>
-<!--
     <module>core</module>
     <module>gae</module>
     <module>jsupload</module>
     <module>samples</module>
--->
   </modules>
 
   <parent>
