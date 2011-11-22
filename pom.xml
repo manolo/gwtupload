@@ -5,7 +5,7 @@
   <artifactId>gwtupload-project</artifactId>
   <name>GwtUpload project</name>
   <packaging>pom</packaging>
-  <version>0.6.5-SNAPSHOT</version>
+  <version>0.6.4-SNAPSHOT</version>
 
   <modules>
     <module>core</module>
@@ -279,6 +279,14 @@
         </configuration>
       </plugin>
 
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.8</version>
+        <configuration>
+          <excludePackageNames>com.google:*</excludePackageNames>
+        </configuration>
+      </plugin>
 <!--
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
