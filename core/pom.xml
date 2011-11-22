@@ -44,6 +44,7 @@
     </dependency>
   </dependencies>
 
+<!--
   <profiles>
      <profile>
        <id>1.6.4</id>
@@ -53,6 +54,7 @@
        </properties>
      </profile>
   </profiles>
+-->
 
   <build>
     <resources>
