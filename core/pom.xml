@@ -5,12 +5,12 @@
   <packaging>jar</packaging>
   <name>GwtUpload library</name>
   <description>GwtUpload library: client and server classes (compatible with: Gwt 1.6.x,1.7.x,2.0.x)</description>
-  <version>0.6.4-SNAPSHOT</version>
+  <version>0.6.4</version>
 
   <parent>
     <groupId>com.googlecode.gwtupload</groupId>
     <artifactId>gwtupload-project</artifactId>
-    <version>0.6.4-SNAPSHOT</version>
+    <version>0.6.4</version>
   </parent>
 
   <dependencies>
