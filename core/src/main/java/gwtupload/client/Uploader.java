@@ -16,23 +16,7 @@
  */
 package gwtupload.client;
 
-import static gwtupload.shared.UConsts.TAG_BLOBSTORE_PATH;
-import static gwtupload.shared.UConsts.TAG_CANCELED;
-import static gwtupload.shared.UConsts.TAG_CTYPE;
-import static gwtupload.shared.UConsts.TAG_CURRENT_BYTES;
-import static gwtupload.shared.UConsts.TAG_FIELD;
-import static gwtupload.shared.UConsts.TAG_FINISHED;
-import static gwtupload.shared.UConsts.TAG_MESSAGE;
-import static gwtupload.shared.UConsts.TAG_MSG_END;
-import static gwtupload.shared.UConsts.TAG_MSG_GT;
-import static gwtupload.shared.UConsts.TAG_MSG_LT;
-import static gwtupload.shared.UConsts.TAG_MSG_START;
-import static gwtupload.shared.UConsts.TAG_NAME;
-import static gwtupload.shared.UConsts.LEGACY_TAG_MSG_START;
-import static gwtupload.shared.UConsts.TAG_PERCENT;
-import static gwtupload.shared.UConsts.TAG_SIZE;
-import static gwtupload.shared.UConsts.TAG_TOTAL_BYTES;
-import static gwtupload.shared.UConsts.TAG_WAIT;
+import static gwtupload.shared.UConsts.*;
 import gwtupload.client.IFileInput.FileInputType;
 import gwtupload.client.IUploadStatus.Status;
 
@@ -136,8 +120,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
   public static final int DEFAULT_FILEINPUT_SIZE = 40;
   
   public static final UploaderConstants I18N_CONSTANTS = GWT.create(UploaderConstants.class);
-  public static final String PARAMETER_FILENAME = "filename";
-  public static final String PARAMETER_SHOW = "show";
+  
   protected static final String STYLE_BUTTON = "upld-button";
   
   protected static final String STYLE_INPUT = "upld-input";
@@ -358,6 +341,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
   private boolean onSubmitComplete;
 
   private SubmitCompleteHandler onSubmitCompleteHandler = new SubmitCompleteHandler() {
+    @SuppressWarnings("deprecation")
     public void onSubmitComplete(SubmitCompleteEvent event) {
       updateStatusTimer.cancel();
       onSubmitComplete = true;
@@ -378,6 +362,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
         }
         serverInfo.field = Utils.getXmlNodeValue(doc, TAG_FIELD);
         serverInfo.message = Utils.getXmlNodeValue(doc, TAG_MESSAGE);
+        serverInfo.key = Utils.getXmlNodeValue(doc, TAG_KEY);
         
         // If the server response is a valid xml
         parseAjaxResponse(serverResponse);
@@ -679,6 +664,10 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
    * Cancel the current upload process.
    */
   public void cancel() {
+    if (getStatus() == Status.UNINITIALIZED) {
+      return;
+    }
+    
     if (finished && !uploading) {
       if (successful) {
         try {
@@ -723,7 +712,11 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
    * It's useful to display uploaded images or generate links to uploaded files.
    */
   public String fileUrl() {
-    return composeURL(PARAMETER_SHOW + "=" + getInputName());
+    String ret =  composeURL(PARAM_SHOW + "=" + getInputName());
+    if (blobstore) {
+      ret += "&" + PARAM_BLOBKEY + "=" + serverInfo.key;
+    }
+    return ret;
   }
 
   /* (non-Javadoc)

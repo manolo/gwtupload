@@ -4,6 +4,7 @@ public class UConsts {
 
   public static final String TAG_BLOBSTORE_PATH = "blobpath";
   public static final String TAG_BLOBSTORE = "blobstore";
+  public static final String TAG_KEY = "key";
   public static final String TAG_CANCELED = "canceled";
   public static final String TAG_CTYPE = "ctype";
   public static final String TAG_CURRENT_BYTES = "currentBytes";
@@ -37,7 +38,5 @@ public class UConsts {
   public static final String PARAM_SESSION = "new_session";
   public static final String PARAM_SHOW = "show";
   public static final String PARAM_CTYPE = "ctype";
-
-  
   
 }

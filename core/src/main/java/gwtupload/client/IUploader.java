@@ -201,6 +201,12 @@ public interface IUploader extends HasJsData, HasWidgets {
      * It can be null;
      */
     public String message;
+    
+    /**
+     * Used when the server sends a special key to identify the file.
+     * Blobstore uses it.
+     */
+    public String key;
   }
 
   /**

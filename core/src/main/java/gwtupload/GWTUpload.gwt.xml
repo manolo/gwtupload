@@ -3,6 +3,9 @@
 <module rename-to='gwtupload'>
   <inherits name='com.google.gwt.user.User' />
   <inherits name="com.google.gwt.xml.XML" />
+  
+  <source path="client"/>
+  <source path="shared"/>
 
   <replace-with class="gwtupload.client.DecoratedFileUpload.DecoratedFileUploadImplIE">
     <when-type-is class="gwtupload.client.DecoratedFileUpload.DecoratedFileUploadImpl"/>
