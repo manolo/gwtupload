@@ -601,10 +601,10 @@ public class UploadServlet extends HttpServlet implements Servlet {
     if (s != null) {
       for (FileItem i : s) {
         if (false == i.isFormField()) {
-          ret.put("ctype", i.getContentType() !=null ? i.getContentType() : "unknown");
-          ret.put("size", "" + i.getSize());
-          ret.put("name", "" + i.getName());
-          ret.put("field", "" + i.getFieldName());
+          ret.put(TAG_CTYPE, i.getContentType() !=null ? i.getContentType() : "unknown");
+          ret.put(TAG_SIZE, "" + i.getSize());
+          ret.put(TAG_NAME, "" + i.getName());
+          ret.put(TAG_FIELD, "" + i.getFieldName());
         }
       }
       ret.put(TAG_FINISHED, "ok");
