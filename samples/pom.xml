@@ -207,6 +207,8 @@
               <groupId>${project.groupId}</groupId>
               <version>${project.version}</version>
               <file>${project.build.directory}/${project.artifactId}-${project.version}.jar</file>
+              <url>${sonatypeUrl}</url>
+              <repositoryId>${sonatypeRepoId}</repositoryId>
             </configuration>
           </execution>
         </executions>
