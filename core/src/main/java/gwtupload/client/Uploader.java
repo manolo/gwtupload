@@ -286,7 +286,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     public void onResponseReceived(Request request, Response response) {
       hasSession = true;
       try {
-        String s = Utils.getXmlNodeValue(XMLParser.parse(response.getText()), "blobstore");
+        String s = Utils.getXmlNodeValue(XMLParser.parse(response.getText()), TAG_BLOBSTORE);
         blobstore = "true".equalsIgnoreCase(s);
         // with blobstore status does not make sense
         if (blobstore) {
@@ -417,7 +417,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
         }
         return;
       }
-
+      
       if (blobstore && !receivedBlobPath) {
         event.cancel();
         try {
@@ -1163,12 +1163,12 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
   }
 
   private void sendAjaxRequestToCancelCurrentUpload() throws RequestException {
-    RequestBuilder reqBuilder = new RequestBuilder(RequestBuilder.GET, composeURL("cancel=true"));
+    RequestBuilder reqBuilder = new RequestBuilder(RequestBuilder.GET, composeURL(PARAM_CANCEL + "=true"));
     reqBuilder.sendRequest("cancel_upload", onCancelReceivedCallback);
   }
 
   private void sendAjaxRequestToDeleteUploadedFile() throws RequestException {
-    RequestBuilder reqBuilder = new RequestBuilder(RequestBuilder.GET, composeURL("remove=" + getInputName()));
+    RequestBuilder reqBuilder = new RequestBuilder(RequestBuilder.GET, composeURL(PARAM_REMOVE + "=" + getInputName()));
     reqBuilder.sendRequest("remove_file", onDeleteFileCallback);
   }
   
@@ -1177,7 +1177,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
    * When the response with the session comes, it submits the form.
    */
   private void sendAjaxRequestToGetBlobstorePath() throws RequestException {
-    RequestBuilder reqBuilder = new RequestBuilder(RequestBuilder.GET, getServletPath());//composeURL("blobstore=true"));
+    RequestBuilder reqBuilder = new RequestBuilder(RequestBuilder.GET, composeURL(PARAM_BLOBSTORE + "=true"));
     reqBuilder.setTimeoutMillis(DEFAULT_AJAX_TIMEOUT);
     reqBuilder.sendRequest("blobstore", onBlobstoreReceivedCallback);
   }
@@ -1198,7 +1198,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
    */
   private void sendAjaxRequestToValidateSession() throws RequestException {
     // Using a reusable builder makes IE fail
-    RequestBuilder reqBuilder = new RequestBuilder(RequestBuilder.GET, composeURL("new_session=true"));
+    RequestBuilder reqBuilder = new RequestBuilder(RequestBuilder.GET, composeURL(PARAM_SESSION + "=true"));
     reqBuilder.setTimeoutMillis(DEFAULT_AJAX_TIMEOUT);
     reqBuilder.sendRequest("create_session", onSessionReceivedCallback);
   }

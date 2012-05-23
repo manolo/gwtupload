@@ -205,13 +205,18 @@ public class UploadServlet extends HttpServlet implements Servlet {
 
   /**
    * Return the list of FileItems stored in session.
-   * 
-   * @param request
-   * @return FileItems stored in session
    */
   @SuppressWarnings("unchecked")
   public static List<FileItem> getSessionFileItems(HttpServletRequest request) {
     return (Vector<FileItem>) request.getSession().getAttribute(SESSION_FILES);
+  }
+  
+  /**
+   * Return the most recent list of FileItems received
+   */
+  @SuppressWarnings("unchecked")
+  public static List<FileItem> getLastReceivedFileItems(HttpServletRequest request) {
+    return (Vector<FileItem>) request.getSession().getAttribute(SESSION_LAST_FILES);
   }
 
   /**
@@ -690,9 +695,9 @@ public class UploadServlet extends HttpServlet implements Servlet {
         totalBytes = listener.getContentLength();
         percent = totalBytes != 0 ? currentBytes * 100 / totalBytes : 0;
         // logger.debug("UPLOAD-SERVLET (" + session.getId() + ") getUploadStatus: " + fieldname + " " + currentBytes + "/" + totalBytes + " " + percent + "%");
-        ret.put("percent", "" + percent);
-        ret.put("currentBytes", "" + currentBytes);
-        ret.put("totalBytes", "" + totalBytes);
+        ret.put(TAG_PERCENT, "" + percent);
+        ret.put(TAG_CURRENT_BYTES, "" + currentBytes);
+        ret.put(TAG_TOTAL_BYTES, "" + totalBytes);
         if (listener.isFinished()) {
           ret.put(TAG_FINISHED, "ok");
         }
@@ -772,6 +777,7 @@ public class UploadServlet extends HttpServlet implements Servlet {
       // Receive the files
       logger.debug("UPLOAD-SERVLET (" + session.getId() + ") parsing HTTP POST request ");
       uploadedItems = uploader.parseRequest(request);
+      session.removeAttribute(SESSION_LAST_FILES);
       logger.debug("UPLOAD-SERVLET (" + session.getId() + ") parsed request, " + uploadedItems.size() + " items received.");
 
       // Received files are put in session
@@ -781,7 +787,6 @@ public class UploadServlet extends HttpServlet implements Servlet {
       }
 
       String error = "";
-      session.setAttribute(SESSION_LAST_FILES, uploadedItems);
 
       if (uploadedItems.size() > 0) {
         sessionFiles.addAll(uploadedItems);
@@ -791,6 +796,7 @@ public class UploadServlet extends HttpServlet implements Servlet {
         }
         logger.debug("UPLOAD-SERVLET (" + session.getId() + ") puting items in session: " + msg);
         session.setAttribute(SESSION_FILES, sessionFiles);
+        session.setAttribute(SESSION_LAST_FILES, uploadedItems);
       } else {
         logger.error("UPLOAD-SERVLET (" + session.getId() + ") error NO DATA received ");
         error += getMessage("no_data");

@@ -28,7 +28,7 @@ public class UConsts {
   public static final String TAG_MSG_LT = "@@@";
   
   
-  public static final String PARAM_BLOBSTORE = "blobstore";
+  public static final String PARAM_BLOBSTORE = TAG_BLOBSTORE;
   public static final String PARAM_BLOBKEY = "blob-key";
   public static final String PARAM_CANCEL = "cancel";
   public static final String PARAM_CLEAN = "clean";
