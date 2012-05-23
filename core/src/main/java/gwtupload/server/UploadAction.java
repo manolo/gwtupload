@@ -177,7 +177,7 @@ public class UploadAction extends UploadServlet {
       error = super.parsePostRequest(request, response);
       if (error == null) {
         // Call to the user code 
-        message = executeAction(request, getSessionFileItems(request));
+        message = executeAction(request, getLastReceivedFileItems(request));
       }
     } catch (UploadCanceledException e) {
       renderXmlResponse(request, response, "<" + TAG_CANCELED + ">true</" + TAG_CANCELED + ">");
