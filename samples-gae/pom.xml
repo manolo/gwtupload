@@ -13,7 +13,7 @@
   <parent>
     <groupId>com.googlecode.gwtupload</groupId>
     <artifactId>gwtupload-project</artifactId>
-    <version>0.6.4-SNAPSHOT</version>
+    <version>0.6.5-SNAPSHOT</version>
   </parent>
 
   <dependencies>
@@ -76,36 +76,43 @@
     </dependency>
   </dependencies>
 
-  <properties>
-    <www>${project.build.directory}/www</www>
-  </properties>
-
   <build>
-    <outputDirectory>${www}/WEB-INF/classes</outputDirectory>
+    <outputDirectory>${project.build.directory}/${project.build.finalName}/WEB-INF/classes</outputDirectory>
     <resources>
-      <resource><directory>src/main/java</directory></resource>
-      <resource><directory>src/main/resources</directory></resource>
+      <resource>
+        <directory>src/main/resources</directory>
+      </resource>
+      <resource>
+        <directory>src/main/java</directory>
+        <includes>
+          <include>**/*.xml</include>
+        </includes>
+      </resource>
     </resources>
     <plugins>
+      <!-- GWT plugin does not copy the webapp folder in hosted mode -->
       <plugin>
         <artifactId>maven-resources-plugin</artifactId>
+        <version>2.5</version>
         <executions>
           <execution>
-            <phase>process-resources</phase>
+            <id>copy-resources</id>
+            <phase>generate-sources</phase>
             <goals>
               <goal>copy-resources</goal>
             </goals>
             <configuration>
-              <outputDirectory>${www}</outputDirectory>
+              <outputDirectory>${project.build.directory}/${project.build.finalName}</outputDirectory>
               <resources>
                 <resource>
-                  <directory>src/main/webapp</directory>
+                 <directory>src/main/webapp</directory>
                 </resource>
               </resources>
             </configuration>
           </execution>
         </executions>
       </plugin>
+
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>gwt-maven-plugin</artifactId>
@@ -144,17 +151,36 @@
         </configuration>
       </plugin>
       <plugin>
-         <groupId>net.kindleit</groupId>
-         <artifactId>maven-gae-plugin</artifactId>
-         <configuration><port>6666</port></configuration>
-         <executions>
-           <execution>
-             <phase>deploy</phase>
-             <goals>
-               <goal>deploy</goal>
-             </goals>
-           </execution>
-         </executions>
+        <groupId>net.kindleit</groupId>
+        <artifactId>maven-gae-plugin</artifactId>
+        <configuration><port>6666</port></configuration>
+        <executions>
+          <execution>
+            <phase>deploy</phase>
+            <goals>
+              <goal>deploy</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-eclipse-plugin</artifactId>
+        <configuration>
+          <downloadSources>true</downloadSources>
+          <downloadJavadocs>false</downloadJavadocs>
+          <additionalBuildcommands>
+            <buildCommand>com.google.gwt.eclipse.core.gwtProjectValidator</buildCommand>
+            <buildcommand>org.eclipse.wst.common.modulecore.ComponentStructuralBuilder</buildcommand>
+            <buildcommand>org.eclipse.jdt.core.javabuilder</buildcommand>
+            <buildcommand>org.eclipse.wst.common.modulecore.ComponentStructuralBuilderDependencyResolver</buildcommand>
+          </additionalBuildcommands>
+          <additionalProjectnatures>
+            <projectnature>com.google.gwt.eclipse.core.gwtNature</projectnature>
+            <projectnature>org.eclipse.jdt.core.javanature</projectnature>
+            <projectnature>org.eclipse.wst.common.modulecore.ModuleCoreNature</projectnature>
+          </additionalProjectnatures>
+        </configuration>
       </plugin>
     </plugins>
   </build>
