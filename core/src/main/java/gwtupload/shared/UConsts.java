@@ -38,5 +38,12 @@ public class UConsts {
   public static final String PARAM_SESSION = "new_session";
   public static final String PARAM_SHOW = "show";
   public static final String PARAM_CTYPE = "ctype";
+  public static final String PARAM_MESSAGE = TAG_MESSAGE;
+  public static final String PARAM_ERROR = TAG_ERROR;
+
+  public static final String PARAM_REDIRECT = "redirect";
+  
+  public static final String RESP_OK = "ok";
+
   
 }
