@@ -118,8 +118,8 @@ public interface IUploader extends HasJsData, HasWidgets {
       return name.replaceAll("^.*[/\\\\]", "");
     }
 
-    public static int getPercent(int done, int total) {
-      return (total > 0 ? done * 100 / total : 0);
+    public static int getPercent(long done, long total) {
+      return (int)(total > 0 ? done * 100 / total : 0);
     }
 
     /**

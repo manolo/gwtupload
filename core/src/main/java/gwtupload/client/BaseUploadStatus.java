@@ -63,7 +63,7 @@ public class BaseUploadStatus implements IUploadStatus {
     /* (non-Javadoc)
      * @see gwtupload.client.HasProgress#setProgress(int, int)
      */
-    public void setProgress(int done, int total) {
+    public void setProgress(long done, long total) {
       if (statusBar == null) {
         return;
       }
@@ -213,8 +213,8 @@ public class BaseUploadStatus implements IUploadStatus {
   /* (non-Javadoc)
    * @see gwtupload.client.IUploadStatus#setProgress(int, int)
    */
-  public void setProgress(int done, int total) {
-    int percent = total > 0 ? done * 100 / total : 0;
+  public void setProgress(long done, long total) {
+    int percent =(int) (total > 0 ? done * 100 / total : 0);
     setPercent(percent);
     if (prg != null) {
       if (prg instanceof HasProgress) {

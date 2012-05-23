@@ -1132,8 +1132,8 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
       return;
     } else if (Utils.getXmlNodeValue(doc, TAG_PERCENT) != null) {
       lastData = now();
-      int transferredKB = Integer.valueOf(Utils.getXmlNodeValue(doc, TAG_CURRENT_BYTES)) / 1024;
-      int totalKB = Integer.valueOf(Utils.getXmlNodeValue(doc, TAG_TOTAL_BYTES)) / 1024;
+      long transferredKB = Long.valueOf(Utils.getXmlNodeValue(doc, TAG_CURRENT_BYTES)) / 1024;
+      long totalKB = Long.valueOf(Utils.getXmlNodeValue(doc, TAG_TOTAL_BYTES)) / 1024;
       statusWidget.setProgress(transferredKB, totalKB);
       log("server response transferred  " + transferredKB + "/" + totalKB + " " + getFileName(), null);
       return;

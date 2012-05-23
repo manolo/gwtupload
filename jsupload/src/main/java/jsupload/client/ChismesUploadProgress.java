@@ -95,8 +95,8 @@ public class ChismesUploadProgress extends BaseUploadStatus {
   }
 
   @Override
-  public void setProgress(int a, int b) {
-    prg.setProgress(a, b);
+  public void setProgress(long a, long b) {
+    prg.setProgress((int)a, (int)b);
   }
 
   public void setSecondsMessage(String message) {

@@ -32,6 +32,6 @@ public interface HasProgress {
    * @param done bytes uploaded
    * @param total size of the request
    */
-  void setProgress(int done, int total);
+  void setProgress(long done, long total);
 
 }
