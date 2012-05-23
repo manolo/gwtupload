@@ -91,8 +91,10 @@ public class FilesApiUploadAction extends UploadAction {
       List<FileItem> sessionFiles) throws UploadActionException {
     String ret = "";
     for (FileItem i : sessionFiles) {
-      ret += (ret.isEmpty() ? "" : " ") + ((FilesAPIFileItem) i).getKey().getKeyString();
-      logger.info("Received new file, stored in blobstore with the key: " + ret);
+      if (!i.isFormField()) {
+        ret += (ret.isEmpty() ? "" : " ") + ((FilesAPIFileItem) i).getKey().getKeyString();
+        logger.info("Received new file, stored in blobstore with the key: " + ret);
+      }
     }
     return ret;
   }
