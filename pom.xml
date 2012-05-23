@@ -28,7 +28,7 @@
     <gwtVersion>2.4.0</gwtVersion>
     <gwtMaven>2.4.0</gwtMaven>
     <commonsFileuploadVersion>1.2.1</commonsFileuploadVersion>
-    <commonsIoVersion>1.4</commonsIoVersion>
+    <commonsIoVersion>2.3</commonsIoVersion>
     <gwtChismesVersion>0.9.7</gwtChismesVersion>
     <gwtExporterVersion>2.4.0-M1</gwtExporterVersion>
     <gwtIncubatorVersion>20101117-r1766</gwtIncubatorVersion>
