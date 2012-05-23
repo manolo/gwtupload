@@ -24,6 +24,7 @@ import gwtupload.server.gae.FilesApiFileItemFactory.FilesAPIFileItem;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -90,7 +91,7 @@ public class FilesApiUploadAction extends UploadAction {
       List<FileItem> sessionFiles) throws UploadActionException {
     String ret = "";
     for (FileItem i : sessionFiles) {
-      ret += ((FilesAPIFileItem) i).getKey().getKeyString();
+      ret += (ret.isEmpty() ? "" : " ") + ((FilesAPIFileItem) i).getKey().getKeyString();
       logger.info("Received new file, stored in blobstore with the key: " + ret);
     }
     return ret;
@@ -112,5 +113,17 @@ public class FilesApiUploadAction extends UploadAction {
     } else {
       super.doGet(request, response);
     }
+  }
+  
+  @Override
+  protected Map<String, String> getFileItemsSummary(HttpServletRequest request, Map<String, String> ret) {
+    
+    ret = super.getFileItemsSummary(request, ret);
+
+    List<FileItem> receivedFiles = getLastReceivedFileItems(request);
+    for (FileItem i : receivedFiles) {
+      ret.put(TAG_KEY, ((FilesAPIFileItem) i).getKey().getKeyString());
+    }
+    return ret;
   }
 }

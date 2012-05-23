@@ -25,6 +25,7 @@ import gwtupload.server.exceptions.UploadCanceledException;
 import gwtupload.server.gae.BlobstoreFileItemFactory.BlobstoreFileItem;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -105,7 +106,6 @@ public class BlobstoreUploadAction extends UploadAction {
   @Override
   public void init(ServletConfig config) throws ServletException {
     super.init(config);
-    logger.info("Initializing Blobstore servlet." );
     uploadDelay = 0;
     useBlobstore = true;
     logger.info("BLOB-STORE-SERVLET: init: maxSize=" + maxSize
@@ -121,37 +121,57 @@ public class BlobstoreUploadAction extends UploadAction {
 
   @Override
   protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-    if (request.getParameter("blob-key") != null) {
-      blobstoreService.serve(new BlobKey(request.getParameter("blob-key")), response);
-    } else if (request.getParameter("redirect") != null) {
+    if (request.getParameter(PARAM_BLOBKEY) != null) {
+      blobstoreService.serve(new BlobKey(request.getParameter(PARAM_BLOBKEY)), response);
+    } else if (request.getParameter(PARAM_REDIRECT) != null) {
       perThreadRequest.set(request);
-      String ret = TAG_ERROR;
-      Map<String, String> stat = getUploadStatus(request, null, null);
-      List <FileItem> items = getSessionFileItems(request);
-      int nitems = 0;
-      if (items != null) {
-          nitems = items.size();
-          for (FileItem item : getSessionFileItems(request)) {
-              BlobKey k = ((BlobstoreFileItem) item).getKey();
-              BlobInfo i = blobInfoFactory.loadBlobInfo(k);
-              if (i != null) {
-                stat.put("ctype", i.getContentType() !=null ? i.getContentType() : "unknown");
-                stat.put("size", "" + i.getSize());
-                stat.put("name", "" + i.getFilename());
-              }
-              stat.put("blobkey", k.getKeyString());
-              stat.put("message", k.getKeyString());
-            }
+      Map<String, String> stat = new HashMap<String, String>();
+      if (request.getParameter(PARAM_MESSAGE) != null) {
+        stat.put(TAG_MESSAGE, request.getParameter(PARAM_MESSAGE));
       }
-      stat.put(TAG_FINISHED, "ok");
-      ret = statusToString(stat);
+      if (request.getParameter(PARAM_ERROR) != null) {
+        stat.put(TAG_ERROR, request.getParameter(PARAM_ERROR));
+      } else if (request.getParameter(PARAM_CANCEL) != null) {
+        stat.put(TAG_CANCELED, request.getParameter(PARAM_CANCEL));
+      } else  {
+        getFileItemsSummary(request, stat);
+      }
+      stat.put(TAG_FINISHED, RESP_OK);
+
+      String ret = statusToString(stat);
       finish(request);
-      logger.debug("BLOB-STORE-SERVLET: (" + request.getSession().getId() + ") redirect nitems=" + nitems + "\n" + ret);
+      logger.debug("BLOB-STORE-SERVLET: (" + request.getSession().getId() + ") redirect \n" + ret);
       renderXmlResponse(request, response, ret, true);
       perThreadRequest.set(null);
     } else {
       super.doGet(request, response);
     }
+  }
+  
+  @Override
+  protected Map<String, String> getUploadStatus(HttpServletRequest request,
+      String fieldname, Map<String, String> ret) {
+    ret.put(TAG_PERCENT, "50");
+    ret.put(TAG_CURRENT_BYTES, "0");
+    ret.put(TAG_TOTAL_BYTES, "0" );    
+    return ret;
+  }
+  
+  @Override
+  protected Map<String, String> getFileItemsSummary(HttpServletRequest request, Map<String, String> ret) {
+    ret = super.getFileItemsSummary(request, ret);
+    for (FileItem item : getLastReceivedFileItems(request)) {
+      if (!item.isFormField()) {
+        BlobKey k = ((BlobstoreFileItem) item).getKey();
+        if (k != null && k.getKeyString() != null) {
+          ret.put(TAG_KEY, k.getKeyString());
+          
+          // legacy
+          ret.put("blobkey", k.getKeyString());
+        }
+      }
+    }
+    return ret;
   }
 
   @Override
@@ -165,7 +185,7 @@ public class BlobstoreUploadAction extends UploadAction {
         error = super.parsePostRequest(request, response);
       } catch (UploadCanceledException e) {
         finish(request);
-        redirect(response, "cancelled=true");
+        redirect(response, PARAM_CANCEL + "=true");
         return;
       } catch (Exception e) {
         logger.info("BLOB-STORE-SERVLET: Exception " + e);
@@ -177,21 +197,32 @@ public class BlobstoreUploadAction extends UploadAction {
 
     if (error != null) {
       removeSessionFileItems(request);
-      redirect(response, "error=" + error);
+      removeCurrentListener(request);
+      redirect(response, PARAM_ERROR + "=" + error);
       return;
     } 
 
+    @SuppressWarnings("deprecation")
     Map<String, BlobKey> blobs = blobstoreService.getUploadedBlobs(request);
     if (blobs != null && blobs.size() > 0) {
-      List<FileItem> items = new Vector<FileItem>();
+      List<FileItem> receivedFiles = new Vector<FileItem>();
       for (Entry<String, BlobKey> e: blobs.entrySet()) {
         BlobstoreFileItem i = new BlobstoreFileItem(e.getKey(), "unknown", false, "");
         logger.info("BLOB-STORE-SERVLET: received file: " + e.getKey() + " " + e.getValue().getKeyString());
         i.setKey(e.getValue());
-        items.add(i);
+        receivedFiles.add(i);
       }
-      logger.info("BLOB-STORE-SERVLET: putting in sesssion elements -> " + items.size());
-      request.getSession().setAttribute(SESSION_FILES, items);
+      
+      logger.info("BLOB-STORE-SERVLET: putting in sesssion elements -> " + receivedFiles.size());
+      
+      Vector<FileItem> sessionFiles = (Vector<FileItem>) getSessionFileItems(request);
+      if (sessionFiles == null) {
+        sessionFiles = new Vector<FileItem>();
+      }
+      sessionFiles.addAll(receivedFiles);
+      
+      request.getSession().setAttribute(SESSION_FILES, receivedFiles);
+      request.getSession().setAttribute(SESSION_LAST_FILES, sessionFiles);
     } else {
       error = getMessage("no_data");
     }
@@ -202,12 +233,14 @@ public class BlobstoreUploadAction extends UploadAction {
       logger.info("ExecuteUploadActionException: " + e);
       error =  e.getMessage();
     }
+    
+    removeCurrentListener(request);
       
-    redirect(response, message != null ? "message=" + message : null);
+    redirect(response, message != null ? PARAM_MESSAGE + "=" + message : null);
   }
   
   protected void redirect(HttpServletResponse response, String params) throws IOException {
-    String url = servletPath + "?redirect=true" + (params != null ? "&" + params.replaceAll("[\n\r]+", " ") : "");
+    String url = servletPath + "?" + PARAM_REDIRECT + "=true" + (params != null ? "&" + params.replaceAll("[\n\r]+", " ") : "");
     logger.info("BLOB-STORE-SERVLET: redirecting to -> : " + url);
     response.sendRedirect(url);
   }
