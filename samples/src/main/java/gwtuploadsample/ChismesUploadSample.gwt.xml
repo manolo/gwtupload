@@ -5,4 +5,5 @@
   <stylesheet src="GWTCBox.css"/>
   <stylesheet src="GWTCButton.css"/>
   <stylesheet src="GWTCTabPanel.css"/>
+  <set-property name="compiler.stackMode" value="strip"/>
 </module>

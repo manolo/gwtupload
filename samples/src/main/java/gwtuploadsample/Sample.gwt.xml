@@ -3,4 +3,5 @@
   <inherits name="jsupload.JsUploadLib"/>
   <stylesheet src="JsUpload.css"/>
   <stylesheet src="UploadSample.css"/>
+  <set-property name="compiler.stackMode" value="strip"/>
 </module>

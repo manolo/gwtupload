@@ -22,8 +22,12 @@ import com.google.code.p.gwtchismes.client.GWTCPopupBox;
 import com.google.code.p.gwtchismes.client.GWTCTabPanel;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Style.Position;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -97,9 +101,7 @@ public class ChismesUploadSample implements EntryPoint {
     public void onFinish(IUploader uploader) {
       if (uploader.getStatus() == Status.SUCCESS) {
         if (uploader.getStatus() == Status.SUCCESS) {
-          String msg = uploader.getServerInfo().message;
-          String url = msg != null && !msg.trim().isEmpty() ? uploader.getServletPath() + "?blob-key=" : uploader.fileUrl();
-          new PreloadedImage(url, uploader.getInputName(), uploader.getFileName(), addToThumbPanelHandler);
+          new PreloadedImage(uploader.fileUrl(), uploader.getInputName(), uploader.getFileName(), addToThumbPanelHandler);
         }        
       }
     }
@@ -173,27 +175,40 @@ public class ChismesUploadSample implements EntryPoint {
     popupPanel.addStyleName("previewBox");
 
     RootPanel.get().add(mainPanel);
+    mainPanel.getElement().getStyle().setMarginLeft(-325, Unit.PX);
+    mainPanel.getElement().getStyle().setLeft(50, Unit.PCT);
+    mainPanel.getElement().getStyle().setPosition(Position.FIXED);
+    mainPanel.getElement().getStyle().setWidth(650, Unit.PX);
+
     mainPanel.setWidget(1, 0, thumbnailsBox);
     mainPanel.setWidget(0, 0, tabPanel);
 
     // FIXME: changing the order of these two lines makes onchange event fail.
-    MultiUploader multiUploader = new MultiUploader(FileInputType.BUTTON, new ChismesUploadProgress(false));//, new IFileInput.DecoratedFileInput(new GWTCButton()));
+    final MultiUploader multiUploader = new MultiUploader(FileInputType.BUTTON, new ChismesUploadProgress(false));//, new IFileInput.DecoratedFileInput(new GWTCButton()));
     multiUploader.addOnFinishUploadHandler(onFinishHandler);
     multiUploader.addOnCancelUploadHandler(onStatusChangedHandler);
     multiUploader.setValidExtensions(validExtensions);
     multiUploadBox.add(multiUploader);
-    tabPanel.add(multiUploadBox, i18nStrs.multiUploadTabText());
     multiUploader.setServletPath(multiUploader.getServletPath() + Window.Location.getQueryString());
 
     // FIXME: GWTCButton here doesn't handle onClick
-    SingleUploader simpleUploader = new SingleUploader(FileInputType.LABEL, new ChismesUploadProgress(true));
+    final SingleUploader simpleUploader = new SingleUploader(FileInputType.LABEL, new ChismesUploadProgress(true));
     simpleUploader.addOnFinishUploadHandler(onFinishHandler);
     simpleUploader.setValidExtensions(validExtensions);
     simpleUploader.avoidRepeatFiles(true);
 
     // FIXME: changing the order of these two lines makes onchange fail.
     simpleUploadBox.add(simpleUploader);
+
     tabPanel.add(simpleUploadBox, i18nStrs.singleUploadTabText());
+    tabPanel.add(multiUploadBox, i18nStrs.multiUploadTabText());
+    
+    tabPanel.addSelectionHandler(new SelectionHandler<Integer>() {
+      public void onSelection(SelectionEvent<Integer> event) {
+        multiUploader.getFileInput().updateSize();
+        simpleUploader.getFileInput().updateSize();
+      }
+    });
 
     tabPanel.selectTab(0);
   }

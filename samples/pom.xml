@@ -19,14 +19,6 @@
       <version>${gwtVersion}</version>
       <scope>provided</scope>
     </dependency>
-<!--
-    <dependency>
-      <groupId>com.google.gwt</groupId>
-      <artifactId>gwt-servlet</artifactId>
-      <version>${gwtVersion}</version>
-      <scope>provided</scope>
-    </dependency>
--->
     <dependency>
       <groupId>${groupId}</groupId>
       <artifactId>gwtupload</artifactId>
@@ -125,9 +117,11 @@
           <!-- Location of the develop-mode web application structure (gwt:run). -->
           <hostedWebapp>${war}</hostedWebapp>
           <!-- Ask GWT to create the Story of Your Compile (SOYC) (gwt:compile) -->
-          <soyc>true</soyc>
+          <compileReport>true</compileReport>
           <!-- Style OBFUSCATED PRETTY -->
-          <style>PRETTY</style>
+          <style>OBF</style>
+          <!-- Compress a bit more the js output -->
+          <disableCastChecking>true</disableCastChecking>
           <!-- Modules to compile -->
           <modules>
             <module>gwtuploadsample.ChismesUploadSample</module>
@@ -183,7 +177,59 @@
            </additionalProjectnatures>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>jar</id>
+            <phase>compile</phase>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-deploy-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>deploy</phase>
+            <goals>
+              <goal>deploy-file</goal>
+            </goals>
+            <configuration>
+              <packaging>jar</packaging>
+              <generatePom>true</generatePom>
+              <url>${project.distributionManagement.repository.url}</url>
+              <artifactId>${project.artifactId}</artifactId>
+              <groupId>${project.groupId}</groupId>
+              <version>${project.version}</version>
+              <file>${project.build.directory}/${project.artifactId}-${project.version}.jar</file>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin> 
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-install-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>install</phase>
+            <goals>
+              <goal>install-file</goal>
+            </goals>
+            <configuration>
+              <packaging>jar</packaging>
+              <artifactId>${project.artifactId}</artifactId>
+              <groupId>${project.groupId}</groupId>
+              <version>${project.version}</version>
+              <file>${project.build.directory}/${project.artifactId}-${project.version}.jar</file>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin> 
     </plugins>
   </build>
-
 </project>
