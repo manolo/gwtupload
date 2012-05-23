@@ -6,11 +6,17 @@
         font-family:verdana,arial,helvetica,clean,sans-serif;
         font-size: 12px;
     }
-    h1, .jsubox, p {
+    h1, .jsubox, p, .center {
         margin-top: 5px;
         margin-left: auto;
         margin-right: auto;
         width: 450px; 
+    }
+    h1 {
+       font-size: 16px;
+    }
+    .jstext {
+       font-size: 12px;
     }
     .jsubox {
         border: 3px groove pink;
@@ -25,6 +31,22 @@
       width: 420px;
       margin-left: auto;
       margin-right: auto;
+    }
+    body {
+        padding: 0px;
+        margin: 0px;
+        background-repeat: no-repeat;
+        background: #879AAB;
+        background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#879AAB)) fixed;
+        background: -moz-linear-gradient(top,  #fff,  #879AAB) fixed;
+        filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#879AAB');
+    }
+    .backPanel {
+        color: blue;
+        float: left;
+        font-size: 12px;
+        padding: 10px;
+        text-decoration: underline;
     }
     </style>
 </head>
@@ -116,11 +138,11 @@
       }
    </script>
    		<div id="back" class="backPanel">
-		  <a href="javascript:window.location = '../index.html' + window.location.search;">&lt;&lt; back </a>
+		  <a href="javascript:window.location = '../index.html' + window.location.search;">&laquo; back </a>
 		</div>
    
-   <h1><i>JsUpload</i> examples</h1>
-   <p>
+   <h1 class="center"><i>JsUpload</i> examples</h1>
+   <div class="center jstext">
    <ul>
    <li>
     JsUpload is the exported version of the <a target="_blank" href='http://code.google.com/p/gwtupload'>GwtUpload</a> library. <br/>
@@ -132,7 +154,7 @@
     Take a look to the <a target="_blank" href='http://code.google.com/p/gwtupload/wiki/JsUpload_Documentation'>documentation</a> to see all the available options and how to configure the server side.
     </li>
     </ul>
-   </p>
+   </div>
    <div id="uploader1" class="jsubox"><br><br></div>
    <div id="uploader2" class="jsubox"><br><br></div>
    <div id="uploader3" class="jsubox"><br><br></div>
