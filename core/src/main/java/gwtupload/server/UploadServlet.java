@@ -46,7 +46,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;
@@ -251,19 +250,13 @@ public class UploadServlet extends HttpServlet implements Servlet {
   public static String getMessage(String key, Object... pars) {
     Locale loc = 
       getThreadLocalRequest() == null || getThreadLocalRequest().getLocale() == null 
-       ? new Locale("en")
+       ? new Locale("es")
        : getThreadLocalRequest().getLocale();
     
     ResourceBundle res = 
       ResourceBundle.getBundle(UploadServlet.class.getName(), loc);
     
-    // Resource bundle always reads the stream in ISO 
-    // http://docs.oracle.com/javase/6/docs/api/java/util/Properties.html
     String msg = res.getString(key);
-    try {
-      msg = new String(msg.getBytes("ISO-8859-1"), "UTF-8");
-    } catch (UnsupportedEncodingException e) {
-    }
     return new MessageFormat(msg, loc).format(pars);
   }
 
