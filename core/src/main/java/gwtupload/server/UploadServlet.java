@@ -16,8 +16,25 @@
  */
 package gwtupload.server;
 
-import static gwtupload.shared.UConsts.*;
-
+import static gwtupload.shared.UConsts.PARAM_CTYPE;
+import static gwtupload.shared.UConsts.PARAM_DELAY;
+import static gwtupload.shared.UConsts.TAG_BLOBSTORE;
+import static gwtupload.shared.UConsts.TAG_BLOBSTORE_PATH;
+import static gwtupload.shared.UConsts.TAG_CANCELED;
+import static gwtupload.shared.UConsts.TAG_CTYPE;
+import static gwtupload.shared.UConsts.TAG_CURRENT_BYTES;
+import static gwtupload.shared.UConsts.TAG_DELETED;
+import static gwtupload.shared.UConsts.TAG_ERROR;
+import static gwtupload.shared.UConsts.TAG_FIELD;
+import static gwtupload.shared.UConsts.TAG_FINISHED;
+import static gwtupload.shared.UConsts.TAG_MSG_END;
+import static gwtupload.shared.UConsts.TAG_MSG_GT;
+import static gwtupload.shared.UConsts.TAG_MSG_LT;
+import static gwtupload.shared.UConsts.TAG_MSG_START;
+import static gwtupload.shared.UConsts.TAG_NAME;
+import static gwtupload.shared.UConsts.TAG_PERCENT;
+import static gwtupload.shared.UConsts.TAG_SIZE;
+import static gwtupload.shared.UConsts.TAG_TOTAL_BYTES;
 import gwtupload.server.exceptions.UploadCanceledException;
 import gwtupload.server.exceptions.UploadException;
 import gwtupload.server.exceptions.UploadSizeLimitException;
@@ -29,9 +46,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.ResourceBundle;
@@ -229,9 +248,23 @@ public class UploadServlet extends HttpServlet implements Servlet {
   /**
    * Returns the localized text of a key.
    */
-  public static String getMessage(String key, Object...pars) {
-    ResourceBundle res = ResourceBundle.getBundle(UploadServlet.class.getName(), getThreadLocalRequest().getLocale());
-    return  new MessageFormat(res.getString(key), getThreadLocalRequest().getLocale()).format(pars);
+  public static String getMessage(String key, Object... pars) {
+    Locale loc = 
+      getThreadLocalRequest() == null || getThreadLocalRequest().getLocale() == null 
+       ? new Locale("en")
+       : getThreadLocalRequest().getLocale();
+    
+    ResourceBundle res = 
+      ResourceBundle.getBundle(UploadServlet.class.getName(), loc);
+    
+    // Resource bundle always reads the stream in ISO 
+    // http://docs.oracle.com/javase/6/docs/api/java/util/Properties.html
+    String msg = res.getString(key);
+    try {
+      msg = new String(msg.getBytes("ISO-8859-1"), "UTF-8");
+    } catch (UnsupportedEncodingException e) {
+    }
+    return new MessageFormat(msg, loc).format(pars);
   }
 
   public static final HttpServletRequest getThreadLocalRequest() {
