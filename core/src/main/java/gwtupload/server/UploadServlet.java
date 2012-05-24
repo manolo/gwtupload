@@ -250,7 +250,7 @@ public class UploadServlet extends HttpServlet implements Servlet {
   public static String getMessage(String key, Object... pars) {
     Locale loc = 
       getThreadLocalRequest() == null || getThreadLocalRequest().getLocale() == null 
-       ? new Locale("es")
+       ? new Locale("en")
        : getThreadLocalRequest().getLocale();
     
     ResourceBundle res = 
