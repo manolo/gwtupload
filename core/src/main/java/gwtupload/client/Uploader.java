@@ -26,6 +26,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Vector;
+import java.util.logging.Logger;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
@@ -127,6 +128,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
   protected static final String STYLE_MAIN = "GWTUpld";
   protected static final String STYLE_STATUS = "upld-status";
   static HTML mlog;
+  static Logger logger;
   private static final int DEFAULT_AJAX_TIMEOUT = 10000;
   private static final int DEFAULT_AUTOUPLOAD_DELAY = 600;
   
@@ -145,6 +147,10 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
         RootPanel.get().add(mlog);
         log(msg, e);
       } else {
+        if (logger == null) {
+          logger = Logger.getLogger("Gwt client Uploader");
+        }
+        logger.info(msg);
         GWT.log(msg, e);
       }
     } else {
@@ -367,6 +373,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
         // If the server response is a valid xml
         parseAjaxResponse(serverResponse);
       } catch (Exception e) {
+        log("onSubmitComplete exception parsing response: ", e);
         // Otherwise force an ajax request so as we have not to wait to the timer schedule
         updateStatusTimer.run();
       }
@@ -713,7 +720,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
    */
   public String fileUrl() {
     String ret =  composeURL(PARAM_SHOW + "=" + getInputName());
-    if (blobstore) {
+    if (serverInfo.key != null) {
       ret += "&" + PARAM_BLOBKEY + "=" + serverInfo.key;
     }
     return ret;
@@ -1126,7 +1133,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
       log("server response is: finished " + getFileName(), null);
       successful = true;
       if (onSubmitComplete) {
-        log("response from server has been received", null);
+        log("POST response from server has been received", null);
         uploadFinished();
       }
       return;
@@ -1136,6 +1143,16 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
       long totalKB = Long.valueOf(Utils.getXmlNodeValue(doc, TAG_TOTAL_BYTES)) / 1024;
       statusWidget.setProgress(transferredKB, totalKB);
       log("server response transferred  " + transferredKB + "/" + totalKB + " " + getFileName(), null);
+      if (onSubmitComplete) {
+        successful = false;
+        String msg = i18nStrs.uploaderBadServerResponse() + "\n" + serverResponse;
+        if (blobstore) {
+          msg += "\n" + i18nStrs.uploaderBlobstoreBilling();
+        }
+        log(msg, null);
+        statusWidget.setError(msg);
+        uploadFinished();
+      }
       return;
     } else {
       log("incorrect response: " + getFileName() + " " + responseTxt, null);

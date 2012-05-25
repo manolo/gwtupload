@@ -75,7 +75,7 @@ public class FilesApiFileItemFactory implements FileItemFactory, Serializable {
     }
   }
 
-  public static class FilesAPIFileItem implements FileItem {
+  public static class FilesAPIFileItem implements FileItem, HasBlobKey {
     private static final long serialVersionUID = 3683112300714613746L;
     private String field;
     private String type;
@@ -183,6 +183,11 @@ public class FilesApiFileItemFactory implements FileItemFactory, Serializable {
       if (file == null)
         return null;
       return fileService.getBlobKey(file);
+    }
+    
+    public String getKeyString() {
+      BlobKey k = getKey();
+      return k == null ? null : k.getKeyString();
     }
   }
 

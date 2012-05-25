@@ -18,10 +18,10 @@
 
   <servlet>
     <servlet-name>uploadServlet</servlet-name>
-<!-- <servlet-class>gwtupload.server.UploadServlet</servlet-class>-->
+<!--  <servlet-class>gwtupload.server.UploadServlet</servlet-class> -->
 <!-- <servlet-class>gwtupload.server.gae.AppEngineUploadAction</servlet-class> -->
-<servlet-class>gwtupload.server.gae.BlobstoreUploadAction</servlet-class>
-<!-- <servlet-class>gwtupload.server.gae.FilesApiUploadAction</servlet-class> -->
+<!-- <servlet-class>gwtupload.server.gae.BlobstoreUploadAction</servlet-class> -->
+     <servlet-class>gwtupload.server.gae.FilesApiUploadAction</servlet-class>
   </servlet>
   
   <servlet-mapping>

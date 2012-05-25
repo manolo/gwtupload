@@ -105,6 +105,12 @@ public interface IUploader extends HasJsData, HasWidgets {
 
     @DefaultStringValue("Timeout sending the file:\n perhaps your browser does not send files correctly,\n your session has expired,\n or there was a server error.\nPlease try again.")
     String uploaderTimeout();
+    
+    @DefaultStringValue("Error uploading the file, the server response has a format which can not be parsed by the application.\n.")
+    String uploaderBadServerResponse();
+
+    @DefaultStringValue("Additional information: it seems that you are using blobstore, so in order to upload large files check that your application is billing enabled.")
+    String uploaderBlobstoreBilling();
   }
 
   /**

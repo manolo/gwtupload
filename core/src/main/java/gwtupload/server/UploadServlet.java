@@ -16,6 +16,7 @@
  */
 package gwtupload.server;
 
+import static gwtupload.shared.UConsts.LEGACY_TAG_KEY;
 import static gwtupload.shared.UConsts.PARAM_CTYPE;
 import static gwtupload.shared.UConsts.PARAM_DELAY;
 import static gwtupload.shared.UConsts.TAG_BLOBSTORE;
@@ -27,6 +28,7 @@ import static gwtupload.shared.UConsts.TAG_DELETED;
 import static gwtupload.shared.UConsts.TAG_ERROR;
 import static gwtupload.shared.UConsts.TAG_FIELD;
 import static gwtupload.shared.UConsts.TAG_FINISHED;
+import static gwtupload.shared.UConsts.TAG_KEY;
 import static gwtupload.shared.UConsts.TAG_MSG_END;
 import static gwtupload.shared.UConsts.TAG_MSG_GT;
 import static gwtupload.shared.UConsts.TAG_MSG_LT;
@@ -35,6 +37,7 @@ import static gwtupload.shared.UConsts.TAG_NAME;
 import static gwtupload.shared.UConsts.TAG_PERCENT;
 import static gwtupload.shared.UConsts.TAG_SIZE;
 import static gwtupload.shared.UConsts.TAG_TOTAL_BYTES;
+import gwtupload.server.exceptions.UploadActionException;
 import gwtupload.server.exceptions.UploadCanceledException;
 import gwtupload.server.exceptions.UploadException;
 import gwtupload.server.exceptions.UploadSizeLimitException;
@@ -47,13 +50,13 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.ResourceBundle;
-import java.util.Vector;
 
 import javax.servlet.Servlet;
 import javax.servlet.ServletConfig;
@@ -226,7 +229,7 @@ public class UploadServlet extends HttpServlet implements Servlet {
    */
   @SuppressWarnings("unchecked")
   public static List<FileItem> getSessionFileItems(HttpServletRequest request) {
-    return (Vector<FileItem>) request.getSession().getAttribute(SESSION_FILES);
+    return (List<FileItem>) request.getSession().getAttribute(SESSION_FILES);
   }
   
   /**
@@ -234,7 +237,7 @@ public class UploadServlet extends HttpServlet implements Servlet {
    */
   @SuppressWarnings("unchecked")
   public static List<FileItem> getLastReceivedFileItems(HttpServletRequest request) {
-    return (Vector<FileItem>) request.getSession().getAttribute(SESSION_LAST_FILES);
+    return (List<FileItem>) request.getSession().getAttribute(SESSION_LAST_FILES);
   }
 
   /**
@@ -295,8 +298,7 @@ public class UploadServlet extends HttpServlet implements Servlet {
    */
   public static void removeSessionFileItems(HttpServletRequest request, boolean removeData) {
     logger.debug("UPLOAD-SERVLET (" + request.getSession().getId() + ") removeSessionFileItems: removeData=" + removeData);
-    @SuppressWarnings("unchecked")
-    Vector<FileItem> sessionFiles = (Vector<FileItem>) request.getSession().getAttribute(SESSION_FILES);
+    List<FileItem> sessionFiles = getSessionFileItems(request);
     if (removeData && sessionFiles != null) {
       for (FileItem fileItem : sessionFiles) {
         if (fileItem != null && !fileItem.isFormField()) {
@@ -412,7 +414,7 @@ public class UploadServlet extends HttpServlet implements Servlet {
    * @param e
    * @return string
    */
-  protected static String stackTraceToString(Exception e) {
+  protected static String stackTraceToString(Throwable e) {
     StringWriter writer = new StringWriter();
     e.printStackTrace(new PrintWriter(writer));
     return writer.getBuffer().toString();
@@ -623,12 +625,12 @@ public class UploadServlet extends HttpServlet implements Servlet {
     }
   }
   
+  @SuppressWarnings("deprecation")
   protected Map<String, String> getFileItemsSummary(HttpServletRequest request, Map<String, String> ret) {
     if (ret == null) {
       ret = new HashMap<String, String>();
     }
-    @SuppressWarnings("unchecked")
-    List<FileItem> s = (List<FileItem>)request.getSession().getAttribute(SESSION_LAST_FILES);
+    List<FileItem> s = getLastReceivedFileItems(request);
     if (s != null) {
       for (FileItem i : s) {
         if (false == i.isFormField()) {
@@ -636,6 +638,11 @@ public class UploadServlet extends HttpServlet implements Servlet {
           ret.put(TAG_SIZE, "" + i.getSize());
           ret.put(TAG_NAME, "" + i.getName());
           ret.put(TAG_FIELD, "" + i.getFieldName());
+          if (i instanceof HasKey) {
+            String k = ((HasKey)i).getKeyString();
+            ret.put(TAG_KEY, k);
+            ret.put(LEGACY_TAG_KEY, k);
+          }
         }
       }
       ret.put(TAG_FINISHED, "ok");
@@ -733,7 +740,7 @@ public class UploadServlet extends HttpServlet implements Servlet {
         ret.put(TAG_FINISHED, "ok");
         logger.debug("UPLOAD-SERVLET (" + session.getId() + ") getUploadStatus: " + request.getQueryString() + " finished with files: " + session.getAttribute(SESSION_FILES));
       } else {
-        Vector<FileItem> sessionFiles = (Vector<FileItem>) getSessionFileItems(request);
+        List<FileItem> sessionFiles = getSessionFileItems(request);
         for (FileItem file : sessionFiles) {
           if (file.isFormField() == false && file.getFieldName().equals(fieldname)) {
             ret.put(TAG_FINISHED, "ok");
@@ -807,9 +814,9 @@ public class UploadServlet extends HttpServlet implements Servlet {
       logger.debug("UPLOAD-SERVLET (" + session.getId() + ") parsed request, " + uploadedItems.size() + " items received.");
 
       // Received files are put in session
-      Vector<FileItem> sessionFiles = (Vector<FileItem>) getSessionFileItems(request);
+      List<FileItem> sessionFiles = getSessionFileItems(request);
       if (sessionFiles == null) {
-        sessionFiles = new Vector<FileItem>();
+        sessionFiles = new ArrayList<FileItem>();
       }
 
       String error = "";
@@ -829,7 +836,13 @@ public class UploadServlet extends HttpServlet implements Servlet {
       }
 
       return error.length() > 0 ? error : null;
-
+      
+    // So much silly questions in the list about this issue.  
+    } catch(LinkageError e) {
+      logger.error("UPLOAD-SERVLET (" + request.getSession().getId() + ") Exception: " + e.getMessage() + "\n" + stackTraceToString(e));
+      RuntimeException ex = new UploadActionException(getMessage("restricted", e.getMessage()), e);
+      listener.setException(ex);
+      throw ex;
     } catch (SizeLimitExceededException e) {
       RuntimeException ex = new UploadSizeLimitException(e.getPermittedSize(), e.getActualSize());
       listener.setException(ex);

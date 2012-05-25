@@ -77,6 +77,12 @@ public class I18nConstants implements UploaderConstants {
   public String uploaderTimeout() {
     return or(strs.get(Const.TXT_TIMEOUT), defaultStrs.uploaderTimeout());
   }
+  public String uploaderBadServerResponse() {
+    return or(strs.get(Const.TXT_BAD_SERVER_RESPONSE), defaultStrs.uploaderBadServerResponse());
+  }
+  public String uploaderBlobstoreBilling() {
+    return or(strs.get(Const.TXT_BLOBSTORE_BILLING), defaultStrs.uploaderBlobstoreBilling());
+  }
   
   public String uploadLabelCancel() {
     return or(strs.get(Const.TXT_CANCEL), defaultStrs.uploadLabelCancel());
@@ -108,4 +114,5 @@ public class I18nConstants implements UploaderConstants {
   public String submitError() {
     return or(strs.get(Const.TXT_SUBMIT_ERROR), defaultStrs.submitError());
   }
+
 }

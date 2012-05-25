@@ -110,22 +110,10 @@ public class FilesApiUploadAction extends UploadAction {
     String bkey = request.getParameter(PARAM_BLOBKEY);
     if (bkey != null) {
       logger.info("Serving a blobstore file with the key:" + bkey);
-      FilesAPIFileItem.getBlobstoreService().serve(
-          new BlobKey(request.getParameter(PARAM_BLOBKEY)), response);
+      FilesAPIFileItem.getBlobstoreService()
+        .serve(new BlobKey(bkey), response);
     } else {
       super.doGet(request, response);
     }
-  }
-  
-  @Override
-  protected Map<String, String> getFileItemsSummary(HttpServletRequest request, Map<String, String> ret) {
-    
-    ret = super.getFileItemsSummary(request, ret);
-
-    List<FileItem> receivedFiles = getLastReceivedFileItems(request);
-    for (FileItem i : receivedFiles) {
-      ret.put(TAG_KEY, ((FilesAPIFileItem) i).getKey().getKeyString());
-    }
-    return ret;
   }
 }

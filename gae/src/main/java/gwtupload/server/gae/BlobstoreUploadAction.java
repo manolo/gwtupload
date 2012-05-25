@@ -16,8 +16,19 @@
  */
 package gwtupload.server.gae;
 
-import static gwtupload.shared.UConsts.*;
-
+import static gwtupload.shared.UConsts.PARAM_BLOBKEY;
+import static gwtupload.shared.UConsts.PARAM_CANCEL;
+import static gwtupload.shared.UConsts.PARAM_ERROR;
+import static gwtupload.shared.UConsts.PARAM_MESSAGE;
+import static gwtupload.shared.UConsts.PARAM_REDIRECT;
+import static gwtupload.shared.UConsts.RESP_OK;
+import static gwtupload.shared.UConsts.TAG_CANCELED;
+import static gwtupload.shared.UConsts.TAG_CURRENT_BYTES;
+import static gwtupload.shared.UConsts.TAG_ERROR;
+import static gwtupload.shared.UConsts.TAG_FINISHED;
+import static gwtupload.shared.UConsts.TAG_MESSAGE;
+import static gwtupload.shared.UConsts.TAG_PERCENT;
+import static gwtupload.shared.UConsts.TAG_TOTAL_BYTES;
 import gwtupload.server.AbstractUploadListener;
 import gwtupload.server.UploadAction;
 import gwtupload.server.exceptions.UploadActionException;
@@ -39,7 +50,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
 
-import com.google.appengine.api.blobstore.BlobInfo;
 import com.google.appengine.api.blobstore.BlobInfoFactory;
 import com.google.appengine.api.blobstore.BlobKey;
 import com.google.appengine.api.blobstore.BlobstoreService;
@@ -80,24 +90,6 @@ public class BlobstoreUploadAction extends UploadAction {
     logger.debug("BLOB-STORE-SERVLET: (" + request.getSession().getId() + ") procesing a request with size: " + request.getContentLength() + " bytes.");
   }
 
-  @Override
-  public void getUploadedFile(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    String parameter = request.getParameter(PARAM_SHOW);
-    FileItem item = findFileItem(getSessionFileItems(request), parameter);
-    if (item != null) {
-      BlobInfo i = blobInfoFactory.loadBlobInfo(((BlobstoreFileItem) item).getKey());
-      if (i != null) {
-        logger.debug("BLOB-STORE-SERVLET: (" + request.getSession().getId() + ") getUploadedFile: " + parameter + " serving blobstore: " + i);
-        blobstoreService.serve(((BlobstoreFileItem) item).getKey(), response);
-      } else {
-        logger.error("BLOB-STORE-SERVLET: (" + request.getSession().getId() + ") getUploadedFile: " + parameter + " file isn't in blobstore.");
-      }
-    } else {
-      logger.info("BLOB-STORE-SERVLET: (" + request.getSession().getId() + ") getUploadedFile: " + parameter + " file isn't in session.");
-      renderXmlResponse(request, response, XML_ERROR_ITEM_NOT_FOUND);
-    }
-  }
-  
   @Override
   public boolean isAppEngine() {
     return true;
@@ -148,32 +140,21 @@ public class BlobstoreUploadAction extends UploadAction {
     }
   }
   
+  /**
+   * BlobStore does not support progress, we return something different to 0%
+   */
   @Override
   protected Map<String, String> getUploadStatus(HttpServletRequest request,
       String fieldname, Map<String, String> ret) {
+    if (ret == null) {
+      ret = new HashMap<String, String>();
+    }    
     ret.put(TAG_PERCENT, "50");
-    ret.put(TAG_CURRENT_BYTES, "0");
-    ret.put(TAG_TOTAL_BYTES, "0" );    
+    ret.put(TAG_CURRENT_BYTES, "1");
+    ret.put(TAG_TOTAL_BYTES, "2" );    
     return ret;
   }
   
-  @Override
-  protected Map<String, String> getFileItemsSummary(HttpServletRequest request, Map<String, String> ret) {
-    ret = super.getFileItemsSummary(request, ret);
-    for (FileItem item : getLastReceivedFileItems(request)) {
-      if (!item.isFormField()) {
-        BlobKey k = ((BlobstoreFileItem) item).getKey();
-        if (k != null && k.getKeyString() != null) {
-          ret.put(TAG_KEY, k.getKeyString());
-          
-          // legacy
-          ret.put("blobkey", k.getKeyString());
-        }
-      }
-    }
-    return ret;
-  }
-
   @Override
   protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
     String error = null;

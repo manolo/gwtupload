@@ -5,6 +5,8 @@ public class UConsts {
   public static final String TAG_BLOBSTORE_PATH = "blobpath";
   public static final String TAG_BLOBSTORE = "blobstore";
   public static final String TAG_KEY = "key";
+  @Deprecated
+  public static final String LEGACY_TAG_KEY = "blobkey";
   public static final String TAG_CANCELED = "canceled";
   public static final String TAG_CTYPE = "ctype";
   public static final String TAG_CURRENT_BYTES = "currentBytes";

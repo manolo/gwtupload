@@ -62,7 +62,10 @@ public class Const implements Exportable {
     protected static final String TXT_INVALID_EXTENSION = "uploaderInvalidExtension"; // (Upload)["Invalid file.\nOnly these types are allowed:\n"] 
     protected static final String TXT_TIMEOUT = "uploaderTimeout"; // (Upload)["Timeout sending the file:\n perhups your browser does not send files correctly,\n your session has expired,\n or there was a server error.\nPlease try again."] 
     protected static final String TXT_SERVER_ERROR = "uploaderServerError"; // (Upload)["Invalid server response. Have you configured correctly your application in the server side?"] 
-    protected static final String TXT_SERVER_UNAVAILABLE = "uploaderServerUnavailable"; // (Upload)["Unable to contact with the server: "] 
+    protected static final String TXT_SERVER_UNAVAILABLE = "uploaderServerUnavailable"; // (Upload)["Unable to contact with the server: "]
+    protected static final String TXT_BAD_SERVER_RESPONSE = "uploaderBadServerResponse"; // (Upload)["Unable to upload the file:\nServer response has a format which can not be parsed by the application.\n\n Server Response is:\n."] 
+    protected static final String TXT_BLOBSTORE_BILLING = "uploaderBlobstoreBilling"; // (Upload)["It seems that you are using blobstore, check that your application is billing enabled to use it."] 
+    
     protected static final String TXT_SEND = "uploaderSend"; // (Upload)["Send"] 
     protected static final String TXT_CANCEL = "uploadLabelCancel"; // (Upload)[null] 
     protected static final String TXT_CANCELING = "uploadStatusCanceling"; // (Upload)["Canceling"] 

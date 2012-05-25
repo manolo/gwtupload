@@ -17,6 +17,7 @@
 package gwtupload.server.gae;
 
 import com.google.appengine.api.blobstore.BlobKey;
+import com.google.gwt.event.logical.shared.HasInitializeHandlers;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
@@ -38,7 +39,8 @@ public class BlobstoreFileItemFactory implements FileItemFactory, Serializable {
    * FileItem class which stores file data in cache.
    * 
    */
-  public static class BlobstoreFileItem implements FileItem, Serializable {
+  public static class BlobstoreFileItem implements FileItem, Serializable, HasBlobKey {
+    
     private static final long serialVersionUID = 1L;
     String ctype;
     OutputStream data = null;
@@ -82,6 +84,10 @@ public class BlobstoreFileItemFactory implements FileItemFactory, Serializable {
 
     public BlobKey getKey() {
       return key;
+    }
+    
+    public String getKeyString() {
+      return key == null ? null : key.getKeyString();
     }
 
     public String getName() {

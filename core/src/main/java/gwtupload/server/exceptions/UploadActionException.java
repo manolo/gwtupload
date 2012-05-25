@@ -22,7 +22,7 @@ package gwtupload.server.exceptions;
  * @author Manolo Carrasco Moñino
  * 
  */
-public class UploadActionException extends Exception {
+public class UploadActionException extends RuntimeException {
   private static final long serialVersionUID = 1L;
 
   public UploadActionException(Throwable e) {
