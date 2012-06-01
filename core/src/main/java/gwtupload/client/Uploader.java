@@ -693,7 +693,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
       return;
     }
       
-    if (canceled) {
+    if (canceled || getStatus() == Status.CANCELING) {
       return;
     }
     
