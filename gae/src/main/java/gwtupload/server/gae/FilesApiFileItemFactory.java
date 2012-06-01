@@ -97,7 +97,7 @@ public class FilesApiFileItemFactory implements FileItemFactory, Serializable {
       type = contentType;
       formField = isFormField;
       name = fileName;
-      file = fileService.createNewBlobFile(contentType);
+      file = fileService.createNewBlobFile(contentType, fileName);
     }
 
     public void delete() {
