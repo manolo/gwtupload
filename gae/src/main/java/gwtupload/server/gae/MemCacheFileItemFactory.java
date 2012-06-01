@@ -194,14 +194,15 @@ public class MemCacheFileItemFactory implements FileItemFactory, Serializable {
           Cache cache = CacheManager.getInstance().getCacheFactory().createCache(new HashMap() { {
             put(GCacheFactory.EXPIRATION_DELTA, 3600); 
           }});
-          byte[] buff = new byte[MEMCACHE_LIMIT];
+          size = data.size();			
+          int storedBytes = 0;
           String sufix = "";
-          while ((data.read(buff)) > 0) {
+          while(storedBytes < size) {
+            byte[] buff = new byte[Math.min(MEMCACHE_LIMIT, size - storedBytes)];
+            storedBytes += data.read(buff);
             cache.put(fname + sufix, buff);
             sufix += "X";
-            buff = new byte[1023 * 1024];
           }
-          size = data.size();
           data = null;
         } catch (Exception e) {
           e.printStackTrace();
@@ -225,7 +226,16 @@ public class MemCacheFileItemFactory implements FileItemFactory, Serializable {
       if (data == null) {
         try {
           Cache cache = CacheManager.getInstance().getCacheFactory().createCache(Collections.emptyMap());
-          return (byte[]) cache.get(fname);
+          int pos = 0;
+          byte[] pData = new byte[size];
+          byte[] cacheBuf = null;
+          String suffix = "";
+          while ((cacheBuf = (byte[]) cache.get(fname + suffix)) != null) {
+            System.arraycopy(cacheBuf, 0, pData, pos, cacheBuf.length);
+            pos += cacheBuf.length;
+            suffix += "X";
+          }
+          return pData;
         } catch (Exception e) {
           e.printStackTrace();
           return null;

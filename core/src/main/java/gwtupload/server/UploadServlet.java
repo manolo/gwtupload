@@ -856,7 +856,7 @@ public class UploadServlet extends HttpServlet implements Servlet {
     } catch (UploadTimeoutException e) {
       listener.setException(e);
       throw e;
-    } catch (Exception e) {
+    } catch (Throwable e) {
       logger.error("UPLOAD-SERVLET (" + request.getSession().getId() + ") Unexpected Exception -> " + e.getMessage() + "\n" + stackTraceToString(e));
       e.printStackTrace();
       RuntimeException ex = new UploadException(e);
