@@ -203,7 +203,9 @@ public class UploadAction extends UploadServlet {
       Map<String, String> stat = new HashMap<String, String>();
       getFileItemsSummary(request, stat);
       if (message != null) {
-        stat.put("message", "\n<![CDATA[\n" + message + "\n]]>\n");
+        // see issue #139
+        // stat.put("message", "\n<![CDATA[\n" + message + "\n]]>\n");
+        stat.put("message", "<![CDATA[" + message + "]]>");
       }
       renderXmlResponse(request, response, statusToString(stat), true);
     }
