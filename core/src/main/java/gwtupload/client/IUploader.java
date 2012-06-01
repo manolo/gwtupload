@@ -111,6 +111,9 @@ public interface IUploader extends HasJsData, HasWidgets {
 
     @DefaultStringValue("Additional information: it seems that you are using blobstore, so in order to upload large files check that your application is billing enabled.")
     String uploaderBlobstoreBilling();
+
+    @DefaultStringValue("Error you have typed an invalid file name, please select a valid one.")
+    String uploaderInvalidPathError();
   }
 
   /**

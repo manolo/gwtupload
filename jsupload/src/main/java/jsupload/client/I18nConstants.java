@@ -114,5 +114,7 @@ public class I18nConstants implements UploaderConstants {
   public String submitError() {
     return or(strs.get(Const.TXT_SUBMIT_ERROR), defaultStrs.submitError());
   }
-
+  public String uploaderInvalidPathError() {
+    return or(strs.get(Const.TXT_SUBMIT_ERROR), defaultStrs.submitError());
+  }
 }

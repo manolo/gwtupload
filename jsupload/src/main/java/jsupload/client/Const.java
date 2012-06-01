@@ -78,6 +78,7 @@ public class Const implements Exportable {
     protected static final String TXT_DELETED = "uploadStatusDeleted"; // (Upload)["Deleted"]
     protected static final String TXT_BROWSE = "uploadBrowse"; // (Upload)["Select a file ..."]
     protected static final String TXT_SUBMIT_ERROR = "submitError"; // (Upload)[Unable to auto submit the form, it seems your browser has security issues with this feature.\n Developer Info: If you are using jsupload and you do not need cross-domain, try a version compiled with the standard linker?]
+    protected static final String TXT_INVALID_PATH = "invalidPathError"; // (Upload)[Error you have typed an invalid file name, please select a valid one.]
     
     protected static final String TXT_PERCENT = "progressPercentMsg"; // (Upload)["{0}%"] Set the message used to format the progress in percent units. 
     protected static final String TXT_SECONDS = "progressSecondsMsg"; // (Upload)["Time remaining: {0} Seconds"] Set the message used to format the time remaining text below the progress bar in seconds.

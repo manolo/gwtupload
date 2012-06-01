@@ -186,7 +186,13 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
         firstTime = true;
         statusWidget.setStatus(IUploadStatus.Status.SUBMITING);
         statusWidget.setVisible(true);
-        uploadForm.submit();
+        // See issue #134
+        try {
+          uploadForm.submit();
+        } catch (Exception e) {
+          cancel();
+          cancelUpload(i18nStrs.uploaderInvalidPathError());
+        }        
       } else if (firstTime) {
         addToQueue();
         firstTime = false;
