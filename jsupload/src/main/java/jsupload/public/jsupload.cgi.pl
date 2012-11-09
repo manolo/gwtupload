@@ -79,12 +79,19 @@ my $max_size = 2000000;
 my $mkpath = 1;
 my $slow = 0;
 
+## Protect names used in path of traversal directory vulnerability
+sub fixPath {
+  my $p = shift;
+  $p =~ s,[^\w\d-],_,g;
+  return $p;
+}
+
 # Get the sessionId or create a new one
 # do not use CGI here, because we need to handle STDIN in order to update the progress status.
-my $sid = new Digest::MD5()->add( $$, time(), rand(time) )->hexdigest();
+my $sid = fixPath(new Digest::MD5()->add( $$, time(), rand(time) )->hexdigest());
 my $set_cookie = "";
 if ( $ENV{'HTTP_COOKIE'} && $ENV{'HTTP_COOKIE'} =~ /$idname="*([^";]+)/ ) {
-    $sid = $1;
+    $sid = fixPath($1);
 } elsif ($mkpath) {
     $set_cookie = "Set-Cookie: CGISESSID=$sid; path=/\n"
 } else {
@@ -201,6 +208,7 @@ sub doPost {
 ## and the other one with the item information (original name and content-type)
 sub saveFile {
     my ( $key, $name, $type, $fd ) = @_;
+    $key = fixPath($key);
     my $bin_file = "";
     if ($fd) {
        $bin_file = $user_dir . $key . ".bin";
@@ -294,7 +302,7 @@ sub getProgress {
 ## if it is an uploaded file it returns the content of this file, setting the content-type to the original value.
 sub writeItemContent {
     select( undef, undef, undef, 0.4 );
-    my $item = shift;
+    my $item = fixPath(shift);
     if ( open( F, "$user_dir/$item.info" ) ) {
         my $value = <F>;
         $value =~ s/[\r\n]+$//g;
