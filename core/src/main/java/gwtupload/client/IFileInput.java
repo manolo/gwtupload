@@ -29,9 +29,9 @@ import com.google.gwt.user.client.ui.Widget;
 import gwtupload.client.DecoratedFileUpload.FileUploadWithMouseEvents;
 
 /**
- * Interface used by Uploaders to use and configure a customized file input.
+ * Interface used by Uploaders to use and configure a customized file fileUplad.
  * 
- * Widgets implementing this interface have to render a file input tag because
+ * Widgets implementing this interface have to render a file fileUplad tag because
  * it will be added to the form which is sent to the server.
  * 
  * This interface has thought to let the user the option to create customizable
@@ -75,7 +75,7 @@ public interface IFileInput extends HasChangeHandlers {
     }
 
     /**
-     * It is not possible to change the button text in a input type=file
+     * It is not possible to change the button text in a fileUplad type=file
      */
     public void setText(String text) {
     }
@@ -137,6 +137,9 @@ public interface IFileInput extends HasChangeHandlers {
       public FileInputType with(Widget w) {
         return this;
       }
+      public FileInputType with(IFileInput i) {
+        return this;
+      }      
     },
     BROWSER_INPUT {
       public IFileInput getInstance() {
@@ -148,6 +151,9 @@ public interface IFileInput extends HasChangeHandlers {
       public FileInputType with(Widget w) {
         return this;
       }
+      public FileInputType with(IFileInput i) {
+        return this;
+      }      
     },
     BUTTON {
       public IFileInput getInstance() {
@@ -159,6 +165,9 @@ public interface IFileInput extends HasChangeHandlers {
       public FileInputType with(Widget w) {
         return this;
       }
+      public FileInputType with(IFileInput i) {
+        return this;
+      }      
     },
     LABEL {
       public IFileInput getInstance() {
@@ -170,13 +179,17 @@ public interface IFileInput extends HasChangeHandlers {
       public FileInputType with(Widget w) {
         return this;
       }
+      public FileInputType with(IFileInput i) {
+        return this;
+      }      
     },
     CUSTOM {
       Widget widget;
       boolean hasText = false;
+      IFileInput i = null;
 
       public IFileInput getInstance() {
-        return new ButtonFileInput(widget, hasText);
+        return i != null ? i.newInstance() : new ButtonFileInput(widget, hasText);
       }
 
       public FileInputType with(Widget widget, boolean hasText) {
@@ -186,6 +199,10 @@ public interface IFileInput extends HasChangeHandlers {
       }
       public FileInputType with(Widget w) {
         return with(w, false);
+      }
+      public FileInputType with(IFileInput i) {
+        this.i = i;
+        return this;
       }
     }
   }
@@ -197,6 +214,7 @@ public interface IFileInput extends HasChangeHandlers {
     IFileInput getInstance();
     FileInputType with(Widget w, boolean hasText);
     FileInputType with(Widget w);
+    FileInputType with(IFileInput w);
   }
 
   /**
@@ -223,7 +241,7 @@ public interface IFileInput extends HasChangeHandlers {
   String getFilename();
 
   /**
-   * Gets the name of this input element.
+   * Gets the name of this fileUplad element.
    * 
    * @return fieldName
    */
@@ -235,7 +253,7 @@ public interface IFileInput extends HasChangeHandlers {
   Widget getWidget();
 
   /**
-   * return whether the input is or not enabled.
+   * return whether the fileUplad is or not enabled.
    */
   boolean isEnabled();
 
@@ -247,7 +265,7 @@ public interface IFileInput extends HasChangeHandlers {
   IFileInput newInstance();
 
   /**
-   * Enable the file input.
+   * Enable the file fileUplad.
    */
   void setEnabled(boolean b);
 
@@ -259,7 +277,7 @@ public interface IFileInput extends HasChangeHandlers {
   void setLength(int length);
 
   /**
-   * Sets the html name for this input element. It is the name of the form
+   * Sets the html name for this fileUplad element. It is the name of the form
    * parameter sent to the server.
    * 
    * @param fieldName

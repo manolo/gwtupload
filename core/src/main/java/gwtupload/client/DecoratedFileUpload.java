@@ -218,8 +218,8 @@ public class DecoratedFileUpload extends Composite implements HasText, HasName, 
    * IE, Chrome, Safari
    * 
    * The hack here is to put the customized button
-   * and the file input statically positioned in an absolute panel. 
-   * This panel has the size of the button, and the input is not shown 
+   * and the file fileUplad statically positioned in an absolute panel. 
+   * This panel has the size of the button, and the fileUplad is not shown 
    * because it is placed out of the width and height panel limits.
    * 
    */
@@ -275,13 +275,13 @@ public class DecoratedFileUpload extends Composite implements HasText, HasName, 
    * Implementation for browsers which do not support the click() method:
    * FF, Opera
    * 
-   * The hack here is to place the customized button and the file input positioned
+   * The hack here is to place the customized button and the file fileUplad positioned
    * statically in an absolute panel which has size of the button. 
-   * The file input is wrapped into a transparent panel, which also has the button
+   * The file fileUplad is wrapped into a transparent panel, which also has the button
    * size and is placed covering the customizable button.
    * 
    * When the user puts his mouse over the button and clicks on it, what really 
-   * happens is that the user clicks on the transparent file input showing
+   * happens is that the user clicks on the transparent file fileUplad showing
    * the choose file dialog.
    * 
    */  
@@ -345,7 +345,7 @@ public class DecoratedFileUpload extends Composite implements HasText, HasName, 
   private static final String STYLE_DISABLED = "disabled";
   protected Widget button;
   protected AbsolutePanel container;
-  protected FileUploadWithMouseEvents input = new FileUploadWithMouseEvents();
+  protected FileUploadWithMouseEvents input;;
   protected boolean reuseButton = false;
   private DecoratedFileUploadImpl impl;
   private String text = "";
@@ -355,11 +355,7 @@ public class DecoratedFileUpload extends Composite implements HasText, HasName, 
    * text when the element is attached.
    */
   public DecoratedFileUpload(String text) {
-    impl = GWT.create(DecoratedFileUploadImpl.class);
-    container = new AbsolutePanel();
-    container.addStyleName(STYLE_CONTAINER);
-    initWidget(container);
-    impl.init(container, input);
+    this((Widget)null);
     this.text = text;
   }
 
@@ -369,7 +365,19 @@ public class DecoratedFileUpload extends Composite implements HasText, HasName, 
    * The widget has to implement the HasClickHandlers interface.
    */
   public DecoratedFileUpload(Widget button) {
-    this("");
+    this(button, null);
+  }
+  
+  public DecoratedFileUpload(Widget button, FileUploadWithMouseEvents in) {
+    impl = GWT.create(DecoratedFileUploadImpl.class);
+    container = new AbsolutePanel();
+    container.addStyleName(STYLE_CONTAINER);
+    initWidget(container);
+    input = in;
+    if (input == null) {
+      input = new FileUploadWithMouseEvents();
+    }
+    impl.init(container, input);
     setButton(button);
   }
 
@@ -416,7 +424,7 @@ public class DecoratedFileUpload extends Composite implements HasText, HasName, 
   }
 
   /**
-   * Return whether the input is enabled.
+   * Return whether the fileUplad is enabled.
    */
   public boolean isEnabled() {
     return input.isEnabled();
