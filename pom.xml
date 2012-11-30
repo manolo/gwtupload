@@ -227,7 +227,7 @@
 
   <scm>
     <connection>scm:git:https://code.google.com/p/gwtupload/</connection>
-    <developerConnection>scm:git:https://manuel.carrasco.m@code.google.com/p/gwtupload/</developerConnection>
+    <developerConnection>scm:git:git@github.com:manolo/gwtupload.git</developerConnection>
     <url>http://code.google.com/p/gwtupload/source/browse/</url>
   </scm>
 <!--
