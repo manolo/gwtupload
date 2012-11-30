@@ -5,7 +5,7 @@
   <artifactId>gwtupload-project</artifactId>
   <name>GwtUpload project</name>
   <packaging>pom</packaging>
-  <version>0.6.5</version>
+  <version>0.6.5-SNAPSHOT</version>
 
   <modules>
     <module>core</module>
@@ -17,7 +17,7 @@
   <parent>
     <groupId>org.sonatype.oss</groupId>
     <artifactId>oss-parent</artifactId>
-    <version>3</version>
+    <version>7</version>
   </parent>
 
   <properties>
@@ -226,13 +226,11 @@
   </issueManagement>
 
   <scm>
-    <connection>scm:svn:http://gwtquery.googlecode.com/svn/trunk/GwtUpload</connection>
-    <developerConnection>scm:svn:https://gwtupload.googlecode.com/svn/trunk/GwtUpload</developerConnection>
+    <connection>scm:git:https://code.google.com/p/gwtupload/</connection>
+    <developerConnection>scm:git:https://manuel.carrasco.m@code.google.com/p/gwtupload/</developerConnection>
     <url>http://code.google.com/p/gwtupload/source/browse/</url>
   </scm>
-
 <!--
-
   <distributionManagement>
     <repository>
       <uniqueVersion>false</uniqueVersion>
@@ -287,7 +285,6 @@
           <excludePackageNames>com.google:*</excludePackageNames>
         </configuration>
       </plugin>
-<!--
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-gpg-plugin</artifactId>
@@ -301,7 +298,6 @@
           </execution>
         </executions>
       </plugin>
--->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-pmd-plugin</artifactId>
