@@ -17,8 +17,16 @@ BUILDING:
 - Assuming you have already installed maven in your system just run:
   mvn package
 
-- To run the examples do either deploy the generated gwtupload-version.war in a servlet container or in the samples folder run
+RUNNING EXAMPLES
+- To compile the examples and run them with maven jetty plugin
+  mvn jetty:run-exploded
+
+- To run examples in GWT dev mode run:
   mvn gwt:run
+
+- You can deploy the generated gwtupload-version.war in a servlet container or run it with:
+  java -jar gwtupload-version.war
+
 
 ECLIPSE:
 
