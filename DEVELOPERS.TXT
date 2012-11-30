@@ -1,0 +1,20 @@
+
+
+Developer Notes:
+
+- To deploy snapshot:
+ $ mvn clean package deploy
+
+- To deploy a new release
+ $ mvn release:clean -Pprod
+ $ mvn release:prepare -Pprod
+ $ mvn release:perform -Pprod
+ $ cd samples/target/
+ $ perl -pi -e 's,<packaging>war</packaging>,<packaging>jar</packaging>,' gwtupload-samples-*.pom
+ $ mvn gpg:sign-and-deploy-file \
+   -Durl=https://oss.sonatype.org/service/local/staging/deploy/maven2/ \
+   -DrepositoryId=sonatype-nexus-staging \
+   -DpomFile=gwtupload-samples-*.pom \
+   -Dfile=gwtupload-samples-*.jar
+
+ Release in this url: https://oss.sonatype.org/index.html#stagingRepositories
