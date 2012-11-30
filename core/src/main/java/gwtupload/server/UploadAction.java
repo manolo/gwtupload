@@ -27,7 +27,6 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -72,7 +71,7 @@ public class UploadAction extends UploadServlet {
    * @param parameter field name or file name of the desired file 
    * @return an ImputString 
    */
-  public static InputStream getFileStream(Vector<FileItem> sessionFiles, String parameter) throws IOException {
+  public static InputStream getFileStream(List<FileItem> sessionFiles, String parameter) throws IOException {
     FileItem item = findFileItem(sessionFiles, parameter);
     return item == null ? null : item.getInputStream();
   }
@@ -84,7 +83,7 @@ public class UploadAction extends UploadServlet {
    * @param fieldName field name 
    * @return the string value 
    */
-  public static String getFormField(Vector<FileItem> sessionFiles, String fieldName) {
+  public static String getFormField(List<FileItem> sessionFiles, String fieldName) {
     FileItem item = findItemByFieldName(sessionFiles, fieldName);
     return item == null || item.isFormField() == false ? null : item.getString();
   }

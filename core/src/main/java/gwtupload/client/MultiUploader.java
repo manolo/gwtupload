@@ -22,7 +22,6 @@ import gwtupload.client.IUploadStatus.Status;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
@@ -450,7 +449,7 @@ public class MultiUploader extends Composite implements IUploader {
   public void reset() {
     currentUploader.reset();
     currentUploader = null;
-    uploaders = new Vector<IUploader>();
+    uploaders = new ArrayList<IUploader>();
     multiUploaderPanel.clear();
     newUploaderInstance();
   }

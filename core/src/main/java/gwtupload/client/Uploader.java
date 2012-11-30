@@ -16,16 +16,40 @@
  */
 package gwtupload.client;
 
-import static gwtupload.shared.UConsts.*;
+import static gwtupload.shared.UConsts.LEGACY_TAG_MSG_START;
+import static gwtupload.shared.UConsts.PARAM_BLOBKEY;
+import static gwtupload.shared.UConsts.PARAM_BLOBSTORE;
+import static gwtupload.shared.UConsts.PARAM_CANCEL;
+import static gwtupload.shared.UConsts.PARAM_REMOVE;
+import static gwtupload.shared.UConsts.PARAM_SESSION;
+import static gwtupload.shared.UConsts.PARAM_SHOW;
+import static gwtupload.shared.UConsts.TAG_BLOBSTORE;
+import static gwtupload.shared.UConsts.TAG_BLOBSTORE_PATH;
+import static gwtupload.shared.UConsts.TAG_CANCELED;
+import static gwtupload.shared.UConsts.TAG_CTYPE;
+import static gwtupload.shared.UConsts.TAG_CURRENT_BYTES;
+import static gwtupload.shared.UConsts.TAG_FIELD;
+import static gwtupload.shared.UConsts.TAG_FINISHED;
+import static gwtupload.shared.UConsts.TAG_KEY;
+import static gwtupload.shared.UConsts.TAG_MESSAGE;
+import static gwtupload.shared.UConsts.TAG_MSG_END;
+import static gwtupload.shared.UConsts.TAG_MSG_GT;
+import static gwtupload.shared.UConsts.TAG_MSG_LT;
+import static gwtupload.shared.UConsts.TAG_MSG_START;
+import static gwtupload.shared.UConsts.TAG_NAME;
+import static gwtupload.shared.UConsts.TAG_PERCENT;
+import static gwtupload.shared.UConsts.TAG_SIZE;
+import static gwtupload.shared.UConsts.TAG_TOTAL_BYTES;
+import static gwtupload.shared.UConsts.TAG_WAIT;
 import gwtupload.client.IFileInput.FileInputType;
 import gwtupload.client.IUploadStatus.Status;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.Vector;
 import java.util.logging.Logger;
 
 import com.google.gwt.core.client.GWT;
@@ -136,7 +160,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
   private static final int DEFAULT_UPDATE_INTERVAL = 500;
   
   private static HashSet<String> fileDone = new HashSet<String>();
-  private static Vector<String> fileQueue = new Vector<String>();
+  private static List<String> fileQueue = new ArrayList<String>();
   private static int statusInterval = DEFAULT_UPDATE_INTERVAL;
   
   private static int uploadTimeout = DEFAULT_TIME_MAX_WITHOUT_RESPONSE;
@@ -258,7 +282,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     }
   };
 
-  private Vector<IUploader.OnChangeUploaderHandler> onChangeHandlers = new Vector<IUploader.OnChangeUploaderHandler>();
+  private List<IUploader.OnChangeUploaderHandler> onChangeHandlers = new ArrayList<IUploader.OnChangeUploaderHandler>();
   private final RequestCallback onDeleteFileCallback = new RequestCallback() {
     public void onError(Request request, Throwable exception) {
       statusWidget.setStatus(Status.DELETED);
@@ -288,7 +312,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     }
   };
   
-  private Vector<IUploader.OnFinishUploaderHandler> onFinishHandlers = new Vector<IUploader.OnFinishUploaderHandler>();
+  private List<IUploader.OnFinishUploaderHandler> onFinishHandlers = new ArrayList<IUploader.OnFinishUploaderHandler>();
   
   private final RequestCallback onSessionReceivedCallback = new RequestCallback() {
     public void onError(Request request, Throwable exception) {
@@ -314,9 +338,9 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     }
   };
   
-  private Vector<IUploader.OnStartUploaderHandler> onStartHandlers = new Vector<IUploader.OnStartUploaderHandler>();
+  private List<IUploader.OnStartUploaderHandler> onStartHandlers = new ArrayList<IUploader.OnStartUploaderHandler>();
   
-  private Vector<IUploader.OnStatusChangedHandler> onStatusChangeHandlers = new Vector<IUploader.OnStatusChangedHandler>();
+  private List<IUploader.OnStatusChangedHandler> onStatusChangeHandlers = new ArrayList<IUploader.OnStatusChangedHandler>();
 
   /**
    * Handler called when the status request response comes back.

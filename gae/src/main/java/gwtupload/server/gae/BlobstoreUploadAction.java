@@ -36,11 +36,11 @@ import gwtupload.server.exceptions.UploadCanceledException;
 import gwtupload.server.gae.BlobstoreFileItemFactory.BlobstoreFileItem;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Vector;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -186,7 +186,7 @@ public class BlobstoreUploadAction extends UploadAction {
     @SuppressWarnings("deprecation")
     Map<String, BlobKey> blobs = blobstoreService.getUploadedBlobs(request);
     if (blobs != null && blobs.size() > 0) {
-      List<FileItem> receivedFiles = new Vector<FileItem>();
+      List<FileItem> receivedFiles = new ArrayList<FileItem>();
       for (Entry<String, BlobKey> e: blobs.entrySet()) {
         BlobstoreFileItem i = new BlobstoreFileItem(e.getKey(), "unknown", false, "");
         logger.info("BLOB-STORE-SERVLET: received file: " + e.getKey() + " " + e.getValue().getKeyString());
@@ -196,9 +196,9 @@ public class BlobstoreUploadAction extends UploadAction {
       
       logger.info("BLOB-STORE-SERVLET: putting in sesssion elements -> " + receivedFiles.size());
       
-      Vector<FileItem> sessionFiles = (Vector<FileItem>) getSessionFileItems(request);
+      List<FileItem> sessionFiles =  getSessionFileItems(request);
       if (sessionFiles == null) {
-        sessionFiles = new Vector<FileItem>();
+        sessionFiles = new ArrayList<FileItem>();
       }
       sessionFiles.addAll(receivedFiles);
       
