@@ -159,7 +159,9 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
   private static final int DEFAULT_UPDATE_INTERVAL = 500;
   
   private static HashSet<String> fileDone = new HashSet<String>();
+  private static HashSet<String> fileUploading = new HashSet<String>();
   private static List<String> fileQueue = new ArrayList<String>();
+
   private static int statusInterval = DEFAULT_UPDATE_INTERVAL;
   
   private static int uploadTimeout = DEFAULT_TIME_MAX_WITHOUT_RESPONSE;
@@ -297,7 +299,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     public void onChange(ChangeEvent event) {
       basename = Utils.basename(getFileName());
       statusWidget.setFileName(basename);
-      if (avoidRepeatedFiles && fileDone.contains(getFileName())) {
+      if (isRepeated()) {
         statusWidget.setStatus(Status.REPEATED);
         return;
       }
@@ -381,7 +383,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
       onSubmitComplete = true;
       serverResponse = event.getResults();
       if (serverResponse != null) {
-        serverResponse = serverResponse.replaceFirst(".*" + TAG_MSG_START + "([\\s\\S]*?)" + TAG_MSG_END + ".*", "$2");
+        serverResponse = serverResponse.replaceFirst(".*" + TAG_MSG_START + "([\\s\\S]*?)" + TAG_MSG_END + ".*", "$1");
         serverResponse = serverResponse.replace(TAG_MSG_LT, "<").replace(TAG_MSG_GT, ">").replace("&lt;", "<").replaceAll("&gt;", ">");
       }
       log("onSubmitComplete: " + serverResponse, null);
@@ -408,6 +410,11 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     }
   };
   
+  
+  private boolean isRepeated() {
+    return avoidRepeatedFiles && (fileDone.contains(getFileName()) || fileUploading.contains(getFileName()));
+  }
+  
   /**
    *  Handler called when the file form is submitted
    *  
@@ -430,7 +437,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
         return;
       }
 
-      if (avoidRepeatedFiles && fileDone.contains(getFileName())) {
+      if (isRepeated()) {
         statusWidget.setStatus(IUploadStatus.Status.REPEATED);
         successful = true;
         event.cancel();
@@ -862,6 +869,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
   public void reset() {
     reuse();
     fileDone = new HashSet<String>();
+    fileUploading = new HashSet<String>();
   }
   
   /**
@@ -1069,9 +1077,12 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
   private void addToQueue() {
     statusWidget.setStatus(IUploadStatus.Status.QUEUED);
     statusWidget.setProgress(0, 0);
-    if (!fileQueue.contains(fileInput.getName())) {
+    if (!fileQueue.contains(getInputName())) {
       onStartUpload();
-      fileQueue.add(fileInput.getName());
+      fileQueue.add(getInputName());
+      if (avoidRepeatedFiles) {
+        fileUploading.add(getFileName());
+      }
     }
   }
   
@@ -1122,7 +1133,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
   }-*/;
 
   private boolean isTheFirstInQueue() {
-    return fileQueue.size() > 0 && fileQueue.get(0).equals(fileInput.getName());
+    return fileQueue.size() > 0 && fileQueue.get(0).equals(getInputName());
   }
 
   private void parseAjaxResponse(String responseTxt) {
@@ -1200,7 +1211,8 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
    * remove a file from the upload queue.
    */
   private void removeFromQueue() {
-    fileQueue.remove(fileInput.getName());
+    fileQueue.remove(getInputName());
+    fileUploading.remove(getFileName());
   }
 
   private String removeHtmlTags(String message) {
@@ -1262,9 +1274,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     
     if (successful) {
       if (avoidRepeatedFiles) {
-        if (!fileDone.contains(getFileName())) {
-          fileDone.add(getFileName());
-        }
+        fileDone.add(getFileName());
         statusWidget.setStatus(IUploadStatus.Status.SUCCESS);
       } else {
         statusWidget.setStatus(IUploadStatus.Status.SUCCESS);
