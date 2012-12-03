@@ -86,7 +86,7 @@ public class MultipleUploadSample implements EntryPoint {
     chismesUploader.addOnFinishUploadHandler(onFinishUploaderHandler);
     RootPanel.get("chismes").add(chismesUploader);
     
-    MUpld m = new MUpld("abcde");
+    MUpld m = new MUpld();
     RootPanel.get("uibinder").add(m);
   }
 

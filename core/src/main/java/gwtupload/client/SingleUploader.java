@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
+import com.google.gwt.uibinder.client.UiChild;
 import com.google.gwt.uibinder.client.UiConstructor;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Focusable;
@@ -284,6 +285,23 @@ public class SingleUploader extends Uploader {
       button.setVisible(!b);
     }
     super.setAutoSubmit(b);
+  }
+  
+  /**
+   * Add a customized Upload bar, used in Uibinder.
+   */
+  @UiChild(limit = 1, tagname = "statusBar")
+  public void addStatusBar(IUploadStatus status) {
+    this.setStatusWidget((IUploadStatus) status);
+  }
+  
+  /**
+   * Add any html button created with Uibinder.
+   * The content has to implement the interface HasClickHandlers
+   */
+  @UiChild(limit = 1, tagname = "button")
+  public void addButton(Widget button) {
+    this.setFileInput(IFileInput.FileInputType.CUSTOM.with(button).getInstance());
   }
 
 }

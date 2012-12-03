@@ -40,6 +40,10 @@ public class ChismesUploadProgress extends BaseUploadStatus {
 
   GWTCProgress prg;
   private String prgBarText = "{0}% {1}/{2} KB. ({3} KB/s)";
+  
+  public ChismesUploadProgress() {
+    this(false);
+  }
 
   public ChismesUploadProgress(boolean asDialog) {
     this.asDialog = asDialog;

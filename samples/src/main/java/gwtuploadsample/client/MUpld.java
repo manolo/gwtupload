@@ -18,7 +18,7 @@ public class MUpld extends Composite {
   @UiField
   MultiUploader uploader;
 
-  public MUpld(String firstName) {
+  public MUpld() {
     initWidget(uiBinder.createAndBindUi(this));
   }
 

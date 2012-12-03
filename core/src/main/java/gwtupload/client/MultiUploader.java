@@ -26,6 +26,7 @@ import java.util.List;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.uibinder.client.UiChild;
 import com.google.gwt.uibinder.client.UiConstructor;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Composite;
@@ -628,6 +629,23 @@ public class MultiUploader extends Composite implements IUploader {
    */
   public void setAutoSubmit(boolean autoSubmit) {
     this.autoSubmit = autoSubmit;
+  }
+  
+  /**
+   * Add a customized Upload bar, used in Uibinder.
+   */
+  @UiChild(limit = 1, tagname = "statusBar")
+  public void addStatusBar(IUploadStatus status) {
+    this.setStatusWidget((IUploadStatus) status);
+  }
+
+  /**
+   * Add any html button created with Uibinder.
+   * The content has to implement the interface HasClickHandlers
+   */
+  @UiChild(limit = 1, tagname = "button")
+  public void addButton(Widget button) {
+    this.setFileInput(IFileInput.FileInputType.CUSTOM.with(button).getInstance());
   }
 
 }

@@ -136,8 +136,8 @@
           <disableCastChecking>true</disableCastChecking>
           <!-- Modules to compile -->
           <modules>
-            <module>gwtuploadsample.ChismesUploadSample</module>
-            <module>gwtuploadsample.SingleUploadSample</module>
+            <!-- <module>gwtuploadsample.ChismesUploadSample</module> -->
+            <!-- <module>gwtuploadsample.SingleUploadSample</module> -->
             <module>gwtuploadsample.MultipleUploadSample</module>
             <!-- <module>jsupload.JsUpload</module> -->
           </modules>

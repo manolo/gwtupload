@@ -1,13 +1,51 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
-	xmlns:g="urn:import:com.google.gwt.user.client.ui"
-	xmlns:up="urn:import:gwtupload.client"
-	>
-	<ui:style>
-		.myup div {
-			font-style: italic;
-		}
-	</ui:style>
-  	<up:MultiUploader type="LABEL" ui:field="uploader" 
-  	                  styleName="{style.myup}" maximumFiles="2" avoidRepeatFiles="true" validExtensions="mmm, ooo"/>
+  xmlns:g="urn:import:com.google.gwt.user.client.ui"
+  xmlns:up="urn:import:gwtupload.client"
+  xmlns:j="urn:import:jsupload.client"
+  >
+  <ui:style>
+    .myup div {
+      font-style: italic;
+    }
+    .htmlButton {
+      width: 300px;
+      background: -moz-linear-gradient(center top , #FFFFFF 0%, #C7D95F 50%, #ADD136 50%, #6D8000) repeat scroll 0 0 transparent;
+      background: -webkit-linear-gradient(center top , #FFFFFF 0%, #C7D95F 50%, #ADD136 50%, #6D8000) repeat scroll 0 0 transparent;
+      background: -o-linear-gradient(center top , #FFFFFF 0%, #C7D95F 50%, #ADD136 50%, #6D8000) repeat scroll 0 0 transparent;
+      background: linear-gradient(center top , #FFFFFF 0%, #C7D95F 50%, #ADD136 50%, #6D8000) repeat scroll 0 0 transparent;
+      border: 1px solid #666E34;
+      border-radius: 6px;
+      box-shadow: 0 1px 1px rgba(0, 0, 0, 0.5), 0 0 2px #FFFFFF inset;
+      color: #050505;
+      font-family: Arial,Helvetica,sans-serif;
+      font-size: 12px;
+      padding: 5px 10px;
+      text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.2), 0 1px 0 rgba(255, 255, 255, 0.4);
+    }
+    
+    @external .DecoratedFileUpload-over;
+    .DecoratedFileUpload-over .htmlButton {
+      color: white;
+    }
+  </ui:style>
+  <g:HTMLPanel>
+    <up:MultiUploader type="LABEL" ui:field="uploader" 
+        styleName="{style.myup}" maximumFiles="2" avoidRepeatFiles="true" validExtensions="jpg, png"/>
+
+    <br/>
+
+    <up:MultiUploader type="CUSTOM" ui:field="uploader2" 
+       maximumFiles="2" avoidRepeatFiles="true" validExtensions="jpg">
+       <up:statusBar>
+          <j:ChismesUploadProgress></j:ChismesUploadProgress>           
+       </up:statusBar>
+       <up:button>
+          <g:HTML styleName="{style.htmlButton}">
+               Css3 button: Push to upload a new file
+          </g:HTML>
+       </up:button>
+    </up:MultiUploader>
+
+  </g:HTMLPanel>
 </ui:UiBinder> 

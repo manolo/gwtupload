@@ -189,10 +189,18 @@ public interface IFileInput extends HasChangeHandlers {
       IFileInput i = null;
 
       public IFileInput getInstance() {
-        return i != null ? i.newInstance() : new ButtonFileInput(widget, hasText);
+        if (i == null) {
+          if (widget == null) {
+            i = GWT.create(ButtonFileInput.class);
+          } else {
+            i = new ButtonFileInput(widget, hasText);
+          }
+        }
+        return i.newInstance();
       }
 
       public FileInputType with(Widget widget, boolean hasText) {
+        i = null;
         this.widget = widget;
         this.hasText = hasText;
         return this;

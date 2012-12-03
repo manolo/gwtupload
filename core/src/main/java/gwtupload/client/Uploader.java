@@ -299,7 +299,8 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     public void onChange(ChangeEvent event) {
       basename = Utils.basename(getFileName());
       statusWidget.setFileName(basename);
-      if (isRepeated()) {
+
+      if (avoidRepeatedFiles && (fileDone.contains(getFileName()) || fileUploading.contains(getFileName()))) {
         statusWidget.setStatus(Status.REPEATED);
         return;
       }
@@ -410,11 +411,6 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     }
   };
   
-  
-  private boolean isRepeated() {
-    return avoidRepeatedFiles && (fileDone.contains(getFileName()) || fileUploading.contains(getFileName()));
-  }
-  
   /**
    *  Handler called when the file form is submitted
    *  
@@ -437,7 +433,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
         return;
       }
 
-      if (isRepeated()) {
+      if (avoidEmptyFile && fileDone.contains(getFileName())) {
         statusWidget.setStatus(IUploadStatus.Status.REPEATED);
         successful = true;
         event.cancel();
