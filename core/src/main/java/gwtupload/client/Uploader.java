@@ -16,7 +16,6 @@
  */
 package gwtupload.client;
 
-import static gwtupload.shared.UConsts.LEGACY_TAG_MSG_START;
 import static gwtupload.shared.UConsts.PARAM_BLOBKEY;
 import static gwtupload.shared.UConsts.PARAM_BLOBSTORE;
 import static gwtupload.shared.UConsts.PARAM_CANCEL;
@@ -377,13 +376,12 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
   private boolean onSubmitComplete;
 
   private SubmitCompleteHandler onSubmitCompleteHandler = new SubmitCompleteHandler() {
-    @SuppressWarnings("deprecation")
     public void onSubmitComplete(SubmitCompleteEvent event) {
       updateStatusTimer.cancel();
       onSubmitComplete = true;
       serverResponse = event.getResults();
       if (serverResponse != null) {
-        serverResponse = serverResponse.replaceFirst(".*(" + TAG_MSG_START + "|" + LEGACY_TAG_MSG_START + ")([\\s\\S]*?)" + TAG_MSG_END + ".*", "$2");
+        serverResponse = serverResponse.replaceFirst(".*" + TAG_MSG_START + "([\\s\\S]*?)" + TAG_MSG_END + ".*", "$2");
         serverResponse = serverResponse.replace(TAG_MSG_LT, "<").replace(TAG_MSG_GT, ">").replace("&lt;", "<").replaceAll("&gt;", ">");
       }
       log("onSubmitComplete: " + serverResponse, null);

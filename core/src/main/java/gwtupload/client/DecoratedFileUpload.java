@@ -223,7 +223,6 @@ public class DecoratedFileUpload extends Composite implements HasText, HasName, 
    * because it is placed out of the width and height panel limits.
    * 
    */
-  @SuppressWarnings("unused")
   private static class DecoratedFileUploadImplClick extends DecoratedFileUploadImpl {
 
     private static HashMap<Widget, HandlerRegistration> clickHandlerCache = new HashMap<Widget, HandlerRegistration>();

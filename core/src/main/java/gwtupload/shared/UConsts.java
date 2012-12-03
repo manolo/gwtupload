@@ -23,11 +23,9 @@ public class UConsts {
   public static final String TAG_OK = "ok";
   
   public static final String TAG_MSG_START = "%%%INI%%%";
-  @Deprecated
-  public static final String LEGACY_TAG_MSG_START = "%%%START%%%";
   public static final String TAG_MSG_END = "%%%END%%%";
-  public static final String TAG_MSG_GT = "___";
-  public static final String TAG_MSG_LT = "@@@";
+  public static final String TAG_MSG_GT = "^^^@@";
+  public static final String TAG_MSG_LT = "@@^^^";
   
   
   public static final String PARAM_BLOBSTORE = TAG_BLOBSTORE;
