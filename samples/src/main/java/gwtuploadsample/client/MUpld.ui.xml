@@ -30,12 +30,13 @@
     }
   </ui:style>
   <g:HTMLPanel>
-    <up:MultiUploader type="LABEL" ui:field="uploader" 
+    MultiUploader type="ANCHOR" 
+    <up:MultiUploader type="ANCHOR"
         styleName="{style.myup}" maximumFiles="2" avoidRepeatFiles="true" validExtensions="jpg, png"/>
-
     <br/>
 
-    <up:MultiUploader type="CUSTOM" ui:field="uploader2" 
+    MultiUploader type="CUSTOM" with customized statusBar and button
+    <up:MultiUploader type="CUSTOM" 
        maximumFiles="2" avoidRepeatFiles="true" validExtensions="jpg">
        <up:statusBar>
           <j:ChismesUploadProgress></j:ChismesUploadProgress>           
@@ -46,6 +47,19 @@
           </g:HTML>
        </up:button>
     </up:MultiUploader>
+    <br/>
 
+    MultiUploader type="LABEL" enabled="false""
+    <up:MultiUploader type="LABEL" enabled="false"/>
+
+    MultiUploader type="BUTTON" enabled="false""
+    <up:MultiUploader type="BUTTON" enabled="false"/>
+
+    MultiUploader type="BROWSER_INPUT" enabled="false""
+    <up:MultiUploader type="BROWSER_INPUT" enabled="false"/>
+        
+    SingleUploader type="ANCHOR" enabled="false""
+    <up:SingleUploader type="ANCHOR" enabled="false"/>
+        
   </g:HTMLPanel>
 </ui:UiBinder> 

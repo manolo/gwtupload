@@ -67,6 +67,8 @@ public class MultipleUploadSample implements EntryPoint {
     // Create a new uploader panel and attach it to the document
     MultiUploader defaultUploader = new MultiUploader();
     RootPanel.get("default").add(defaultUploader);
+    
+    
     // Add a finish handler which will load the image once the upload finishes
     defaultUploader.addOnFinishUploadHandler(onFinishUploaderHandler);
     defaultUploader.setMaximumFiles(3);
@@ -81,6 +83,7 @@ public class MultipleUploadSample implements EntryPoint {
     incubatorUploader.addOnFinishUploadHandler(onFinishUploaderHandler);
     incubatorUploader.setValidExtensions("jpg", "jpeg", "png", "gif");
     RootPanel.get("incubator").add(incubatorUploader);
+
 
     MultiUploader chismesUploader = new MultiUploader(FileInputType.BUTTON, new ChismesUploadProgress(false));//, new DecoratedFileInput(new GWTCButton()));
     chismesUploader.addOnFinishUploadHandler(onFinishUploaderHandler);

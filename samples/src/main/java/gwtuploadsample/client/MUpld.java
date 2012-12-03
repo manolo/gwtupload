@@ -15,9 +15,6 @@ public class MUpld extends Composite {
   interface MUpldUiBinder extends UiBinder<Widget, MUpld> {
   }
 
-  @UiField
-  MultiUploader uploader;
-
   public MUpld() {
     initWidget(uiBinder.createAndBindUi(this));
   }
