@@ -206,7 +206,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
   private final Timer automaticUploadTimer = new Timer() {
     private boolean firstTime = true;
     public void run() {
-      if (isTheFirstInQueue()) {
+      if (autoSubmit && isTheFirstInQueue()) {
         this.cancel();
         firstTime = true;
         statusWidget.setStatus(IUploadStatus.Status.SUBMITING);
