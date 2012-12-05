@@ -18,6 +18,11 @@ package jsupload.client;
 
 import gwtupload.client.BaseUploadStatus;
 import gwtupload.client.IUploadStatus;
+import gwtupload.client.Utils;
+
+import java.util.List;
+
+import org.apache.commons.lang.StringUtils;
 
 import com.google.code.p.gwtchismes.client.GWTCProgress;
 import com.google.gwt.user.client.Window;
@@ -72,11 +77,11 @@ public class ChismesUploadProgress extends BaseUploadStatus {
   }
   
   @Override
-  public void setFileName(String name) {
+  public void setFileNames(List<String> names) {
     if (!asDialog) {
-      super.setFileName(name);
+      super.setFileNames(names);
     }
-    prg.setText(name);
+    prg.setText(Utils.convertCollectionToString(names, ", "));
   }
 
   public void setHoursMessage(String message) {

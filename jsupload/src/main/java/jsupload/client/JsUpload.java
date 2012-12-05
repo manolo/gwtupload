@@ -16,14 +16,9 @@
  */
 package jsupload.client;
 
-import gwtupload.client.IFileInput.FileInputType;
-import gwtupload.client.IUploader;
-import gwtupload.client.MultiUploader;
-
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.ui.RootPanel;
 
 /**
  * @author Manolo Carrasco Moñino T

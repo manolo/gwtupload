@@ -21,6 +21,7 @@ public class UConsts {
   public static final String TAG_TOTAL_BYTES = "totalBytes";
   public static final String TAG_WAIT = "wait";
   public static final String TAG_OK = "ok";
+  public static final String TAG_FILE = "file";
   
   public static final String TAG_MSG_START = "%%%INI%%%";
   public static final String TAG_MSG_END = "%%%END%%%";

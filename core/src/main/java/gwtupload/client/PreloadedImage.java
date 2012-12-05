@@ -16,6 +16,8 @@
  */
 package gwtupload.client;
 
+import java.util.List;
+
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.event.dom.client.ErrorEvent;
 import com.google.gwt.event.dom.client.ErrorHandler;
@@ -135,7 +137,7 @@ public class PreloadedImage extends Image implements HasJsData {
   /* (non-Javadoc)
    * @see gwtupload.client.HasJsData#getData()
    */
-  public JavaScriptObject getData() {
+  public List<JavaScriptObject> getData() {
     return null;
   }
 

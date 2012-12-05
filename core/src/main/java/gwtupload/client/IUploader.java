@@ -16,6 +16,8 @@
  */
 package gwtupload.client;
 
+import java.util.List;
+
 import gwtupload.client.IUploadStatus.Status;
 import gwtupload.client.IUploadStatus.UploadStatusConstants;
 
@@ -23,9 +25,6 @@ import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.xml.client.Document;
-import com.google.gwt.xml.client.Node;
-import com.google.gwt.xml.client.NodeList;
 
 /**
  * <p>
@@ -117,108 +116,6 @@ public interface IUploader extends HasJsData, HasWidgets {
   }
 
   /**
-   * Utility class.
-   */
-  public static final class Utils {
-    /**
-     * return the name of a file without path.
-     */
-    public static String basename(String name) {
-      return name.replaceAll("^.*[/\\\\]", "");
-    }
-
-    public static int getPercent(long done, long total) {
-      return (int)(total > 0 ? done * 100 / total : 0);
-    }
-
-    /**
-     * return the text content of a tag in a xml document. 
-     */
-    public static String getXmlNodeValue(Document doc, String tag) {
-      if (doc == null) {
-        return null;
-      }
-
-      NodeList list = doc.getElementsByTagName(tag);
-      if (list.getLength() == 0) {
-        return null;
-      }
-
-      Node node = list.item(0);
-      if (node.getNodeType() != Node.ELEMENT_NODE) {
-        return null;
-      }
-
-      String ret = "";
-      NodeList textNodes = node.getChildNodes();
-      for (int i = 0; i < textNodes.getLength(); i++) {
-        Node n = textNodes.item(i);
-        if (n.getNodeType() == Node.TEXT_NODE && n.getNodeValue().replaceAll("[ \\n\\t\\r]", "").length() > 0) {
-          ret += n.getNodeValue();
-        } else if (n.getNodeType() == Node.CDATA_SECTION_NODE) {
-          ret += n.getNodeValue();
-        }
-      }
-      return ret.length() == 0 ? null : ret.replaceAll("^\\s+", "").replaceAll("\\s+$", "");
-    }
-
-    /**
-     * Return true in the case of the filename has an extension included in the 
-     * validExtensions array. It isn't case sensitive.
-     * 
-     * @param validExtensions an array with allowed extensions. ie: .jpg, .mpg ..
-     * @param fileName
-     * @return true in the case of valid filename
-     */
-    public static boolean validateExtension(String validExtensions[], String fileName) {
-      if (fileName == null || fileName.length() == 0) {
-        return false;
-      }
-
-      boolean valid = validExtensions == null || validExtensions.length == 0 ? true : false;
-      for (int i = 0; valid == false && i < validExtensions.length; i++) {
-        if (validExtensions[i] != null && fileName.toLowerCase().matches(validExtensions[i])) {
-          valid = true;
-          break;
-        }
-      }
-      return valid;
-    }
-  }
-  
-  
-  public static class UploadedInfo {
-    /**
-     * File name sent by the client
-     */
-    public String name;
-    /**
-     * Content-type sent by the client
-     */
-    public String ctype;
-    /**
-     * Size in bytes calculated in the server
-     */
-    public int size = 0;
-    /**
-     * Field name
-     */
-    public String field;
-    /**
-     * Additional message sent by the server.
-     * It is the return string of the UploadAction.executeAction method.
-     * It can be null;
-     */
-    public String message;
-    
-    /**
-     * Used when the server sends a special key to identify the file.
-     * Blobstore uses it.
-     */
-    public String key;
-  }
-
-  /**
    * Get the url where the server application is installed.
    */
   String getServletPath();
@@ -289,32 +186,20 @@ public interface IUploader extends HasJsData, HasWidgets {
   void cancel();
 
   /**
-   * Returns the link reference to the uploaded file in the web server.
+   * Returns the link references to the uploaded files in the web server.
    * It is useful to show uploaded images or to create links to uploaded documents.
    * 
-   * In multi-uploader panels, this method has to return the link to the most recent
-   * uploaded file
+   * In multi-uploader panels, this method has to return the links to the most recently
+   * uploaded files
    * 
-   * @return string   
+   * @return List<String>   
    */
-  String fileUrl();
-
-  /**
-   * Returns the just the name of the file selected by the user without directory names,
-   * or an empty string when the user has not selected any one.
-   */
-  String getBasename();
+  List<String> fileUrls();
 
   /**
    * Return the FileInput used.
    */
   IFileInput getFileInput();
-
-  /**
-   * Returns the name of the file selected by the user reported by the browser
-   * or an empty string when the user has not selected any one.
-   */
-  String getFileName();
 
   /**
    * Returns the name of the file input in the form.
@@ -342,7 +227,7 @@ public interface IUploader extends HasJsData, HasWidgets {
    * Returns the file info provided by the server or null
    * if the server did not return a valid xml message.
    */
-  UploadedInfo getServerInfo();
+  ServerInfo getServerInfo();
 
   /**
    * Return the status of the upload process.
@@ -444,7 +329,7 @@ public interface IUploader extends HasJsData, HasWidgets {
    * Sets the uploader in uploaded state with given file info
    * @param info
    */
-  void setUploaded(UploadedInfo info);
+  void setUploaded(ServerInfo info);
   
   /**
    * Return the widget instance.

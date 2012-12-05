@@ -16,17 +16,16 @@
  */
 package gwtupload.server;
 
-import static gwtupload.shared.UConsts.*;
-
+import static gwtupload.shared.UConsts.TAG_CANCELED;
+import static gwtupload.shared.UConsts.TAG_ERROR;
 import gwtupload.server.exceptions.UploadActionException;
 import gwtupload.server.exceptions.UploadCanceledException;
 import gwtupload.shared.UConsts;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -35,6 +34,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.lang3.tuple.Pair;
 
 /** 
  * <p>Class used to manipulate the data received in the server side.</p>
@@ -152,7 +152,7 @@ public class UploadAction extends UploadServlet {
     if (parameter != null) {
       try {
         removeItem(request, parameter);
-        FileItem item = super.findFileItem(getSessionFileItems(request), parameter);
+        FileItem item = super.findFileItem(getMySessionFileItems(request), parameter);
         if (item != null) {
           removeItem(request, item);
         }
@@ -176,7 +176,7 @@ public class UploadAction extends UploadServlet {
       error = super.parsePostRequest(request, response);
       if (error == null) {
         // Call to the user code 
-        message = executeAction(request, getLastReceivedFileItems(request));
+        message = executeAction(request, getMyLastReceivedFileItems(request));
       }
     } catch (UploadCanceledException e) {
       renderXmlResponse(request, response, "<" + TAG_CANCELED + ">true</" + TAG_CANCELED + ">");
@@ -199,12 +199,11 @@ public class UploadAction extends UploadServlet {
       }
       UploadServlet.removeSessionFileItems(request);
     } else {
-      Map<String, String> stat = new HashMap<String, String>();
-      getFileItemsSummary(request, stat);
+    	List<Pair<String, String>> stat = new ArrayList<Pair<String, String>>();
+    	getFileItemsSummary(request, stat);
       if (message != null) {
         // see issue #139
-        // stat.put("message", "\n<![CDATA[\n" + message + "\n]]>\n");
-        stat.put("message", "<![CDATA[" + message + "]]>");
+        stat.add(Pair.of("message", "<![CDATA[" + message + "]]>"));
       }
       renderXmlResponse(request, response, statusToString(stat), true);
     }

@@ -17,6 +17,7 @@
 package gwtupload.client;
 
 import java.util.HashMap;
+import java.util.List;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -97,7 +98,7 @@ public class DecoratedFileUpload extends Composite implements HasText, HasName, 
    * we put it here in order to be compatible with older Gwt versions.
    *
    */
-  public static class FileUploadWithMouseEvents extends FileUpload implements HasMouseOverHandlers, HasMouseOutHandlers, HasChangeHandlers {
+  public static class FileUploadWithMouseEvents extends MultipleFileUpload implements HasMouseOverHandlers, HasMouseOutHandlers, HasChangeHandlers {
 
     public HandlerRegistration addChangeHandler(ChangeHandler handler) {
       return addDomHandler(handler, ChangeEvent.getType());
@@ -392,6 +393,13 @@ public class DecoratedFileUpload extends Composite implements HasText, HasName, 
    */
   public String getFilename() {
     return input.getFilename();
+  }
+  
+  /**
+   * Return the file names selected by the user.
+   */
+  public List<String> getFilenames() {
+	  return input.getFilenames();
   }
 
   /**

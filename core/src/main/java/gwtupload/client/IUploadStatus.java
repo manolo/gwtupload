@@ -16,13 +16,14 @@
  */
 package gwtupload.client;
 
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Set;
+
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.i18n.client.Constants;
 import com.google.gwt.user.client.ui.Widget;
-
-import java.util.EnumSet;
-import java.util.Set;
 
 /**
  * <p>
@@ -133,10 +134,10 @@ public interface IUploadStatus extends HasProgress {
   void setError(String error);
   
   /**
-   * Called when the uploader knows the filename selected by the user.
-   * @param name file's basename
+   * Called when the uploader knows the filenames selected by the user.
+   * @param of the selected files' names
    */
-  void setFileName(String name);
+  void setFileNames(List<String> names);
   
   /**
    * Internationalize the UploadStatus widget.

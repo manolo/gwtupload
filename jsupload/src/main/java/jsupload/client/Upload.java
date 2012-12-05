@@ -16,6 +16,8 @@
  */
 package jsupload.client;
 
+import java.util.List;
+
 import gwtupload.client.IFileInput.FileInputType;
 import gwtupload.client.IUploader;
 import gwtupload.client.MultiUploader;
@@ -178,15 +180,15 @@ public class Upload implements Exportable {
    *    upload.data().size     // The size of the file 
    *    upload.data().status   // The upload status (UNINITIALIZED, QUEUED, INPROGRESS, SUCCESS, ERROR, CANCELING, CANCELED, SUBMITING)
    */
-  public JavaScriptObject data() {
+  public List<JavaScriptObject> data() {
     return uploader.getData();
   }
 
   /**
-   * returns the url of the last uploaded file.
+   * returns the urls of the last uploaded files.
    */
-  public String fileUrl() {
-    return uploader.fileUrl();
+  public List<String> fileUrls() {
+    return uploader.fileUrls();
   }
   
   /**

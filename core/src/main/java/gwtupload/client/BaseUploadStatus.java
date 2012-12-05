@@ -16,6 +16,9 @@
  */
 package gwtupload.client;
 
+import java.util.List;
+import java.util.Set;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -27,8 +30,6 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
-
-import java.util.Set;
 
 /**
  *<p>
@@ -67,7 +68,7 @@ public class BaseUploadStatus implements IUploadStatus {
       if (statusBar == null) {
         return;
       }
-      int percent = IUploader.Utils.getPercent(done, total);
+      int percent = Utils.getPercent(done, total);
       statusBar.setWidth(percent + "px");
       statusMsg.setText(percent + "%");
     }
@@ -183,13 +184,14 @@ public class BaseUploadStatus implements IUploadStatus {
     Window.alert(msg.replaceAll("\\\\n", "\\n"));
   }
 
+
   /*
    * (non-Javadoc)
    * 
-   * @see gwtupload.client.IUploadStatus#setFileName(java.lang.String)
+   * @see gwtupload.client.IUploadStatus#setFileNames(List<java.lang.String>)
    */
-  public void setFileName(String name) {
-    fileNameLabel.setText(name);
+  public void setFileNames(List<String> names) {
+    fileNameLabel.setText(Utils.convertCollectionToString(names, ", "));
   }
 
   /* (non-Javadoc)

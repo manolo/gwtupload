@@ -28,6 +28,7 @@ import static gwtupload.shared.UConsts.TAG_CANCELED;
 import static gwtupload.shared.UConsts.TAG_CTYPE;
 import static gwtupload.shared.UConsts.TAG_CURRENT_BYTES;
 import static gwtupload.shared.UConsts.TAG_FIELD;
+import static gwtupload.shared.UConsts.TAG_FILE;
 import static gwtupload.shared.UConsts.TAG_FINISHED;
 import static gwtupload.shared.UConsts.TAG_KEY;
 import static gwtupload.shared.UConsts.TAG_MESSAGE;
@@ -44,6 +45,8 @@ import gwtupload.client.IFileInput.FileInputType;
 import gwtupload.client.IUploadStatus.Status;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -78,6 +81,7 @@ import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.xml.client.Document;
+import com.google.gwt.xml.client.NodeList;
 import com.google.gwt.xml.client.XMLParser;
 import com.google.gwt.xml.client.impl.DOMParseException;
 
@@ -146,7 +150,6 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
   public static final UploaderConstants I18N_CONSTANTS = GWT.create(UploaderConstants.class);
   
   protected static final String STYLE_BUTTON = "upld-button";
-  
   protected static final String STYLE_INPUT = "upld-input";
   protected static final String STYLE_MAIN = "GWTUpld";
   protected static final String STYLE_STATUS = "upld-status";
@@ -228,7 +231,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
   protected boolean autoSubmit = false;  
   private boolean avoidRepeatedFiles = false;
   private boolean avoidEmptyFile = true;
-  private String basename = "";
+  private List<String> basenames = new ArrayList<String>();
   private boolean blobstore = false;
   private IUploadStatus.UploadCancelHandler cancelHandler = new IUploadStatus.UploadCancelHandler() {
     public void onCancel() {
@@ -292,22 +295,24 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
 
     public void onResponseReceived(Request request, Response response) {
       statusWidget.setStatus(Status.DELETED);
-      fileDone.remove(getFileName());
+      fileDone.removeAll(getFileInputNames());
     }
   };
   private final ChangeHandler onFileInputChanged = new ChangeHandler() {
     public void onChange(ChangeEvent event) {
-      basename = Utils.basename(getFileName());
-      statusWidget.setFileName(basename);
-
-      if (avoidRepeatedFiles && (fileDone.contains(getFileName()) || fileUploading.contains(getFileName()))) {
+      basenames.clear();
+      for (String s: getFileInputNames()) {
+        basenames.add(Utils.basename(s));
+      }
+      statusWidget.setFileNames(basenames);
+      if (avoidRepeatedFiles && anyFileIsRepeated()) {
         statusWidget.setStatus(Status.REPEATED);
         return;
       }
-      if (autoSubmit && !validateExtension(basename)) {
+      if (autoSubmit && !validateAll(basenames)) {
         return;
       }
-      if (autoSubmit && basename.length() > 0) {
+      if (autoSubmit && fileSelected()) {
         automaticUploadTimer.scheduleRepeating(DEFAULT_AUTOUPLOAD_DELAY);
       }
       onChangeInput();
@@ -391,22 +396,28 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
       try {
         // Parse the xml and extract serverInfo
         Document doc = XMLParser.parse(serverResponse);
-        serverInfo.name = Utils.getXmlNodeValue(doc, TAG_NAME);
-        serverInfo.ctype = Utils.getXmlNodeValue(doc, TAG_CTYPE);
-        String size = Utils.getXmlNodeValue(doc, TAG_SIZE);
-        if (size != null) {
-          serverInfo.size = Integer.parseInt(size);
+        serverInfo.setMessage(Utils.getXmlNodeValue(doc, TAG_MESSAGE));
+        serverInfo.setField(Utils.getXmlNodeValue(doc, TAG_FIELD));
+
+        NodeList list = doc.getElementsByTagName(TAG_FILE);
+
+        for (int i = 0; i < list.getLength(); i++) {
+        	UploadedInfo info = new UploadedInfo();
+
+        	info.setName(doc.getElementsByTagName(TAG_NAME).item(i).getFirstChild().getNodeValue());
+        	info.setCtype(doc.getElementsByTagName(TAG_CTYPE).item(i).getFirstChild().getNodeValue());
+        	String size = doc.getElementsByTagName(TAG_SIZE).item(i).getFirstChild().getNodeValue();
+        	if (size != null) {
+        		info.setSize(Integer.parseInt(size));
+        	}
+        	serverInfo.add(info);
         }
-        serverInfo.field = Utils.getXmlNodeValue(doc, TAG_FIELD);
-        serverInfo.message = Utils.getXmlNodeValue(doc, TAG_MESSAGE);
-        serverInfo.key = Utils.getXmlNodeValue(doc, TAG_KEY);
-        
         // If the server response is a valid xml
         parseAjaxResponse(serverResponse);
       } catch (Exception e) {
-        log("onSubmitComplete exception parsing response: ", e);
-        // Otherwise force an ajax request so as we have not to wait to the timer schedule
-        updateStatusTimer.run();
+    	  log("onSubmitComplete exception parsing response: ", e);
+    	  // Otherwise force an ajax request so as we have not to wait to the timer schedule
+    	  updateStatusTimer.run();
       }
     }
   };
@@ -433,7 +444,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
         return;
       }
 
-      if (avoidEmptyFile && fileDone.contains(getFileName())) {
+      if (avoidEmptyFile && anyFileIsRepeated()) {
         statusWidget.setStatus(IUploadStatus.Status.REPEATED);
         successful = true;
         event.cancel();
@@ -441,7 +452,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
         return;
       }
       
-      if (!validateExtension(basename)) {
+      if (!validateAll(basenames)) {
         event.cancel();
         return;
       }
@@ -471,7 +482,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
       uploading = true;
       finished = false;
       serverResponse = null;
-      serverInfo = new UploadedInfo();
+      serverInfo = new ServerInfo();
 
       statusWidget.setVisible(true);
       updateStatusTimer.squeduleStart();
@@ -485,7 +496,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
   private int requestsCounter = 0;
 
   private String serverResponse = null;
-  private UploadedInfo serverInfo = new UploadedInfo();
+  private ServerInfo serverInfo = new ServerInfo();
   
   private String servletPath = "servlet.gupld";
 
@@ -746,22 +757,19 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
   }
 
   /**
-   * Returns the link for getting the uploaded file from the server
+   * Returns the links for getting the uploaded files from the server
    * It's useful to display uploaded images or generate links to uploaded files.
    */
-  public String fileUrl() {
-    String ret =  composeURL(PARAM_SHOW + "=" + getInputName());
-    if (serverInfo.key != null) {
-      ret += "&" + PARAM_BLOBKEY + "=" + serverInfo.key;
-    }
-    return ret;
-  }
-
-  /* (non-Javadoc)
-   * @see gwtupload.client.IUploader#getBasename()
-   */
-  public String getBasename() {
-    return Utils.basename(getFileName());
+  public List<String> fileUrls() {
+	  List<String> list = new ArrayList<String>();
+	 for (UploadedInfo info: serverInfo.getUploadedFiles()) { 
+	    String ret =  composeURL(PARAM_SHOW + "=" + info.getFileName());
+	    if (info.getKey() != null) {
+	      ret += "&" + PARAM_BLOBKEY + "=" + info.getKey();
+	    }
+	    list.add(ret);
+	 }
+    return list;
   }
 
   /**
@@ -769,8 +777,14 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
    * It's useful in the exported version of the library. 
    * Because native javascript needs it
    */
-  public JavaScriptObject getData() {
-    return getDataImpl(fileUrl(), getInputName(), getFileName(), getBasename(), getServerResponse(), getServerInfo().message, getStatus().toString(), getServerInfo().size);
+  public List<JavaScriptObject> getData() {
+	  List<JavaScriptObject> list = new ArrayList<JavaScriptObject>();
+	  for (UploadedInfo info: serverInfo.getUploadedFiles()) {
+		  list.add(getDataImpl(Arrays.toString(fileUrls().toArray()), getInputName(), info.getFileName(), 
+				  Utils.basename(info.getFileName()), getServerResponse(), getServerInfo().getMessage(), 
+				  getStatus().toString(), info.getSize()));
+	  }
+	  return list;
   }
 
   public IFileInput getFileInput() {
@@ -782,6 +796,13 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
    */
   public String getFileName() {
     return fileInput.getFilename();
+  }
+  
+  /* (non-Javadoc)
+   * @see gwtupload.client.IUploader#getFileNames()
+   */
+  public List<String> getFileNames() {
+    return fileInput.getFilenames();
   }
   
   public FormPanel getForm() {
@@ -809,7 +830,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
   /* (non-Javadoc)
    * @see gwtupload.client.IUploader#getServerInfo()
    */
-  public UploadedInfo getServerInfo() {
+  public ServerInfo getServerInfo() {
     return serverInfo;
   }
 
@@ -1003,11 +1024,11 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
   /* (non-Javadoc)
    * @see gwtupload.client.IUploader#setUploaded()
    */
-  public void setUploaded(UploadedInfo info) {
-    serverInfo = info;
+  public void setUploaded(ServerInfo serverInfo) {
+    this.serverInfo = serverInfo;
     successful = true;
-    statusWidget.setFileName(info.name);
-    fileInput.setName(info.field);
+    statusWidget.setFileNames(serverInfo.getUploadedFileNames());
+    fileInput.setName(serverInfo.getField());
     uploadFinished();
   }
 
@@ -1154,18 +1175,18 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
       return;
     } else if (Utils.getXmlNodeValue(doc, TAG_WAIT) != null) {
       if (serverResponse != null) {
-        log("server response received, cancelling the upload " + getFileName() + " " + serverResponse, null);
+        log("server response received, cancelling the upload " + getFileInputNames() + " " + serverResponse, null);
         successful = true;
         uploadFinished();
       }
     } else if (Utils.getXmlNodeValue(doc, TAG_CANCELED) != null) {
-      log("server response is: canceled " + getFileName(), null);
+      log("server response is: canceled " + getFileInputNames(), null);
       successful = false;
       canceled = true;
       uploadFinished();
       return;
     } else if (Utils.getXmlNodeValue(doc, TAG_FINISHED) != null) {
-      log("server response is: finished " + getFileName(), null);
+      log("server response is: finished " + serverInfo.getUploadedFileNames(), null);
       successful = true;
       if (onSubmitComplete) {
         log("POST response from server has been received", null);
@@ -1177,7 +1198,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
       long transferredKB = Long.valueOf(Utils.getXmlNodeValue(doc, TAG_CURRENT_BYTES)) / 1024;
       long totalKB = Long.valueOf(Utils.getXmlNodeValue(doc, TAG_TOTAL_BYTES)) / 1024;
       statusWidget.setProgress(transferredKB, totalKB);
-      log("server response transferred  " + transferredKB + "/" + totalKB + " " + getFileName(), null);
+      log("server response transferred  " + transferredKB + "/" + totalKB + " " + getFileInputNames(), null);
       if (onSubmitComplete) {
         successful = false;
         String msg = i18nStrs.uploaderBadServerResponse() + "\n" + serverResponse;
@@ -1190,7 +1211,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
       }
       return;
     } else {
-      log("incorrect response: " + getFileName() + " " + responseTxt, null);
+      log("incorrect response: " + getFileInputNames() + " " + responseTxt, null);
     }
     
     if (uploadTimeout > 0 && now() - lastData >  uploadTimeout) {
@@ -1270,7 +1291,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     
     if (successful) {
       if (avoidRepeatedFiles) {
-        fileDone.add(getFileName());
+        fileDone.addAll(fileInput.getFilenames());
         statusWidget.setStatus(IUploadStatus.Status.SUCCESS);
       } else {
         statusWidget.setStatus(IUploadStatus.Status.SUCCESS);
@@ -1282,6 +1303,22 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     }
     
     onFinishUpload();
+  }
+  
+  private boolean fileSelected() {
+    for (String s: basenames) {
+      if (s.length() > 0) return true;
+    }
+    return false;
+  }
+  
+  private boolean validateAll(Collection<String> coll) {
+    for (String s: coll) {
+      if (!validateExtension(s)) {
+        return false;
+      }
+    }
+    return true;
   }
 
   private boolean validateExtension(String filename) {
@@ -1296,5 +1333,16 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     }
     return valid;
   }
+  
+  public List<String> getFileInputNames() {
+    return fileInput.getFilenames();
+  }
 
+  public boolean anyFileIsRepeated() {
+    for (String s: fileInput.getFilenames()) {
+      if (fileDone.contains(s) || fileUploading.contains(s))
+        return true;
+    }
+    return false;
+  }
 }

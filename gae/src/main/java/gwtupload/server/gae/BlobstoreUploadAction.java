@@ -37,7 +37,6 @@ import gwtupload.server.gae.BlobstoreFileItemFactory.BlobstoreFileItem;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -49,6 +48,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
+import org.apache.commons.lang3.tuple.Pair;
 
 import com.google.appengine.api.blobstore.BlobInfoFactory;
 import com.google.appengine.api.blobstore.BlobKey;
@@ -117,18 +117,18 @@ public class BlobstoreUploadAction extends UploadAction {
       blobstoreService.serve(new BlobKey(request.getParameter(PARAM_BLOBKEY)), response);
     } else if (request.getParameter(PARAM_REDIRECT) != null) {
       perThreadRequest.set(request);
-      Map<String, String> stat = new HashMap<String, String>();
+      List<Pair<String, String>> stat = new ArrayList<Pair<String, String>>();
       if (request.getParameter(PARAM_MESSAGE) != null) {
-        stat.put(TAG_MESSAGE, request.getParameter(PARAM_MESSAGE));
+        stat.add(Pair.of(TAG_MESSAGE, request.getParameter(PARAM_MESSAGE)));
       }
       if (request.getParameter(PARAM_ERROR) != null) {
-        stat.put(TAG_ERROR, request.getParameter(PARAM_ERROR));
+        stat.add(Pair.of(TAG_ERROR, request.getParameter(PARAM_ERROR)));
       } else if (request.getParameter(PARAM_CANCEL) != null) {
-        stat.put(TAG_CANCELED, request.getParameter(PARAM_CANCEL));
+        stat.add(Pair.of(TAG_CANCELED, request.getParameter(PARAM_CANCEL)));
       } else  {
         getFileItemsSummary(request, stat);
       }
-      stat.put(TAG_FINISHED, RESP_OK);
+      stat.add(Pair.of(TAG_FINISHED, RESP_OK));
 
       String ret = statusToString(stat);
       finish(request);
@@ -144,14 +144,14 @@ public class BlobstoreUploadAction extends UploadAction {
    * BlobStore does not support progress, we return something different to 0%
    */
   @Override
-  protected Map<String, String> getUploadStatus(HttpServletRequest request,
-      String fieldname, Map<String, String> ret) {
-    if (ret == null) {
-      ret = new HashMap<String, String>();
-    }    
-    ret.put(TAG_PERCENT, "50");
-    ret.put(TAG_CURRENT_BYTES, "1");
-    ret.put(TAG_TOTAL_BYTES, "2" );    
+  protected List<Pair<String, String>> getUploadStatus(HttpServletRequest request,
+      String fieldname, List<Pair<String, String>> ret) {
+	  if (ret == null) {
+		  ret = new ArrayList<Pair<String, String>>();
+	  }
+    ret.add(Pair.of(TAG_PERCENT, "50"));
+    ret.add(Pair.of(TAG_CURRENT_BYTES, "1"));
+    ret.add(Pair.of(TAG_TOTAL_BYTES, "2" ));    
     return ret;
   }
   
@@ -196,20 +196,20 @@ public class BlobstoreUploadAction extends UploadAction {
       
       logger.info("BLOB-STORE-SERVLET: putting in sesssion elements -> " + receivedFiles.size());
       
-      List<FileItem> sessionFiles =  getSessionFileItems(request);
+      List<FileItem> sessionFiles = getMySessionFileItems(request);
       if (sessionFiles == null) {
         sessionFiles = new ArrayList<FileItem>();
       }
       sessionFiles.addAll(receivedFiles);
       
-      request.getSession().setAttribute(SESSION_FILES, receivedFiles);
-      request.getSession().setAttribute(SESSION_LAST_FILES, sessionFiles);
+      request.getSession().setAttribute(getSessionFilesKey(request), receivedFiles);
+      request.getSession().setAttribute(getSessionLastFilesKey(request), sessionFiles);
     } else {
       error = getMessage("no_data");
     }
       
     try {
-      message = executeAction(request, getSessionFileItems(request));
+      message = executeAction(request, getMySessionFileItems(request));
     } catch (UploadActionException e) {
       logger.info("ExecuteUploadActionException: " + e);
       error =  e.getMessage();

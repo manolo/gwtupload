@@ -279,23 +279,16 @@ public class MultiUploader extends Composite implements IUploader {
   }
 
   /* (non-Javadoc)
-   * @see gwtupload.client.IUploader#fileUrl()
+   * @see gwtupload.client.IUploader#fileUrls()
    */
-  public String fileUrl() {
-    return lastUploader.fileUrl();
-  }
-
-  /* (non-Javadoc)
-   * @see gwtupload.client.IUploader#getBasename()
-   */
-  public String getBasename() {
-    return Utils.basename(getFileName());
+  public List<String> fileUrls() {
+    return lastUploader.fileUrls();
   }
 
   /* (non-Javadoc)
    * @see gwtupload.client.HasJsData#getData()
    */
-  public JavaScriptObject getData() {
+  public List<JavaScriptObject> getData() {
     return lastUploader.getData();
   }
 
@@ -304,13 +297,6 @@ public class MultiUploader extends Composite implements IUploader {
    */
   public IFileInput getFileInput() {
     return currentUploader.getFileInput();
-  }
-  
-  /* (non-Javadoc)
-   * @see gwtupload.client.IUploader#getFileName()
-   */
-  public String getFileName() {
-    return lastUploader.getFileName();
   }
 
   /* (non-Javadoc)
@@ -353,7 +339,7 @@ public class MultiUploader extends Composite implements IUploader {
   /* (non-Javadoc)
    * @see gwtupload.client.IUploader#getServerInfo()
    */
-  public UploadedInfo getServerInfo() {
+  public ServerInfo getServerInfo() {
     return lastUploader.getServerInfo();
   }
 
@@ -393,9 +379,9 @@ public class MultiUploader extends Composite implements IUploader {
    * @param name
    * @return the status of the uploader in the case of found or UNINITIALIZED 
    */
-  public Status getStatus(String name) {
+  public Status getStatus(String name) { 
     for (IUploader u : uploaders) {
-      if (u.getInputName().equals(name) || u.getFileName().equals(name)) {
+      if (u.getInputName().equals(name) || u.getServerInfo().getUploadedFileNames().contains(name)) {
         return u.getStatus();
       }
     }
@@ -548,7 +534,7 @@ public class MultiUploader extends Composite implements IUploader {
   /* (non-Javadoc)
   * @see gwtupload.client.IUploader#setUploaded()
   */
-  public void setUploaded(UploadedInfo info) {
+  public void setUploaded(ServerInfo info) {
 	currentUploader.setUploaded(info);
   }
 

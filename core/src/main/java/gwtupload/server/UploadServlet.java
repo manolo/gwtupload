@@ -37,6 +37,7 @@ import static gwtupload.shared.UConsts.TAG_NAME;
 import static gwtupload.shared.UConsts.TAG_PERCENT;
 import static gwtupload.shared.UConsts.TAG_SIZE;
 import static gwtupload.shared.UConsts.TAG_TOTAL_BYTES;
+import static gwtupload.shared.UConsts.TAG_FILE;
 import gwtupload.server.exceptions.UploadActionException;
 import gwtupload.server.exceptions.UploadCanceledException;
 import gwtupload.server.exceptions.UploadException;
@@ -51,10 +52,8 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.ResourceBundle;
 
@@ -72,6 +71,7 @@ import org.apache.commons.fileupload.FileUploadBase.SizeLimitExceededException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.tuple.Pair;
 
 /**
  * <p>
@@ -130,8 +130,8 @@ import org.apache.commons.io.IOUtils;
  */
 public class UploadServlet extends HttpServlet implements Servlet {
 
-  protected static final String SESSION_FILES = "FILES";
-  protected static final String SESSION_LAST_FILES = "LAST_FILES";
+  private static final String SESSION_FILES = "FILES";
+  private static final String SESSION_LAST_FILES = "LAST_FILES";
   
   protected static final int DEFAULT_REQUEST_LIMIT_KB = 5 * 1024 * 1024;
   protected static final int DEFAULT_SLOW_DELAY_MILLIS = 300;
@@ -225,19 +225,47 @@ public class UploadServlet extends HttpServlet implements Servlet {
   }
 
   /**
-   * Return the list of FileItems stored in session.
+   * Return the list of FileItems stored in session under the provided session key.
    */
   @SuppressWarnings("unchecked")
+  public static List<FileItem> getSessionFileItems(HttpServletRequest request, String sessionFilesKey) {
+    return (List<FileItem>) request.getSession().getAttribute(sessionFilesKey);
+  }
+
+  /**
+   * Return the list of FileItems stored in session under the default name.
+   */
   public static List<FileItem> getSessionFileItems(HttpServletRequest request) {
-    return (List<FileItem>) request.getSession().getAttribute(SESSION_FILES);
+	    return getSessionFileItems(request, SESSION_FILES);
+	  }
+  
+  /**
+   * Return the list of FileItems stored in session under the session key. 
+   */
+  public List<FileItem> getMySessionFileItems(HttpServletRequest request) {
+	  return getSessionFileItems(request, getSessionFilesKey(request));
   }
   
   /**
    * Return the most recent list of FileItems received
    */
   @SuppressWarnings("unchecked")
+  public static List<FileItem> getLastReceivedFileItems(HttpServletRequest request, String sessionLastFilesKey) {
+    return (List<FileItem>) request.getSession().getAttribute(sessionLastFilesKey);
+  }
+
+  /**
+   * Return the most recent list of FileItems received under the default key
+   */
   public static List<FileItem> getLastReceivedFileItems(HttpServletRequest request) {
-    return (List<FileItem>) request.getSession().getAttribute(SESSION_LAST_FILES);
+	    return getLastReceivedFileItems(request, SESSION_LAST_FILES);
+	  }
+  
+  /**
+   * Return the most recent list of FileItems received under the session key
+   */
+  public List<FileItem> getMyLastReceivedFileItems(HttpServletRequest request) {
+	  return getLastReceivedFileItems(request, getSessionLastFilesKey(request));
   }
 
   /**
@@ -278,16 +306,23 @@ public class UploadServlet extends HttpServlet implements Servlet {
   }
 
   /**
-   * Removes all FileItems stored in session and the temporary data.
+   * Removes all FileItems stored in session under the session key and the temporary data.
    * 
    * @param request
    */
-  public static void removeSessionFileItems(HttpServletRequest request) {
-    removeSessionFileItems(request, true);
+  public static void removeSessionFileItems(HttpServletRequest request, String sessionFilesKey) {
+    removeSessionFileItems(request, sessionFilesKey, true);
   }
+  
+  /**
+   * Removes all FileItems stored in session under the default key and the temporary data.
+   */
+  public static void removeSessionFileItems(HttpServletRequest request) {
+	    removeSessionFileItems(request, SESSION_FILES, true);
+	  }
 
   /**
-   * Removes all FileItems stored in session, but in this case 
+   * Removes all FileItems stored in session under the session key, but in this case 
    * the user can specify whether the temporary data is removed from disk.
    * 
    * @param request
@@ -296,9 +331,9 @@ public class UploadServlet extends HttpServlet implements Servlet {
    *                    false: use it when you are referencing file items 
    *                    instead of copying them.
    */
-  public static void removeSessionFileItems(HttpServletRequest request, boolean removeData) {
+  public static void removeSessionFileItems(HttpServletRequest request, String sessionFilesKey, boolean removeData) {
     logger.debug("UPLOAD-SERVLET (" + request.getSession().getId() + ") removeSessionFileItems: removeData=" + removeData);
-    List<FileItem> sessionFiles = getSessionFileItems(request);
+    List<FileItem> sessionFiles = getSessionFileItems(request, sessionFilesKey);
     if (removeData && sessionFiles != null) {
       for (FileItem fileItem : sessionFiles) {
         if (fileItem != null && !fileItem.isFormField()) {
@@ -306,9 +341,17 @@ public class UploadServlet extends HttpServlet implements Servlet {
         }
       }
     }
-    request.getSession().removeAttribute(SESSION_FILES);
+    request.getSession().removeAttribute(sessionFilesKey);
   }
 
+  /**
+   * Removes all FileItems stored in session under the default key, but in this case 
+   * the user can specify whether the temporary data is removed from disk.
+   */
+  public static void removeSessionFileItems(HttpServletRequest request, boolean removeData) {
+	  removeSessionFileItems(request, SESSION_FILES, removeData);
+  }
+  
   /**
    * 
    * @deprecated use removeSessionFileItems
@@ -462,7 +505,7 @@ public class UploadServlet extends HttpServlet implements Servlet {
    */
   public void getUploadedFile(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String parameter = request.getParameter(UConsts.PARAM_SHOW);
-    FileItem item = findFileItem(getSessionFileItems(request), parameter);
+    FileItem item = findFileItem(getMySessionFileItems(request), parameter);
     if (item != null) {
       logger.debug("UPLOAD-SERVLET (" + request.getSession().getId() + ") getUploadedFile: " + parameter + " returning: " + item.getContentType() + ", " + item.getName() + ", " + item.getSize()
             + " bytes");
@@ -576,9 +619,9 @@ public class UploadServlet extends HttpServlet implements Servlet {
     perThreadRequest.set(null);
   }
   
-  protected String statusToString(Map<String, String> status) {
+  protected String statusToString(List<Pair<String, String>> stat) {
     String message = "";
-    for (Entry<String, String> e : status.entrySet()) {
+    for (Entry<String, String> e : stat) {
       if (e.getValue() != null) {
         String k = e.getKey();
         String v = e.getValue().replaceAll("</*pre>", "").replaceAll("&lt;", "<").replaceAll("&gt;", ">");
@@ -603,9 +646,9 @@ public class UploadServlet extends HttpServlet implements Servlet {
     try {
       error = parsePostRequest(request, response);
       finish(request);
-      Map<String, String> stat = new HashMap<String, String>();
+      List<Pair<String, String>> stat = new ArrayList<Pair<String, String>>();
       if (error != null && error.length() > 0 ) {
-        stat.put(TAG_ERROR, error);
+    	  stat.add(Pair.of(TAG_ERROR, error));
       } else {
         getFileItemsSummary(request, stat);
       }
@@ -626,31 +669,39 @@ public class UploadServlet extends HttpServlet implements Servlet {
   }
   
   @SuppressWarnings("deprecation")
-  protected Map<String, String> getFileItemsSummary(HttpServletRequest request, Map<String, String> ret) {
-    if (ret == null) {
-      ret = new HashMap<String, String>();
+  protected List<Pair<String, String>> getFileItemsSummary(HttpServletRequest request, List<Pair<String, String>> stat) {
+    if (stat == null) {
+      stat = new ArrayList<Pair<String, String>>();
     }
-    List<FileItem> s = getLastReceivedFileItems(request);
+    List<FileItem> s = getMyLastReceivedFileItems(request);
     if (s != null) {
+      if (!s.isEmpty()) { stat.add(Pair.of(TAG_FIELD, "" + s.get(0).getFieldName())); }
       for (FileItem i : s) {
         if (false == i.isFormField()) {
-          ret.put(TAG_CTYPE, i.getContentType() !=null ? i.getContentType() : "unknown");
-          ret.put(TAG_SIZE, "" + i.getSize());
-          ret.put(TAG_NAME, "" + i.getName());
-          ret.put(TAG_FIELD, "" + i.getFieldName());
-          if (i instanceof HasKey) {
-            String k = ((HasKey)i).getKeyString();
-            ret.put(TAG_KEY, k);
-            ret.put(LEGACY_TAG_KEY, k);
-          }
+        	String fileTags = fileTagsToString(i);
+        	stat.add(Pair.of(TAG_FILE, fileTags));
         }
       }
-      ret.put(TAG_FINISHED, "ok");
+      stat.add(Pair.of(TAG_FINISHED, "ok"));
     }
-    return ret;
+    return stat;
   }
   
-  /**
+  private String fileTagsToString(FileItem i) {
+	  List<Pair<String, String>> tempList = new ArrayList<Pair<String, String>>();
+
+	  tempList.add(Pair.of(TAG_CTYPE, i.getContentType() !=null ? i.getContentType() : "unknown"));
+	  tempList.add(Pair.of(TAG_SIZE, "" + i.getSize()));
+	  tempList.add(Pair.of(TAG_NAME, "" + i.getName()));
+	  if (i instanceof HasKey) {
+		  String k = ((HasKey)i).getKeyString();
+		  tempList.add(Pair.of(TAG_KEY, k));
+		  tempList.add(Pair.of(LEGACY_TAG_KEY, k));
+	  }
+	  return statusToString(tempList);
+  }
+
+/**
    * Notify to the listener that the upload has finished.
    * 
    * @param request
@@ -697,14 +748,14 @@ public class UploadServlet extends HttpServlet implements Servlet {
    * @param fieldname
    * @return a map of tag/values to be rendered 
    */
-  protected Map<String, String> getUploadStatus(HttpServletRequest request, String fieldname, Map<String, String> ret) {
+  protected List<Pair<String, String>> getUploadStatus(HttpServletRequest request, String fieldname, List<Pair<String, String>> ret) {
 
     perThreadRequest.set(request);
 
     HttpSession session = request.getSession();
 
     if (ret == null) {
-      ret = new HashMap<String, String>();
+      ret = new ArrayList<Pair<String, String>>();
     }
     
     long currentBytes = 0;
@@ -714,13 +765,13 @@ public class UploadServlet extends HttpServlet implements Servlet {
     if (listener != null) {
       if (listener.getException() != null) {
         if (listener.getException() instanceof UploadCanceledException) {
-          ret.put(TAG_CANCELED, "true");
-          ret.put(TAG_FINISHED, TAG_CANCELED);
+          ret.add(Pair.of(TAG_CANCELED, "true"));
+          ret.add(Pair.of(TAG_FINISHED, TAG_CANCELED));
           logger.error("UPLOAD-SERVLET (" + session.getId() + ") getUploadStatus: " + fieldname + " canceled by the user after " + listener.getBytesRead() + " Bytes");
         } else {
           String errorMsg = getMessage("server_error", listener.getException().getMessage());
-          ret.put(TAG_ERROR, errorMsg);
-          ret.put(TAG_FINISHED, TAG_ERROR);
+          ret.add(Pair.of(TAG_ERROR, errorMsg));
+          ret.add(Pair.of(TAG_FINISHED, TAG_ERROR));
           logger.error("UPLOAD-SERVLET (" + session.getId() + ") getUploadStatus: " + fieldname + " finished with error: " + listener.getException().getMessage());
         }
       } else {
@@ -728,34 +779,40 @@ public class UploadServlet extends HttpServlet implements Servlet {
         totalBytes = listener.getContentLength();
         percent = totalBytes != 0 ? currentBytes * 100 / totalBytes : 0;
         // logger.debug("UPLOAD-SERVLET (" + session.getId() + ") getUploadStatus: " + fieldname + " " + currentBytes + "/" + totalBytes + " " + percent + "%");
-        ret.put(TAG_PERCENT, "" + percent);
-        ret.put(TAG_CURRENT_BYTES, "" + currentBytes);
-        ret.put(TAG_TOTAL_BYTES, "" + totalBytes);
+        ret.add(Pair.of(TAG_PERCENT, "" + percent));
+        ret.add(Pair.of(TAG_CURRENT_BYTES, "" + currentBytes));
+        ret.add(Pair.of(TAG_TOTAL_BYTES, "" + totalBytes));
         if (listener.isFinished()) {
-          ret.put(TAG_FINISHED, "ok");
+          ret.add(Pair.of(TAG_FINISHED, "ok"));
         }
       }
-    } else if (getSessionFileItems(request) != null) {
+    } else if (getMySessionFileItems(request) != null) {
       if (fieldname == null) {
-        ret.put(TAG_FINISHED, "ok");
-        logger.debug("UPLOAD-SERVLET (" + session.getId() + ") getUploadStatus: " + request.getQueryString() + " finished with files: " + session.getAttribute(SESSION_FILES));
+        ret.add(Pair.of(TAG_FINISHED, "ok"));
+        logger.debug("UPLOAD-SERVLET (" + session.getId() + ") getUploadStatus: " + request.getQueryString() +
+        		" finished with files: " + session.getAttribute(getSessionFilesKey(request)));
       } else {
-        List<FileItem> sessionFiles = getSessionFileItems(request);
+        List<FileItem> sessionFiles = getMySessionFileItems(request);
         for (FileItem file : sessionFiles) {
           if (file.isFormField() == false && file.getFieldName().equals(fieldname)) {
-            ret.put(TAG_FINISHED, "ok");
-            ret.put(UConsts.PARAM_FILENAME, fieldname);
-            logger.debug("UPLOAD-SERVLET (" + session.getId() + ") getUploadStatus: " + fieldname + " finished with files: " + session.getAttribute(SESSION_FILES));
+            ret.add(Pair.of(TAG_FINISHED, "ok"));
+            ret.add(Pair.of(UConsts.PARAM_FILENAME, fieldname));
+            logger.debug("UPLOAD-SERVLET (" + session.getId() + ") getUploadStatus: " + fieldname +
+            		" finished with files: " + session.getAttribute(getSessionFilesKey(request)));
           }
         }
       }
     } else {
       logger.debug("UPLOAD-SERVLET (" + session.getId() + ") getUploadStatus: no listener in session");
-      ret.put("wait", "listener is null");
+      ret.add(Pair.of("wait", "listener is null"));
     }
-    if (ret.containsKey(TAG_FINISHED)) {
-      removeCurrentListener(request);
+    for (Entry<String, String> e: ret) {
+    	if (e.getKey() == TAG_FINISHED) 
+    		removeCurrentListener(request);
     }
+//    if (ret.containsKey(TAG_FINISHED)) {
+//      removeCurrentListener(request);
+//    }
 
     perThreadRequest.set(null);
     return ret;
@@ -810,11 +867,11 @@ public class UploadServlet extends HttpServlet implements Servlet {
       // Receive the files
       logger.debug("UPLOAD-SERVLET (" + session.getId() + ") parsing HTTP POST request ");
       uploadedItems = uploader.parseRequest(request);
-      session.removeAttribute(SESSION_LAST_FILES);
+      session.removeAttribute(getSessionLastFilesKey(request));
       logger.debug("UPLOAD-SERVLET (" + session.getId() + ") parsed request, " + uploadedItems.size() + " items received.");
 
       // Received files are put in session
-      List<FileItem> sessionFiles = getSessionFileItems(request);
+      List<FileItem> sessionFiles = getMySessionFileItems(request);
       if (sessionFiles == null) {
         sessionFiles = new ArrayList<FileItem>();
       }
@@ -828,8 +885,8 @@ public class UploadServlet extends HttpServlet implements Servlet {
           msg += i.getFieldName() + " => " + i.getName() + "(" + i.getSize() + " bytes),";
         }
         logger.debug("UPLOAD-SERVLET (" + session.getId() + ") puting items in session: " + msg);
-        session.setAttribute(SESSION_FILES, sessionFiles);
-        session.setAttribute(SESSION_LAST_FILES, uploadedItems);
+        session.setAttribute(getSessionFilesKey(request), sessionFiles);
+        session.setAttribute(getSessionLastFilesKey(request), uploadedItems);
       } else {
         logger.error("UPLOAD-SERVLET (" + session.getId() + ") error NO DATA received ");
         error += getMessage("no_data");
@@ -875,6 +932,35 @@ public class UploadServlet extends HttpServlet implements Servlet {
     if (listener != null) {
       listener.remove();
     }
+  }
+
+  /**
+   * Override this to provide a session key which allow to differentiate between
+   * multiple instances of uploaders in an application with the same session but
+   * who do not wish to share the uploaded files.
+   * Example:
+   * @Override
+   * protected String getSessionFilesKey(HttpServletRequest request) {
+   *	return getSessionFilesKey(request.getParameter("randomNumber"));
+   * }
+   *
+   * public static String getSessionFilesKey(String parameter) {
+   *	return "SESSION_FILES_" + parameter;
+   * }
+   * 
+   */
+  protected String getSessionFilesKey(HttpServletRequest request) {
+    return SESSION_FILES;
+  }
+
+  /**
+   * Override this to provide a session key which allow to differentiate between
+   * multiple instances of uploaders in an application with the same session but
+   * who do not wish to share the uploaded files.
+   * See getSessionFilesKey() for an example.
+   */
+  protected String getSessionLastFilesKey(HttpServletRequest request) {
+    return SESSION_LAST_FILES;
   }
 
 }

@@ -14,7 +14,7 @@ Developer Notes:
  $ mvn gpg:sign-and-deploy-file \
    -Durl=https://oss.sonatype.org/service/local/staging/deploy/maven2/ \
    -DrepositoryId=sonatype-nexus-staging \
-   -DpomFile=gwtupload-samples-*.pom \
-   -Dfile=gwtupload-samples-*.jar
+   -DpomFile=`echo -n gwtupload-samples-*.pom` \
+   -Dfile=`echo -n gwtupload-samples-*.jar`
 
  Release in this url: https://oss.sonatype.org/index.html#stagingRepositories

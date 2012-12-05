@@ -101,7 +101,10 @@ public class ChismesUploadSample implements EntryPoint {
     public void onFinish(IUploader uploader) {
       if (uploader.getStatus() == Status.SUCCESS) {
         if (uploader.getStatus() == Status.SUCCESS) {
-          new PreloadedImage(uploader.fileUrl(), uploader.getInputName(), uploader.getFileName(), addToThumbPanelHandler);
+          for (int i = 0; i < uploader.fileUrls().size(); i++) {
+            new PreloadedImage(uploader.fileUrls().get(i), uploader.getInputName(),  
+                uploader.getServerInfo().getUploadedFiles().get(i).getFileName(), addToThumbPanelHandler);
+          }
         }        
       }
     }

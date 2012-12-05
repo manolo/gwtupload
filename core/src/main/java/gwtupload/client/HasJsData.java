@@ -17,6 +17,8 @@
 
 package gwtupload.client;
 
+import java.util.List;
+
 import com.google.gwt.core.client.JavaScriptObject;
 /**
  * <p>
@@ -32,8 +34,8 @@ import com.google.gwt.core.client.JavaScriptObject;
  */
 public interface HasJsData {
   /**
-   * Returns a javascript object, that can be used from
+   * Returns a list of javascript objects, that can be used from
    * native javascript to get data related with the class
    */
-  JavaScriptObject getData();
+  List<JavaScriptObject> getData();
 }

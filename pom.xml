@@ -34,6 +34,7 @@
     <gwtIncubatorVersion>20101117-r1766</gwtIncubatorVersion>
     <junitVersion>3.8.2</junitVersion>
     <log4jVersion>1.2.16</log4jVersion>
+    <commonsLang3Version>3.1</commonsLang3Version>
     <downloadLabel>Beta</downloadLabel>
     <localMavenRepo>file:${env.HOME}/workspace/GWTUpload-mavenrepo</localMavenRepo>
     <gae.version>1.6.5</gae.version>
@@ -129,6 +130,11 @@
       <artifactId>appengine-api-1.0-sdk</artifactId>
       <version>${gae.version}</version>
       <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>${commonsLang3Version}</version>
     </dependency>
   </dependencies>
 

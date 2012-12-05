@@ -16,6 +16,8 @@
  */
 package gwtupload.client;
 
+import java.util.List;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
@@ -60,6 +62,7 @@ public interface IFileInput extends HasChangeHandlers {
 
     public BrowserFileInput() {
       super();
+      DOM.setElementAttribute(getElement(), "multiple", "multiple"); // enable multiple select for browsers that support it
     }
 
     public Widget getWidget() {
@@ -247,6 +250,11 @@ public interface IFileInput extends HasChangeHandlers {
    * @return the widget's filename
    */
   String getFilename();
+  
+  /**
+   * Gets the filenames selected by the user.
+   */
+  List<String> getFilenames();
 
   /**
    * Gets the name of this fileUplad element.
