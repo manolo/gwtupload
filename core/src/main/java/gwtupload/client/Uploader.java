@@ -762,8 +762,9 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
    */
   public List<String> fileUrls() {
 	  List<String> list = new ArrayList<String>();
+	 int cnt = 0;
 	 for (UploadedInfo info: serverInfo.getUploadedFiles()) { 
-	    String ret =  composeURL(PARAM_SHOW + "=" + info.getFileName());
+	    String ret =  composeURL(PARAM_SHOW + "=" + getInputName() + "-" + cnt++);
 	    if (info.getKey() != null) {
 	      ret += "&" + PARAM_BLOBKEY + "=" + info.getKey();
 	    }
@@ -1307,7 +1308,9 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
   
   private boolean fileSelected() {
     for (String s: basenames) {
-      if (s.length() > 0) return true;
+      if (s.length() > 0) {
+        return true;
+      }
     }
     return false;
   }

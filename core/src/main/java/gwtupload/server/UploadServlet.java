@@ -879,6 +879,15 @@ public class UploadServlet extends HttpServlet implements Servlet {
       String error = "";
 
       if (uploadedItems.size() > 0) {
+        
+        // We append to the field name the sequence of the uploaded file
+        int cnt = 0;
+        for (FileItem i : uploadedItems) {
+          if (!i.isFormField()) {
+            i.setFieldName(i.getFieldName() + "-" + cnt++);
+          }
+        }
+        
         sessionFiles.addAll(uploadedItems);
         String msg = "";
         for (FileItem i : sessionFiles) {
