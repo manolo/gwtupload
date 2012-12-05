@@ -8,26 +8,42 @@
     .myup div {
       font-style: italic;
     }
-    .htmlButton {
+
+	.htmlButton{
       width: 300px;
-      background: -moz-linear-gradient(center top , #FFFFFF 0%, #C7D95F 50%, #ADD136 50%, #6D8000) repeat scroll 0 0 transparent;
-      background: -webkit-linear-gradient(center top , #FFFFFF 0%, #C7D95F 50%, #ADD136 50%, #6D8000) repeat scroll 0 0 transparent;
-      background: -o-linear-gradient(center top , #FFFFFF 0%, #C7D95F 50%, #ADD136 50%, #6D8000) repeat scroll 0 0 transparent;
-      background: linear-gradient(center top , #FFFFFF 0%, #C7D95F 50%, #ADD136 50%, #6D8000) repeat scroll 0 0 transparent;
-      border: 1px solid #666E34;
-      border-radius: 6px;
-      box-shadow: 0 1px 1px rgba(0, 0, 0, 0.5), 0 0 2px #FFFFFF inset;
-      color: #050505;
-      font-family: Arial,Helvetica,sans-serif;
-      font-size: 12px;
-      padding: 5px 10px;
-      text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.2), 0 1px 0 rgba(255, 255, 255, 0.4);
-    }
-    
+      text-transform:uppercase;
+	  border:1px solid #8bcf54; 
+	  -webkit-border-radius: 3px; 
+	  -moz-border-radius: 3px;
+	  border-radius: 3px;
+	  font-family:arial, helvetica, sans-serif; 
+	  padding: 10px 10px 10px 10px; 
+	  text-shadow: -1px -1px 0 rgba(0,0,0,0.3);
+	  font-weight:bold; 
+	  text-align: center; 
+	  color: #FFFFFF; 
+	  background-color: #a9db80;
+	  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #a9db80), color-stop(100%, #96c56f));
+	  background-image: -webkit-linear-gradient(top, #a9db80, #96c56f);
+	  background-image: -moz-linear-gradient(top, #a9db80, #96c56f);
+	  background-image: -ms-linear-gradient(top, #a9db80, #96c56f);
+	  background-image: -o-linear-gradient(top, #a9db80, #96c56f);
+	  background-image: linear-gradient(top, #a9db80, #96c56f);
+	  filter: literal("progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#a9db80, endColorstr=#96c56f)");
+	}
+
     @external .DecoratedFileUpload-over;
-    .DecoratedFileUpload-over .htmlButton {
-      color: white;
-    }
+	.DecoratedFileUpload-over .htmlButton {
+	  border:1px solid #74bf36; 
+	  background-color: #8ed058;
+	  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#8ed058), color-stop(100%, #7bb64b));
+	  background-image: -webkit-linear-gradient(top, #8ed058, #7bb64b);
+	  background-image: -moz-linear-gradient(top, #8ed058, #7bb64b);
+	  background-image: -ms-linear-gradient(top, #8ed058, #7bb64b);
+	  background-image: -o-linear-gradient(top, #8ed058, #7bb64b);
+	  background-image: linear-gradient(top, #8ed058, #7bb64b);
+	  filter: literal("progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#8ed058, endColorstr=#7bb64b)");
+	}    
   </ui:style>
   <g:HTMLPanel>
     MultiUploader type="ANCHOR" 
