@@ -30,7 +30,6 @@ import static gwtupload.shared.UConsts.TAG_CURRENT_BYTES;
 import static gwtupload.shared.UConsts.TAG_FIELD;
 import static gwtupload.shared.UConsts.TAG_FILE;
 import static gwtupload.shared.UConsts.TAG_FINISHED;
-import static gwtupload.shared.UConsts.TAG_KEY;
 import static gwtupload.shared.UConsts.TAG_MESSAGE;
 import static gwtupload.shared.UConsts.TAG_MSG_END;
 import static gwtupload.shared.UConsts.TAG_MSG_GT;
@@ -305,7 +304,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
         basenames.add(Utils.basename(s));
       }
       statusWidget.setFileNames(basenames);
-      if (avoidRepeatedFiles && anyFileIsRepeated()) {
+      if (avoidRepeatedFiles && anyFileIsRepeated(false)) {
         statusWidget.setStatus(Status.REPEATED);
         return;
       }
@@ -443,8 +442,8 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
         event.cancel();
         return;
       }
-
-      if (avoidEmptyFile && anyFileIsRepeated()) {
+      
+      if (avoidEmptyFile && anyFileIsRepeated(true)) {
         statusWidget.setStatus(IUploadStatus.Status.REPEATED);
         successful = true;
         event.cancel();
@@ -1341,9 +1340,9 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     return fileInput.getFilenames();
   }
 
-  public boolean anyFileIsRepeated() {
+  public boolean anyFileIsRepeated(boolean checkOnlyUploadedFiles) {
     for (String s: fileInput.getFilenames()) {
-      if (fileDone.contains(s) || fileUploading.contains(s))
+      if (fileDone.contains(s) || (!checkOnlyUploadedFiles && fileUploading.contains(s)))
         return true;
     }
     return false;
