@@ -60,11 +60,6 @@ public interface IFileInput extends HasChangeHandlers {
   public class BrowserFileInput extends FileUploadWithMouseEvents implements
       IFileInput {
 
-    public BrowserFileInput() {
-      super();
-      DOM.setElementAttribute(getElement(), "multiple", "multiple"); // enable multiple select for browsers that support it
-    }
-
     public Widget getWidget() {
       return this;
     }

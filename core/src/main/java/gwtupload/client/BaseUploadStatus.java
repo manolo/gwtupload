@@ -25,6 +25,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
@@ -82,7 +83,7 @@ public class BaseUploadStatus implements IUploadStatus {
   /**
    * Label with the original name of the uploaded file.
    */
-  protected Label fileNameLabel = getFileNameLabel();
+  protected HTML fileNameLabel = getFileNameLabel();
   
   /**
    * Main panel, attach it to the document using getWidget().
@@ -122,16 +123,16 @@ public class BaseUploadStatus implements IUploadStatus {
     return new HorizontalPanel();
   }
   
-  protected Label getStatusLabel() {
-    return new Label();
+  protected HTML getStatusLabel() {
+    return new HTML();
   }
   
-  protected Label getFileNameLabel() {
-    return new Label();
+  protected HTML getFileNameLabel() {
+    return new HTML();
   }
   
-  protected Label getCancelLabel() {
-    return new Label(" ");
+  protected HTML getCancelLabel() {
+    return new HTML(" ");
   }
 
   /* (non-Javadoc)
@@ -191,7 +192,7 @@ public class BaseUploadStatus implements IUploadStatus {
    * @see gwtupload.client.IUploadStatus#setFileNames(List<java.lang.String>)
    */
   public void setFileNames(List<String> names) {
-    fileNameLabel.setText(Utils.convertCollectionToString(names, ", "));
+    fileNameLabel.setHTML(Utils.convertCollectionToString(names, "<br/>"));
   }
 
   /* (non-Javadoc)

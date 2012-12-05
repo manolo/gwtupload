@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.dom.client.InputElement;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.FileUpload;
 
 /**
@@ -15,6 +16,11 @@ import com.google.gwt.user.client.ui.FileUpload;
  *
  */
 public class MultipleFileUpload extends FileUpload {
+
+  public MultipleFileUpload() {
+    super();
+    DOM.setElementAttribute(getElement(), "multiple", "multiple"); // enable multiple select for browsers that support it
+  }
 
   public List<String> getFilenames() {
     ArrayList<String> result = new ArrayList<String>();
