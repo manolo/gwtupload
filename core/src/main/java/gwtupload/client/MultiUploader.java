@@ -288,7 +288,7 @@ public class MultiUploader extends Composite implements IUploader {
   /* (non-Javadoc)
    * @see gwtupload.client.HasJsData#getData()
    */
-  public List<JavaScriptObject> getData() {
+  public JavaScriptObject getData() {
     return lastUploader.getData();
   }
 

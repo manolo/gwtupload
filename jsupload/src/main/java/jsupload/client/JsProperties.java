@@ -41,7 +41,11 @@ public class JsProperties {
     }
 
     public native void onChangeImpl(JavaScriptObject f, Object o)/*-{
-      if (f && typeof f == 'function') f(o);
+      try {
+        if (f && typeof f == 'function') f(o);
+      } catch (e) {
+        $wnd.console.log("JsUpload Error: " + e);
+      }
     }-*/;
   }
 
@@ -51,12 +55,8 @@ public class JsProperties {
 
   public static boolean getBoolean(JavaScriptObject jso, String name, boolean deFault) {
     String val = getImpl(jso, name, "" + deFault).toLowerCase();
-    if ("true".equals(val)) { return true; }
-    if ("false".equals(val)) { return false; }
-    if ("on".equals(val)) { return true; }
-    if ("off".equals(val)) { return false; }
-    if ("1".equals(val)) { return true; }
-    if ("0".equals(val)) { return false; }
+    if (val.matches("^(1|true|on)$")) { return true; }
+    if (val.matches("^(0|false|off)$")) { return false; }
     return deFault;
   }
 

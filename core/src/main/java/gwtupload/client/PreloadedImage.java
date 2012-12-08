@@ -16,8 +16,6 @@
  */
 package gwtupload.client;
 
-import java.util.List;
-
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.event.dom.client.ErrorEvent;
 import com.google.gwt.event.dom.client.ErrorHandler;
@@ -137,7 +135,8 @@ public class PreloadedImage extends Image implements HasJsData {
   /* (non-Javadoc)
    * @see gwtupload.client.HasJsData#getData()
    */
-  public List<JavaScriptObject> getData() {
+  public JavaScriptObject getData() {
+    // This method is only used in the exported version
     return null;
   }
 
@@ -145,8 +144,8 @@ public class PreloadedImage extends Image implements HasJsData {
    * get the name of this image.
    */
   public String getName() {
-        return name;
-      }
+    return name;
+  }
 
   /**
    * Get the real size of the image. 
@@ -204,8 +203,8 @@ public class PreloadedImage extends Image implements HasJsData {
   }
 
   public void setUniqId(String uniqId) {
-        this.uniqId = uniqId;
-      }
+    this.uniqId = uniqId;
+  }
 
   /* (non-Javadoc)
    * @see com.google.gwt.user.client.ui.Image#setUrl(java.lang.String)

@@ -34,8 +34,8 @@ import com.google.gwt.core.client.JavaScriptObject;
  */
 public interface HasJsData {
   /**
-   * Returns a list of javascript objects, that can be used from
+   * Returns a javascript object, that can be used from
    * native javascript to get data related with the class
    */
-  List<JavaScriptObject> getData();
+  JavaScriptObject getData();
 }

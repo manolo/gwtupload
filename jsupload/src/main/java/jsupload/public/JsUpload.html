@@ -125,7 +125,11 @@
         // Method to show a picture using the class PreloadImage
         // The image is not shown until it has been sucessfully downloaded
         function loadImage(upl_data) {
-           if (upl_data && upl_data.url) {
+           if (upl_data && upl_data[0] && upl_data[0].url) {
+        	 for (i = 0; i < upl_data.length; i++) {
+        		loadImage(upl_data[i]);
+        	 }
+           } else if (upl_data && upl_data.url) {
               var image = new jsu.PreloadImage({
                 url: upl_data.url,
                 containerId: "photos",

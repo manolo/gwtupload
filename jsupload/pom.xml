@@ -44,6 +44,12 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>com.google.gwt</groupId>
+      <artifactId>gwt-codeserver</artifactId>
+      <version>${gwtVersion}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>${groupId}</groupId>
       <artifactId>gwtupload</artifactId>
       <version>${version}</version>
@@ -119,9 +125,8 @@
           </execution>
         </executions>
         <configuration>
-          <hostedWebApp>${project.build.directory}/${project.build.finalName}</hostedWebApp>
           <runTarget>jsupload/JsUpload.html</runTarget>
-          <soyc>true</soyc>
+          <compileReport>true</compileReport>
           <style>${gwt.style}</style>
           <module>jsupload.JsUpload${gwt.module.suffix}</module>
           <compileReport>true</compileReport>
@@ -195,6 +200,8 @@
         </executions>
       </plugin>
     </plugins>
+    <outputDirectory>${project.build.directory}/${project.build.finalName}/WEB-INF/classes</outputDirectory>
+
   </build>
 
   <distributionManagement>

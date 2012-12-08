@@ -1,4 +1,4 @@
 <module rename-to="jsupload">
   <inherits name="jsupload.JsUpload" />
-  <add-linker name="xs"/>
+  <add-linker name="xsiframe"/>
 </module>

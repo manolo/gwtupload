@@ -44,7 +44,6 @@ import gwtupload.client.IFileInput.FileInputType;
 import gwtupload.client.IUploadStatus.Status;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -55,6 +54,7 @@ import java.util.logging.Logger;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.core.client.JsArray;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -402,7 +402,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
 
         for (int i = 0; i < list.getLength(); i++) {
         	UploadedInfo info = new UploadedInfo();
-
+        	info.setField(getInputName() + "-" + i);
         	info.setName(doc.getElementsByTagName(TAG_NAME).item(i).getFirstChild().getNodeValue());
         	info.setCtype(doc.getElementsByTagName(TAG_CTYPE).item(i).getFirstChild().getNodeValue());
         	String size = doc.getElementsByTagName(TAG_SIZE).item(i).getFirstChild().getNodeValue();
@@ -761,30 +761,37 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
    */
   public List<String> fileUrls() {
 	  List<String> list = new ArrayList<String>();
-	 int cnt = 0;
-	 for (UploadedInfo info: serverInfo.getUploadedFiles()) { 
-	    String ret =  composeURL(PARAM_SHOW + "=" + getInputName() + "-" + cnt++);
-	    if (info.getKey() != null) {
-	      ret += "&" + PARAM_BLOBKEY + "=" + info.getKey();
-	    }
-	    list.add(ret);
-	 }
+	  for (UploadedInfo info: serverInfo.getUploadedFiles()) { 
+	    list.add(fileUrl(info));
+ 	  }
     return list;
+  }
+  
+  private String fileUrl(UploadedInfo info) {
+    String ret =  composeURL(PARAM_SHOW + "=" + info.getField());
+    if (info.getKey() != null) {
+      ret += "&" + PARAM_BLOBKEY + "=" + info.getKey();
+    }
+    return ret;
   }
 
   /**
-   * Returns a JavaScriptObject properties with the url of the uploaded file.
+   * Returns a JavaScriptObject object with info of the uploaded files.
    * It's useful in the exported version of the library. 
-   * Because native javascript needs it
    */
-  public List<JavaScriptObject> getData() {
-	  List<JavaScriptObject> list = new ArrayList<JavaScriptObject>();
+  public JavaScriptObject getData() {
+    JsArray<JavaScriptObject> ret = JavaScriptObject.createArray().cast();
 	  for (UploadedInfo info: serverInfo.getUploadedFiles()) {
-		  list.add(getDataImpl(Arrays.toString(fileUrls().toArray()), getInputName(), info.getFileName(), 
-				  Utils.basename(info.getFileName()), getServerResponse(), getServerInfo().getMessage(), 
-				  getStatus().toString(), info.getSize()));
+		  ret.push(getDataImpl(
+		      fileUrl(info), info.getField(), 
+		      info.getFileName(), 
+				  Utils.basename(info.getFileName()), 
+				  getServerResponse(), 
+				  getServerInfo().getMessage(), 
+				  getStatus().toString(), 
+				  info.getSize()));
 	  }
-	  return list;
+	  return ret;
   }
 
   public IFileInput getFileInput() {

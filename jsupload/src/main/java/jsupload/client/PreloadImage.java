@@ -16,9 +16,6 @@
  */
 package jsupload.client;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import gwtupload.client.HasJsData;
 import gwtupload.client.PreloadedImage;
 
@@ -67,10 +64,8 @@ public class PreloadImage extends PreloadedImage implements Exportable, HasJsDat
    *  - realwidth
    *  - realheight
    */
-  public List<JavaScriptObject> getData() {
-	  List<JavaScriptObject> list = new ArrayList<JavaScriptObject>();
-	  list.add(getDataImpl(getUrl(), getRealHeight(), getRealWidth()));
-    return list;
+  public JavaScriptObject getData() {
+	  return getDataImpl(getUrl(), getRealHeight(), getRealWidth());
   }
 
   /**

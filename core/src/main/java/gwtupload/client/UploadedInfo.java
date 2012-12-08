@@ -1,6 +1,11 @@
 package gwtupload.client;
 
 public class UploadedInfo {
+  
+  /**
+   * Field name sent to the server
+   */
+  private String field;
 
   /**
    * File name sent by the client
@@ -54,4 +59,12 @@ public class UploadedInfo {
   public void setSize(int size) {
     this.size = size;
   }
+
+  public String getField() {
+    return field;
+  }
+
+  public void setField(String field) {
+    this.field = field;
+  }  
 }

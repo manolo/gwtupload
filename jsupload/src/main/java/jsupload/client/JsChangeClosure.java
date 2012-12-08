@@ -40,7 +40,6 @@ import com.google.gwt.event.logical.shared.ValueChangeHandler;
 @ExportClosure
 public interface JsChangeClosure extends Exportable {
   @Export void onChange(Object object);
-
 }
 
 /**
@@ -91,8 +90,8 @@ class JsUtils {
     return new IUploader.OnCancelUploaderHandler() {
       public void onCancel(IUploader u) {
         if (jsChange != null) {
+          jsChange.onChange(u.getData());
         }
-        jsChange.onChange(u.getData());
       }
     };
   }
@@ -101,8 +100,8 @@ class JsUtils {
     return new IUploader.OnChangeUploaderHandler() {
       public void onChange(IUploader u) {
         if (jsChange != null) {
+          jsChange.onChange(u.getData());
         }
-        jsChange.onChange(u.getData());
       }
     };
   }
@@ -111,8 +110,8 @@ class JsUtils {
     return new IUploader.OnFinishUploaderHandler() {
       public void onFinish(IUploader u) {
         if (jsChange != null) {
+          jsChange.onChange(u.getData());
         }
-        jsChange.onChange(u.getData());
       }
     };
   }
@@ -121,8 +120,8 @@ class JsUtils {
     return new OnLoadPreloadedImageHandler() {
       public void onLoad(PreloadedImage image) {
         if (jsChange != null) {
+          jsChange.onChange(image.getData());
         }
-        jsChange.onChange(image.getData());
       }
     };
   }
@@ -131,8 +130,8 @@ class JsUtils {
     return new IUploader.OnStartUploaderHandler() {
       public void onStart(IUploader u) {
         if (jsChange != null) {
+          jsChange.onChange(u.getData());
         }
-        jsChange.onChange(u.getData());
       }
     };
   }
@@ -141,8 +140,8 @@ class JsUtils {
     return new IUploader.OnStatusChangedHandler() {
       public void onStatusChanged(IUploader u) {
         if (jsChange != null) {
+          jsChange.onChange(u.getData());
         }
-        jsChange.onChange(u.getData());
       }
     };
   }

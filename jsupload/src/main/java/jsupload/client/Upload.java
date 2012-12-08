@@ -170,7 +170,8 @@ public class Upload implements Exportable {
   }
 
   /**
-   * Returns a javascript data structure:
+   * Returns a javascript array of as many elements as images uploaded by this 
+   * uploader instance, each element has the next structure:
    *    upload.data().url      // The url to get the uploaded file from the server
    *    upload.data().name     // The name of the input form element
    *    upload.data().filename // The name of the file selected by the user as is reported by the browser
@@ -180,7 +181,7 @@ public class Upload implements Exportable {
    *    upload.data().size     // The size of the file 
    *    upload.data().status   // The upload status (UNINITIALIZED, QUEUED, INPROGRESS, SUCCESS, ERROR, CANCELING, CANCELED, SUBMITING)
    */
-  public List<JavaScriptObject> data() {
+  public JavaScriptObject data() {
     return uploader.getData();
   }
 
