@@ -46,7 +46,7 @@ public class ModalUploadStatus extends BaseUploadStatus {
    * so, PopupPanel will never attached to the document by the user
    * and it will be attached when show() is called.
    */
-  @Override public Widget getWidget() {
+  @Override public Widget asWidget() {
     return new HTML();
   };
   

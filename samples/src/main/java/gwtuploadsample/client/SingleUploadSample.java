@@ -79,8 +79,8 @@ public class SingleUploadSample implements EntryPoint {
     single3.setAutoSubmit(true);
     single3.setValidExtensions("jpg", "gif", "png");
     single3.addOnFinishUploadHandler(onFinishUploaderHandler);
-    single3.getFileInput().getWidget().setStyleName("customButton"); 
-    single3.getFileInput().getWidget().setSize("159px", "27px");
+    single3.getFileInput().asWidget().setStyleName("customButton"); 
+    single3.getFileInput().asWidget().setSize("159px", "27px");
     single3.avoidRepeatFiles(true);
     RootPanel.get("single3").add(single3);
 
