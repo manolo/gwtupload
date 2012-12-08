@@ -333,6 +333,12 @@ public interface IUploader extends HasJsData, HasWidgets, IsWidget {
   void setUploaded(ServerInfo info);
   
   /**
+   * Enable multiple selection of files when available (most
+   * modern browsers support this).
+   */
+  void setMultipleSelection(boolean b);
+  
+  /**
    * Return the widget instance.
    * @deprecated use asWidget instead
    */

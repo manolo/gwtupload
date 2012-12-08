@@ -519,5 +519,8 @@ public class DecoratedFileUpload extends Composite implements HasText, HasName, 
   public void updateSize() {
     impl.resize();
   }
-
+  
+  public void enableMultiple(boolean b) {
+    input.enableMultiple(b);
+  }
 }

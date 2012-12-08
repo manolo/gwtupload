@@ -491,10 +491,14 @@ public class MultiUploader extends Composite implements IUploader {
    * If you decrease this parameter, files already uploaded or in queue are
    * not removed.
    * 
+   * Setting this parameter, multi-selection is disabled because we can not
+   * compute uploaded files until they go to server.
+   * 
    * @param max
    */
   public void setMaximumFiles(int max) {
     maximumFiles = max;
+    setMultipleSelection(false);
   }
 
   /* (non-Javadoc)
@@ -632,6 +636,10 @@ public class MultiUploader extends Composite implements IUploader {
   @UiChild(limit = 1, tagname = "button")
   public void addButton(Widget button) {
     this.setFileInput(IFileInput.FileInputType.CUSTOM.with(button).getInstance());
+  }
+
+  public void setMultipleSelection(boolean b) {
+    getFileInput().enableMultiple(b);
   }
 
 }

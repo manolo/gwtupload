@@ -318,4 +318,6 @@ public interface IFileInput extends HasChangeHandlers, IsWidget {
 
   void updateSize();
 
+  void enableMultiple(boolean b);
+
 }

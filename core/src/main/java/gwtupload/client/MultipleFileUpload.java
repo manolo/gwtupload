@@ -19,7 +19,8 @@ public class MultipleFileUpload extends FileUpload {
 
   public MultipleFileUpload() {
     super();
-    DOM.setElementAttribute(getElement(), "multiple", "multiple"); // enable multiple select for browsers that support it
+    // By default multiple is enabled;
+    enableMultiple(true);
   }
 
   public List<String> getFilenames() {
@@ -36,6 +37,15 @@ public class MultipleFileUpload extends FileUpload {
     }
 
     return result;
+  }
+  
+  public void enableMultiple(boolean b) {
+    String attr = "multiple";
+    if (b) {
+      DOM.setElementAttribute(getElement(), attr, attr);
+    } else {
+      DOM.removeElementAttribute(getElement(), attr);
+    }
   }
 
 }

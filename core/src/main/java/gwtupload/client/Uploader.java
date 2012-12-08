@@ -1354,4 +1354,8 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     }
     return false;
   }
+
+  public void setMultipleSelection(boolean b) {
+    fileInput.enableMultiple(b);
+  }
 }
