@@ -33,7 +33,8 @@ public class IncubatorUploadProgress extends BaseUploadStatus {
 
   TextFormatter formater = new TextFormatter() {
     protected String getText(ProgressBar bar, double curProgress) {
-      return fileNameLabel.getText() + "  (" + (int) curProgress + " %)";
+      String txt = fileNames.size() > 1  ? "Sending " + fileNames.size() + " files " : fileNameLabel.getText(); 
+      return txt + "  (" + (int) curProgress + "%)";
     }
   };
   ProgressBar prg = new ProgressBar();

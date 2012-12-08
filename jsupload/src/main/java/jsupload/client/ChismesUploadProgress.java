@@ -22,10 +22,10 @@ import gwtupload.client.Utils;
 
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
-
 import com.google.code.p.gwtchismes.client.GWTCProgress;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -54,8 +54,27 @@ public class ChismesUploadProgress extends BaseUploadStatus {
     this.asDialog = asDialog;
     prg = new GWTCProgress(asDialog ? 60 : 20, asDialog ? GWTCProgress.SHOW_AS_DIALOG | GWTCProgress.SHOW_TIME_REMAINING | prgBarOption : prgBarOption);
     setProgressWidget(prg);
+    panel.add(prg);
     prg.setVisible(true);
     setPercentMessage(prgBarText);
+  }
+  
+  
+  @Override
+  protected Panel getPanel() {
+    return new FlexTable() {
+      public void add(Widget child) {
+        if (child.equals(cancelLabel)) {
+          setWidget(0, 0, child);
+        } else if (child.equals(fileNameLabel)) {
+          setWidget(0, 1, child);
+        } else if (child.equals(statusLabel)) {
+          setWidget(0, 2, child);
+        } else {
+          setWidget(1, 1, child);
+        }
+      }
+    };
   }
   
   @Override
@@ -76,14 +95,6 @@ public class ChismesUploadProgress extends BaseUploadStatus {
     }
   }
   
-  @Override
-  public void setFileNames(List<String> names) {
-    if (!asDialog) {
-      super.setFileNames(names);
-    }
-    prg.setText(Utils.convertCollectionToString(names, ", "));
-  }
-
   public void setHoursMessage(String message) {
     if (message != null) {
       prg.setHoursMessage(message);
@@ -125,6 +136,12 @@ public class ChismesUploadProgress extends BaseUploadStatus {
     } else {
       super.setVisible(v);
     }
+  }
+  
+  @Override
+  protected void updateStatusPanel(boolean showProgress, String message) {
+    super.updateStatusPanel(showProgress, message);
+    fileNameLabel.setVisible(true);
   }
 
 }
