@@ -17,7 +17,6 @@
 package gwtupload.server;
 
 import static gwtupload.shared.UConsts.LEGACY_TAG_KEY;
-import static gwtupload.shared.UConsts.PARAM_CTYPE;
 import static gwtupload.shared.UConsts.PARAM_DELAY;
 import static gwtupload.shared.UConsts.TAG_BLOBSTORE;
 import static gwtupload.shared.UConsts.TAG_BLOBSTORE_PATH;
@@ -27,6 +26,7 @@ import static gwtupload.shared.UConsts.TAG_CURRENT_BYTES;
 import static gwtupload.shared.UConsts.TAG_DELETED;
 import static gwtupload.shared.UConsts.TAG_ERROR;
 import static gwtupload.shared.UConsts.TAG_FIELD;
+import static gwtupload.shared.UConsts.TAG_FILE;
 import static gwtupload.shared.UConsts.TAG_FINISHED;
 import static gwtupload.shared.UConsts.TAG_KEY;
 import static gwtupload.shared.UConsts.TAG_MSG_END;
@@ -37,7 +37,6 @@ import static gwtupload.shared.UConsts.TAG_NAME;
 import static gwtupload.shared.UConsts.TAG_PERCENT;
 import static gwtupload.shared.UConsts.TAG_SIZE;
 import static gwtupload.shared.UConsts.TAG_TOTAL_BYTES;
-import static gwtupload.shared.UConsts.TAG_FILE;
 import gwtupload.server.exceptions.UploadActionException;
 import gwtupload.server.exceptions.UploadCanceledException;
 import gwtupload.server.exceptions.UploadException;
@@ -52,8 +51,10 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.ResourceBundle;
 
@@ -71,7 +72,6 @@ import org.apache.commons.fileupload.FileUploadBase.SizeLimitExceededException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.tuple.Pair;
 
 /**
  * <p>
@@ -420,21 +420,8 @@ public class UploadServlet extends HttpServlet implements Servlet {
    * @throws IOException
    */
   protected static void renderXmlResponse(HttpServletRequest request, HttpServletResponse response, String message, boolean post) throws IOException {
-    
     String contentType = post ? "text/plain" : "text/html";
 
-    // TODO: this is here for testing purposes, it must be removed
-    String ctype = request.getParameter(PARAM_CTYPE);
-    if (ctype != null) {
-      if("xml".equalsIgnoreCase(ctype)) {
-        contentType = "text/xml";
-      } else if("html".equalsIgnoreCase(ctype)) {
-        contentType = "text/html";
-      } else if("text".equalsIgnoreCase(ctype)) {
-        contentType = "text/plain";
-      }
-    }
-    
     String xml = XML_TPL.replace("%%MESSAGE%%", message != null ? message : "");
     if (post) {
       xml = TAG_MSG_START + xml.replaceAll("<", TAG_MSG_LT).replaceAll(">", TAG_MSG_GT) + TAG_MSG_END;
@@ -619,9 +606,9 @@ public class UploadServlet extends HttpServlet implements Servlet {
     perThreadRequest.set(null);
   }
   
-  protected String statusToString(List<Pair<String, String>> stat) {
+  protected String statusToString(Map<String, String> stat) {
     String message = "";
-    for (Entry<String, String> e : stat) {
+    for (Entry<String, String> e : stat.entrySet()) {
       if (e.getValue() != null) {
         String k = e.getKey();
         String v = e.getValue().replaceAll("</*pre>", "").replaceAll("&lt;", "<").replaceAll("&gt;", ">");
@@ -646,9 +633,9 @@ public class UploadServlet extends HttpServlet implements Servlet {
     try {
       error = parsePostRequest(request, response);
       finish(request);
-      List<Pair<String, String>> stat = new ArrayList<Pair<String, String>>();
+      Map<String, String> stat = new HashMap<String, String>();
       if (error != null && error.length() > 0 ) {
-    	  stat.add(Pair.of(TAG_ERROR, error));
+    	  stat.put(TAG_ERROR, error);
       } else {
         getFileItemsSummary(request, stat);
       }
@@ -668,34 +655,34 @@ public class UploadServlet extends HttpServlet implements Servlet {
     }
   }
   
-  protected List<Pair<String, String>> getFileItemsSummary(HttpServletRequest request, List<Pair<String, String>> stat) {
+  protected Map<String, String> getFileItemsSummary(HttpServletRequest request, Map<String, String> stat) {
     if (stat == null) {
-      stat = new ArrayList<Pair<String, String>>();
+      stat = new HashMap<String, String>();
     }
     List<FileItem> s = getMyLastReceivedFileItems(request);
     if (s != null) {
-      if (!s.isEmpty()) { stat.add(Pair.of(TAG_FIELD, "" + s.get(0).getFieldName())); }
+      if (!s.isEmpty()) { stat.put(TAG_FIELD, "" + s.get(0).getFieldName()); }
       for (FileItem i : s) {
         if (false == i.isFormField()) {
         	String fileTags = fileTagsToString(i);
-        	stat.add(Pair.of(TAG_FILE, fileTags));
+        	stat.put(TAG_FILE, fileTags);
         }
       }
-      stat.add(Pair.of(TAG_FINISHED, "ok"));
+      stat.put(TAG_FINISHED, "ok");
     }
     return stat;
   }
   
   private String fileTagsToString(FileItem i) {
-	  List<Pair<String, String>> tempList = new ArrayList<Pair<String, String>>();
+	  Map<String, String> tempList = new HashMap<String, String>();
 
-	  tempList.add(Pair.of(TAG_CTYPE, i.getContentType() !=null ? i.getContentType() : "unknown"));
-	  tempList.add(Pair.of(TAG_SIZE, "" + i.getSize()));
-	  tempList.add(Pair.of(TAG_NAME, "" + i.getName()));
+	  tempList.put(TAG_CTYPE, i.getContentType() !=null ? i.getContentType() : "unknown");
+	  tempList.put(TAG_SIZE, "" + i.getSize());
+	  tempList.put(TAG_NAME, "" + i.getName());
 	  if (i instanceof HasKey) {
 		  String k = ((HasKey)i).getKeyString();
-		  tempList.add(Pair.of(TAG_KEY, k));
-		  tempList.add(Pair.of(LEGACY_TAG_KEY, k));
+		  tempList.put(TAG_KEY, k);
+		  tempList.put(LEGACY_TAG_KEY, k);
 	  }
 	  return statusToString(tempList);
   }
@@ -747,14 +734,14 @@ public class UploadServlet extends HttpServlet implements Servlet {
    * @param fieldname
    * @return a map of tag/values to be rendered 
    */
-  protected List<Pair<String, String>> getUploadStatus(HttpServletRequest request, String fieldname, List<Pair<String, String>> ret) {
+  protected Map<String, String> getUploadStatus(HttpServletRequest request, String fieldname, Map<String, String> ret) {
 
     perThreadRequest.set(request);
 
     HttpSession session = request.getSession();
 
     if (ret == null) {
-      ret = new ArrayList<Pair<String, String>>();
+      ret = new HashMap<String, String>();
     }
     
     long currentBytes = 0;
@@ -764,13 +751,13 @@ public class UploadServlet extends HttpServlet implements Servlet {
     if (listener != null) {
       if (listener.getException() != null) {
         if (listener.getException() instanceof UploadCanceledException) {
-          ret.add(Pair.of(TAG_CANCELED, "true"));
-          ret.add(Pair.of(TAG_FINISHED, TAG_CANCELED));
+          ret.put(TAG_CANCELED, "true");
+          ret.put(TAG_FINISHED, TAG_CANCELED);
           logger.error("UPLOAD-SERVLET (" + session.getId() + ") getUploadStatus: " + fieldname + " canceled by the user after " + listener.getBytesRead() + " Bytes");
         } else {
           String errorMsg = getMessage("server_error", listener.getException().getMessage());
-          ret.add(Pair.of(TAG_ERROR, errorMsg));
-          ret.add(Pair.of(TAG_FINISHED, TAG_ERROR));
+          ret.put(TAG_ERROR, errorMsg);
+          ret.put(TAG_FINISHED, TAG_ERROR);
           logger.error("UPLOAD-SERVLET (" + session.getId() + ") getUploadStatus: " + fieldname + " finished with error: " + listener.getException().getMessage());
         }
       } else {
@@ -778,24 +765,24 @@ public class UploadServlet extends HttpServlet implements Servlet {
         totalBytes = listener.getContentLength();
         percent = totalBytes != 0 ? currentBytes * 100 / totalBytes : 0;
         // logger.debug("UPLOAD-SERVLET (" + session.getId() + ") getUploadStatus: " + fieldname + " " + currentBytes + "/" + totalBytes + " " + percent + "%");
-        ret.add(Pair.of(TAG_PERCENT, "" + percent));
-        ret.add(Pair.of(TAG_CURRENT_BYTES, "" + currentBytes));
-        ret.add(Pair.of(TAG_TOTAL_BYTES, "" + totalBytes));
+        ret.put(TAG_PERCENT, "" + percent);
+        ret.put(TAG_CURRENT_BYTES, "" + currentBytes);
+        ret.put(TAG_TOTAL_BYTES, "" + totalBytes);
         if (listener.isFinished()) {
-          ret.add(Pair.of(TAG_FINISHED, "ok"));
+          ret.put(TAG_FINISHED, "ok");
         }
       }
     } else if (getMySessionFileItems(request) != null) {
       if (fieldname == null) {
-        ret.add(Pair.of(TAG_FINISHED, "ok"));
+        ret.put(TAG_FINISHED, "ok");
         logger.debug("UPLOAD-SERVLET (" + session.getId() + ") getUploadStatus: " + request.getQueryString() +
         		" finished with files: " + session.getAttribute(getSessionFilesKey(request)));
       } else {
         List<FileItem> sessionFiles = getMySessionFileItems(request);
         for (FileItem file : sessionFiles) {
           if (file.isFormField() == false && file.getFieldName().equals(fieldname)) {
-            ret.add(Pair.of(TAG_FINISHED, "ok"));
-            ret.add(Pair.of(UConsts.PARAM_FILENAME, fieldname));
+            ret.put(TAG_FINISHED, "ok");
+            ret.put(UConsts.PARAM_FILENAME, fieldname);
             logger.debug("UPLOAD-SERVLET (" + session.getId() + ") getUploadStatus: " + fieldname +
             		" finished with files: " + session.getAttribute(getSessionFilesKey(request)));
           }
@@ -803,15 +790,11 @@ public class UploadServlet extends HttpServlet implements Servlet {
       }
     } else {
       logger.debug("UPLOAD-SERVLET (" + session.getId() + ") getUploadStatus: no listener in session");
-      ret.add(Pair.of("wait", "listener is null"));
+      ret.put("wait", "listener is null");
     }
-    for (Entry<String, String> e: ret) {
-    	if (e.getKey() == TAG_FINISHED) 
-    		removeCurrentListener(request);
+    if (ret.containsKey(TAG_FINISHED)) {
+      removeCurrentListener(request);
     }
-//    if (ret.containsKey(TAG_FINISHED)) {
-//      removeCurrentListener(request);
-//    }
 
     perThreadRequest.set(null);
     return ret;

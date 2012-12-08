@@ -24,8 +24,9 @@ import gwtupload.shared.UConsts;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -34,7 +35,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.lang3.tuple.Pair;
 
 /** 
  * <p>Class used to manipulate the data received in the server side.</p>
@@ -199,11 +199,11 @@ public class UploadAction extends UploadServlet {
       }
       UploadServlet.removeSessionFileItems(request);
     } else {
-    	List<Pair<String, String>> stat = new ArrayList<Pair<String, String>>();
+    	Map<String, String> stat = new HashMap<String, String>();
     	getFileItemsSummary(request, stat);
       if (message != null) {
         // see issue #139
-        stat.add(Pair.of("message", "<![CDATA[" + message + "]]>"));
+        stat.put("message", "<![CDATA[" + message + "]]>");
       }
       renderXmlResponse(request, response, statusToString(stat), true);
     }

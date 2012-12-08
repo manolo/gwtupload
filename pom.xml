@@ -131,11 +131,6 @@
       <version>${gae.version}</version>
       <scope>provided</scope>
     </dependency>
-    <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-lang3</artifactId>
-      <version>${commonsLang3Version}</version>
-    </dependency>
   </dependencies>
 
   <description>
