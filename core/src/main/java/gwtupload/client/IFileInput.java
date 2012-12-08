@@ -25,6 +25,7 @@ import com.google.gwt.event.dom.client.HasChangeHandlers;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -42,7 +43,7 @@ import gwtupload.client.DecoratedFileUpload.FileUploadWithMouseEvents;
  * @author Manolo Carrasco Moñino
  * 
  */
-public interface IFileInput extends HasChangeHandlers {
+public interface IFileInput extends HasChangeHandlers, IsWidget {
 
   /**
    * A HyperLinkFileInput implementing the IFileInput interface
@@ -60,8 +61,9 @@ public interface IFileInput extends HasChangeHandlers {
   public class BrowserFileInput extends FileUploadWithMouseEvents implements
       IFileInput {
 
+    @Deprecated
     public Widget getWidget() {
-      return this;
+      return asWidget();
     }
 
     public IFileInput newInstance() {
@@ -260,7 +262,9 @@ public interface IFileInput extends HasChangeHandlers {
 
   /**
    * Returns the widget which will be inserted in the document.
+   * @deprecated use asWidget instead
    */
+  @Deprecated
   Widget getWidget();
 
   /**

@@ -125,7 +125,7 @@ public class SingleUploaderModal extends SingleUploader {
   @Override
   protected void onStartUpload() {
     super.onStartUpload();
-    getFileInput().getWidget().setVisible(true);
+    getFileInput().asWidget().setVisible(true);
     if (button != null) {
       button.setVisible(true);
     }

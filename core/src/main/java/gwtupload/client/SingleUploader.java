@@ -129,7 +129,7 @@ public class SingleUploader extends Uploader {
 
     if (status == null) {
       status = new BaseUploadStatus();
-      super.add(status.getWidget());
+      super.add(status.asWidget());
     }
     super.setStatusWidget(status);
     
@@ -245,7 +245,7 @@ public class SingleUploader extends Uploader {
       }
     }
 
-    getFileInput().getWidget().setVisible(true);
+    getFileInput().asWidget().setVisible(true);
     if (button != null) {
       setEnabledButton(true);
       button.removeStyleName("changed");
@@ -269,7 +269,7 @@ public class SingleUploader extends Uploader {
       button.removeStyleName("changed");
       button.setVisible(false);
     }
-    getFileInput().getWidget().setVisible(false);
+    getFileInput().asWidget().setVisible(false);
   }
   
   public void setAvoidRepeatFiles(boolean b){

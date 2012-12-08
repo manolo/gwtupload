@@ -62,7 +62,7 @@ public class MultiUploader extends Composite implements IUploader {
         // For security reasons, most browsers don't submit files if fileInput is hidden or has a size of 0,
         // so, before sending the form, it is necessary to show the fileInput, we put it out of the viewable
         // area.
-        Widget w = u.getFileInput().getWidget();
+        Widget w = u.getFileInput().asWidget();
         DOM.setStyleAttribute(w.getElement(), "position", "absolute");
         DOM.setStyleAttribute(w.getElement(), "left", "-4000px");
         u.getFileInput().setVisible(true);

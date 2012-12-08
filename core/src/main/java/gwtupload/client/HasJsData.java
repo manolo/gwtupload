@@ -17,8 +17,6 @@
 
 package gwtupload.client;
 
-import java.util.List;
-
 import com.google.gwt.core.client.JavaScriptObject;
 /**
  * <p>

@@ -85,6 +85,8 @@ public class BaseUploadStatus implements IUploadStatus {
    */
   protected HTML fileNameLabel = getFileNameLabel();
   
+  protected List<String> fileNames;
+  
   /**
    * Main panel, attach it to the document using getWidget().
    */
@@ -157,7 +159,12 @@ public class BaseUploadStatus implements IUploadStatus {
   /* (non-Javadoc)
    * @see gwtupload.client.IUploadStatus#getWidget()
    */
+  @Deprecated
   public Widget getWidget() {
+    return asWidget();
+  }
+  
+  public Widget asWidget() {
     return panel;
   }
 
@@ -192,6 +199,7 @@ public class BaseUploadStatus implements IUploadStatus {
    * @see gwtupload.client.IUploadStatus#setFileNames(List<java.lang.String>)
    */
   public void setFileNames(List<String> names) {
+    fileNames = names;
     fileNameLabel.setHTML(Utils.convertCollectionToString(names, "<br/>"));
   }
 
@@ -290,7 +298,7 @@ public class BaseUploadStatus implements IUploadStatus {
    * @see gwtupload.client.IUploadStatus#setVisible(boolean)
    */
   public void setVisible(boolean b) {
-    panel.setVisible(b);
+    asWidget().setVisible(b);
   }
 
   /**

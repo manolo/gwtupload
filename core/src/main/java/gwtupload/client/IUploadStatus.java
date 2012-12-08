@@ -23,6 +23,7 @@ import java.util.Set;
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.i18n.client.Constants;
+import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -33,7 +34,7 @@ import com.google.gwt.user.client.ui.Widget;
  * @author Manolo Carrasco Moñino
  * 
  */
-public interface IUploadStatus extends HasProgress {  
+public interface IUploadStatus extends HasProgress, IsWidget {  
 
   /**
    * Enumeration of possible cancel options
@@ -108,6 +109,7 @@ public interface IUploadStatus extends HasProgress {
    * Called for getting the container widget.
    * @return The container widget
    */
+  @Deprecated
   Widget getWidget();
 
   /**

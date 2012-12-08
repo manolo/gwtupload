@@ -16,14 +16,15 @@
  */
 package gwtupload.client;
 
-import java.util.List;
-
 import gwtupload.client.IUploadStatus.Status;
 import gwtupload.client.IUploadStatus.UploadStatusConstants;
+
+import java.util.List;
 
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.HasWidgets;
+import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -34,7 +35,7 @@ import com.google.gwt.user.client.ui.Widget;
  * @author Manolo Carrasco Moñino
  *
  */
-public interface IUploader extends HasJsData, HasWidgets {
+public interface IUploader extends HasJsData, HasWidgets, IsWidget {
 
   /**
    * Interface for onCancelUpload events.
@@ -333,6 +334,8 @@ public interface IUploader extends HasJsData, HasWidgets {
   
   /**
    * Return the widget instance.
+   * @deprecated use asWidget instead
    */
+  @Deprecated
   Widget getWidget();
 }

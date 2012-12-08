@@ -668,7 +668,6 @@ public class UploadServlet extends HttpServlet implements Servlet {
     }
   }
   
-  @SuppressWarnings("deprecation")
   protected List<Pair<String, String>> getFileItemsSummary(HttpServletRequest request, List<Pair<String, String>> stat) {
     if (stat == null) {
       stat = new ArrayList<Pair<String, String>>();

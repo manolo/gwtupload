@@ -140,7 +140,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     }
     public void clear() {
       formElements.clear();
-      add(fileInput.getWidget());
+      add(fileInput.asWidget());
     }
   }
   
@@ -924,7 +924,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
 
   public void setFileInput(IFileInput input) {
     if (fileInput != null) {
-      fileInput.getWidget().removeFromParent();
+      fileInput.asWidget().removeFromParent();
     }
     fileInput = input;
     fileInput.addChangeHandler(onFileInputChanged);
@@ -932,7 +932,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     fileInput.setEnabled(enabled);
     setFileInputSize(DEFAULT_FILEINPUT_SIZE);
     assignNewNameToFileInput();
-    uploadForm.add(fileInput.getWidget());
+    uploadForm.add(fileInput.asWidget());
   }
 
   /* (non-Javadoc)
@@ -977,12 +977,12 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     if (stat == null) {
       return;
     }
-    uploaderPanel.remove(statusWidget.getWidget());
+    uploaderPanel.remove(statusWidget.asWidget());
     statusWidget = stat;
-    if (!stat.getWidget().isAttached()) {
-      uploaderPanel.add(statusWidget.getWidget());
+    if (!stat.asWidget().isAttached()) {
+      uploaderPanel.add(statusWidget.asWidget());
     }
-    statusWidget.getWidget().addStyleName(STYLE_STATUS);
+    statusWidget.asWidget().addStyleName(STYLE_STATUS);
     statusWidget.setVisible(false);
     statusWidget.addCancelHandler(cancelHandler);
     statusWidget.setStatusChangedHandler(statusChangedHandler);
