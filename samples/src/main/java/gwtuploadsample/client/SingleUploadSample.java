@@ -16,6 +16,7 @@
  */
 package gwtuploadsample.client;
 
+import jsupload.client.ChismesUploadProgress;
 import gwtupload.client.IFileInput.FileInputType;
 import gwtupload.client.IUploadStatus.Status;
 import gwtupload.client.IUploader;
@@ -61,7 +62,6 @@ public class SingleUploadSample implements EntryPoint {
     }
   };
   
-  
   public void onModuleLoad() {
     SingleUploader single1 = new SingleUploaderModal();
     single1.addOnFinishUploadHandler(onFinishUploaderHandler);
@@ -71,18 +71,22 @@ public class SingleUploadSample implements EntryPoint {
     single1.avoidEmptyFiles(false);
     RootPanel.get("single1").add(single1);
     
-    SingleUploader single2 = new SingleUploader(FileInputType.LABEL);
+    SingleUploader single2 = new SingleUploaderModal(FileInputType.ANCHOR, new ChismesUploadProgress(true));
     single2.addOnFinishUploadHandler(onFinishUploaderHandler);
     RootPanel.get("single2").add(single2);
-
-    SingleUploader single3 = new SingleUploader(FileInputType.LABEL);
-    single3.setAutoSubmit(true);
-    single3.setValidExtensions("jpg", "gif", "png");
+    
+    SingleUploader single3 = new SingleUploader(FileInputType.BUTTON);
     single3.addOnFinishUploadHandler(onFinishUploaderHandler);
-    single3.getFileInput().asWidget().setStyleName("customButton"); 
-    single3.getFileInput().asWidget().setSize("159px", "27px");
-    single3.avoidRepeatFiles(true);
     RootPanel.get("single3").add(single3);
+    
+    SingleUploader single4 = new SingleUploader(FileInputType.LABEL);
+    single4.setAutoSubmit(true);
+    single4.setValidExtensions("jpg", "gif", "png");
+    single4.addOnFinishUploadHandler(onFinishUploaderHandler);
+    single4.getFileInput().asWidget().setStyleName("customButton"); 
+    single4.getFileInput().asWidget().setSize("159px", "27px");
+    single4.avoidRepeatFiles(true);
+    RootPanel.get("single4").add(single4);
 
     RootPanel.get("thumbnails").add(panelImages);
   }

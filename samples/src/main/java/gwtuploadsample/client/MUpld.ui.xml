@@ -52,8 +52,7 @@
     <br/>
 
     MultiUploader type="CUSTOM" with customized statusBar and button
-    <up:MultiUploader type="CUSTOM" 
-       maximumFiles="2" avoidRepeatFiles="true" validExtensions="jpg">
+    <up:MultiUploader type="CUSTOM" validExtensions="jpg,png,pdf">
        <up:statusBar>
           <j:ChismesUploadProgress></j:ChismesUploadProgress>           
        </up:statusBar>
