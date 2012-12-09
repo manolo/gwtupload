@@ -863,7 +863,7 @@ public class UploadServlet extends HttpServlet implements Servlet {
         int cnt = 0;
         for (FileItem i : uploadedItems) {
           if (!i.isFormField()) {
-            i.setFieldName(i.getFieldName() + "-" + cnt++);
+            i.setFieldName(i.getFieldName().replace(UConsts.MULTI_SUFFIX, "") + "-" + cnt++);
           }
         }
         

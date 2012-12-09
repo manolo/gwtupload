@@ -45,5 +45,7 @@ public class UConsts {
   public static final String PARAM_ERROR = TAG_ERROR;
   public static final String PARAM_REDIRECT = "redirect";
   
+  public static final String MULTI_SUFFIX = "[]";
+  
   public static final String RESP_OK = "ok";
 }

@@ -183,22 +183,25 @@ sub doPost {
     foreach my $key ( $cgi->param() ) {
         my $value = $cgi->param($key);
         if ( defined($value) ) {
-            my $fh = $cgi->upload($key);
-            if ( defined($fh) ) {
-                $key .= '-' . $cnt++;
-                # In this variable you can send any information to the client side.
-                my $servermessage = "jsupload version: $version";
+           my @fhs = $cgi->upload($key);
+           $key =~ s/\[\]$//;
+            foreach my $fh (@fhs) {
+              if ( defined($fh) ) {
+                  $key .= '-' . $cnt++;
+                  # In this variable you can send any information to the client side.
+                  my $servermessage = "jsupload version: $version";
 
-                my $type = $cgi->uploadInfo($value)->{'Content-Type'} || 'unknown';
-                my $name = saveFile( $key, $value, $type, $fh );
-                my $size = -s "$name";
-                $files .= " <file>\n  <field>$key</field>\n  <name>$value</name>"
-                  . "\n  <size>$size</size>\n  <ctype>$type</ctype>"
-                  . "\n  <message>\n<![CDATA[\n$servermessage\n]]>\n  </message>\n </file>";
-            } else {
-                saveFile($key, $value, "text/plain");
-                $pars .= "<parameter><field>$key</field>"
-                  . "<value>$value</value></parameter>";
+                  my $type = $cgi->uploadInfo($value)->{'Content-Type'} || 'unknown';
+                  my $name = saveFile( $key, $value, $type, $fh );
+                  my $size = -s "$name";
+                  $files .= " <file>\n  <field>$key</field>\n  <name>$value</name>"
+                    . "\n  <size>$size</size>\n  <ctype>$type</ctype>"
+                    . "\n  <message>\n<![CDATA[\n$servermessage\n]]>\n  </message>\n </file>";
+              } else {
+                  saveFile($key, $value, "text/plain");
+                  $pars .= "<parameter><field>$key</field>"
+                    . "<value>$value</value></parameter>";
+              }
             }
         }
     }

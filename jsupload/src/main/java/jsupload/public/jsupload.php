@@ -154,26 +154,29 @@ if($_SERVER['REQUEST_METHOD'] == 'GET') {
     writeResponse("<error>You have sent an incorrect APC_UPLOAD_PROGRESS key:" . $key . "</error>", 1);
   }
 
-  $uploadfile = $uploaddir . $key . ".bin";
-  $uploadinfo = $uploaddir . $key . ".info";
+  $fld = preg_replace("\[\]$", """, $key);
+  $cnt = 0;
+  foreach ($_FILES[$key]['tmp_name'] as $tmpfile)) {
+    $size = $_FILES[$key]['size'][$cnt];
+    $type = $_FILES[$key]['type'][$cnt];
+    $name = $_FILES[$key]['name'][$cnt];
+    $field = $fld .  '-' . $cnt++;
+    $uploadfile = $uploaddir . $field . ".bin";
+    $uploadinfo = $uploaddir . $field . ".info";
+    if (move_uploaded_file($tmpfile, $uploadfile)) {
+      $servermessage = $version;
+      $msg  = " <file>\n  <field>$field</field>\n  <name>$name</name>"
+            . "\n  <size>$size</size>\n  <ctype>$type</ctype>"
+            . "\n  <message>\n<![CDATA[\n$servermessage\n]]>\n  </message>\n </file>";
 
-  if (move_uploaded_file($_FILES[$key]['tmp_name'], $uploadfile)) {
-    $size = $_FILES[$key]['size'];
-    $type = $_FILES[$key]['type'];
-    $name = $_FILES[$key]['name'];
-    $servermessage = $version;
+      $fh = fopen($uploadinfo, 'w');
+      fwrite($fh, $name . "\n" . $type . "\n");    
+      fclose($fh);
 
-    $msg  = " <file>\n  <field>$key</field>\n  <name>$name</name>"
-          . "\n  <size>$size</size>\n  <ctype>$type</ctype>"
-          . "\n  <message>\n<![CDATA[\n$servermessage\n]]>\n  </message>\n </file>";
-
-    $fh = fopen($uploadinfo, 'w');
-    fwrite($fh, $name . "\n" . $type . "\n");    
-    fclose($fh);
-
-    writeResponse($msg, 1);
-  } else {
-    writeResponse("<error>Unable to move: " . $_FILES[$key]['tmp_name'] . " to: " . $uploadfile . "</error>", 1);
+      writeResponse($msg, 1);
+    } else {
+      writeResponse("<error>Unable to move: " . $tmpfile . " to: " . $uploadfile . "</error>", 1);
+    }
   }
 }
 

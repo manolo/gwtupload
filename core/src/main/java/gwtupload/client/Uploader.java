@@ -16,30 +16,7 @@
  */
 package gwtupload.client;
 
-import static gwtupload.shared.UConsts.PARAM_BLOBKEY;
-import static gwtupload.shared.UConsts.PARAM_BLOBSTORE;
-import static gwtupload.shared.UConsts.PARAM_CANCEL;
-import static gwtupload.shared.UConsts.PARAM_REMOVE;
-import static gwtupload.shared.UConsts.PARAM_SESSION;
-import static gwtupload.shared.UConsts.PARAM_SHOW;
-import static gwtupload.shared.UConsts.TAG_BLOBSTORE;
-import static gwtupload.shared.UConsts.TAG_BLOBSTORE_PATH;
-import static gwtupload.shared.UConsts.TAG_CANCELED;
-import static gwtupload.shared.UConsts.TAG_CTYPE;
-import static gwtupload.shared.UConsts.TAG_CURRENT_BYTES;
-import static gwtupload.shared.UConsts.TAG_FIELD;
-import static gwtupload.shared.UConsts.TAG_FILE;
-import static gwtupload.shared.UConsts.TAG_FINISHED;
-import static gwtupload.shared.UConsts.TAG_MESSAGE;
-import static gwtupload.shared.UConsts.TAG_MSG_END;
-import static gwtupload.shared.UConsts.TAG_MSG_GT;
-import static gwtupload.shared.UConsts.TAG_MSG_LT;
-import static gwtupload.shared.UConsts.TAG_MSG_START;
-import static gwtupload.shared.UConsts.TAG_NAME;
-import static gwtupload.shared.UConsts.TAG_PERCENT;
-import static gwtupload.shared.UConsts.TAG_SIZE;
-import static gwtupload.shared.UConsts.TAG_TOTAL_BYTES;
-import static gwtupload.shared.UConsts.TAG_WAIT;
+import static gwtupload.shared.UConsts.*;
 import gwtupload.client.IFileInput.FileInputType;
 import gwtupload.client.IUploadStatus.Status;
 
@@ -239,6 +216,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
   };
   private boolean canceled = false;
   private boolean enabled = true;
+  private boolean multiple = true;
   private IFileInput fileInput;
   protected String fileInputPrefix = "GWTU";
   private FileInputType fileInputType;
@@ -824,7 +802,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
    * @see gwtupload.client.IUploader#getInputName()
    */
   public String getInputName() {
-    return fileInput.getName();
+    return fileInput.getName().replace(MULTI_SUFFIX,"");
   }
 
   /* (non-Javadoc)
@@ -1049,7 +1027,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
       }
       waitingForResponse = true;
       // Using a reusable builder makes IE fail because it caches the response
-      // So it's better to change the request path sending an additional random parameter
+      // So it's better to change the request path sending an additional variable parameter
       RequestBuilder reqBuilder = new RequestBuilder(RequestBuilder.GET, composeURL("filename=" + fileInput.getName() , "c=" + requestsCounter++));
       reqBuilder.setTimeoutMillis(DEFAULT_AJAX_TIMEOUT);
       reqBuilder.sendRequest("get_status", onStatusReceivedCallback);
@@ -1115,6 +1093,9 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
    */
   protected void assignNewNameToFileInput() {
     String fileInputName = (fileInputPrefix + "-" + Math.random()).replaceAll("\\.", "");
+    if (multiple) {
+      fileInputName += MULTI_SUFFIX;
+    }
     fileInput.setName(fileInputName);
   }
 
@@ -1356,6 +1337,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
   }
 
   public void setMultipleSelection(boolean b) {
+    multiple = b;
     fileInput.enableMultiple(b);
   }
 }
