@@ -160,7 +160,7 @@ public class BaseUploadStatus implements IUploadStatus {
    * @see gwtupload.client.IUploadStatus#getWidget()
    */
   @Deprecated
-  public Widget getWidget() {
+  final public Widget getWidget() {
     return asWidget();
   }
   
