@@ -177,30 +177,34 @@ sub doPost {
     my $msg = "<finished>ok</finished>\n";
     open( STDIN, "$data_file" );
     $cgi = new CGI();
+    my $cnt = 0;
+    my $files = "";
+    my $pars = "";
     foreach my $key ( $cgi->param() ) {
         my $value = $cgi->param($key);
         if ( defined($value) ) {
             my $fh = $cgi->upload($key);
             if ( defined($fh) ) {
+                $key .= '-' . $cnt++;
                 # In this variable you can send any information to the client side.
                 my $servermessage = "jsupload version: $version";
 
                 my $type = $cgi->uploadInfo($value)->{'Content-Type'} || 'unknown';
                 my $name = saveFile( $key, $value, $type, $fh );
                 my $size = -s "$name";
-                $msg .= " <file>\n  <field>$key</field>\n  <name>$value</name>"
+                $files .= " <file>\n  <field>$key</field>\n  <name>$value</name>"
                   . "\n  <size>$size</size>\n  <ctype>$type</ctype>"
                   . "\n  <message>\n<![CDATA[\n$servermessage\n]]>\n  </message>\n </file>";
             } else {
                 saveFile($key, $value, "text/plain");
-                $msg .= "<parameter><field>$key</field>"
+                $pars .= "<parameter><field>$key</field>"
                   . "<value>$value</value></parameter>";
             }
         }
     }
     close(STDIN);
     unlink($data_file);
-    writeResponse($msg, 1);
+    writeResponse($msg . "<files>$files</files>" . "<parameters>$pars<parameters>", 1);
 }
 
 ## Save each received file in the user folder.

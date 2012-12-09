@@ -1,7 +1,6 @@
 package gwtupload.shared;
 
 public class UConsts {
-
   public static final String TAG_BLOBSTORE_PATH = "blobpath";
   public static final String TAG_BLOBSTORE = "blobstore";
   public static final String TAG_KEY = "key";
@@ -22,12 +21,15 @@ public class UConsts {
   public static final String TAG_WAIT = "wait";
   public static final String TAG_OK = "ok";
   public static final String TAG_FILE = "file";
+  public static final String TAG_FILES = "files";
+  public static final String TAG_VALUE = "value";
+  public static final String TAG_PARAM = "parameter";
+  public static final String TAG_PARAMS = "parameters";
   
   public static final String TAG_MSG_START = "%%%INI%%%";
   public static final String TAG_MSG_END = "%%%END%%%";
   public static final String TAG_MSG_GT = "^^^@@";
   public static final String TAG_MSG_LT = "@@^^^";
-  
   
   public static final String PARAM_BLOBSTORE = TAG_BLOBSTORE;
   public static final String PARAM_BLOBKEY = "blob-key";
@@ -41,10 +43,7 @@ public class UConsts {
   public static final String PARAM_CTYPE = "ctype";
   public static final String PARAM_MESSAGE = TAG_MESSAGE;
   public static final String PARAM_ERROR = TAG_ERROR;
-
   public static final String PARAM_REDIRECT = "redirect";
   
   public static final String RESP_OK = "ok";
-
-  
 }
