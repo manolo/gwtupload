@@ -18,9 +18,6 @@ package jsupload.client;
 
 import gwtupload.client.BaseUploadStatus;
 import gwtupload.client.IUploadStatus;
-import gwtupload.client.Utils;
-
-import java.util.List;
 
 import com.google.code.p.gwtchismes.client.GWTCProgress;
 import com.google.gwt.user.client.Window;
@@ -78,8 +75,8 @@ public class ChismesUploadProgress extends BaseUploadStatus {
   }
   
   @Override
-  public Widget getWidget() {
-    return asDialog ? prg : super.getWidget();
+  public Widget asWidget() {
+    return asDialog ? prg : super.asWidget();
   }
   
   @Override
