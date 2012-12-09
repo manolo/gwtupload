@@ -354,13 +354,12 @@ public class UploadServlet extends HttpServlet implements Servlet {
     FileItem item = findFileItem(getSessionFileItems(request), parameter);
     if (item != null) {
       getSessionFileItems(request).remove(item);
-      renderXmlResponse(request, response, XML_DELETED_TRUE);
       logger.debug("UPLOAD-SERVLET (" + request.getSession().getId() + ") removeUploadedFile: " + parameter + " " + item.getName() + " " + item.getSize());
     } else {
-      renderXmlResponse(request, response, XML_ERROR_ITEM_NOT_FOUND);
-      logger.info("UPLOAD-SERVLET (" + request.getSession().getId() + ") removeUploadedFile: " + parameter + " unable to delete file because it isn't in session.");
+      logger.info("UPLOAD-SERVLET (" + request.getSession().getId() + ") removeUploadedFile: " + parameter + " not in session.");
     }
 
+    renderXmlResponse(request, response, XML_DELETED_TRUE);
     return item;
   }
 
@@ -676,7 +675,6 @@ public class UploadServlet extends HttpServlet implements Servlet {
     if (i instanceof HasKey) {
       String k = ((HasKey)i).getKeyString();
       item.put(TAG_KEY, k);
-      item.put(LEGACY_TAG_KEY, k);
     }
     
     Map<String, String> file = new HashMap<String, String>();

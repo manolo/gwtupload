@@ -151,7 +151,9 @@ public class UploadAction extends UploadServlet {
     String parameter = request.getParameter(UConsts.PARAM_REMOVE);
     if (parameter != null) {
       try {
+        // Notify classes extending this that they have to remove the item. 
         removeItem(request, parameter);
+        // Other way to notify classes extending this.  
         FileItem item = super.findFileItem(getMySessionFileItems(request), parameter);
         if (item != null) {
           removeItem(request, item);
@@ -160,6 +162,7 @@ public class UploadAction extends UploadServlet {
         renderXmlResponse(request, response, "<" + TAG_ERROR + ">" + e.getMessage() + "</" + TAG_ERROR + ">");
         return;
       }
+      // Remove the item saved in session in the case it was not removed yet
       super.removeUploadedFile(request, response);
     } else {
       super.doGet(request, response);
