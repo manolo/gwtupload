@@ -124,6 +124,7 @@ public class SampleUploadServlet extends UploadAction {
     receivedContentTypes.remove(fieldName);
     if (file != null) {
       file.delete();
+      logger.info("SAMPLE-SERVLET (" + request.getSession().getId() + ") removed file " + file.getAbsolutePath());  
     }
   }
 
