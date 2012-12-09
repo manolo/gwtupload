@@ -272,13 +272,13 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
 
     public void onResponseReceived(Request request, Response response) {
       statusWidget.setStatus(Status.DELETED);
-      fileDone.removeAll(getFileInputNames());
+      fileDone.removeAll(getFileNames());
     }
   };
   private final ChangeHandler onFileInputChanged = new ChangeHandler() {
     public void onChange(ChangeEvent event) {
       basenames.clear();
-      for (String s: getFileInputNames()) {
+      for (String s: getFileNames()) {
         basenames.add(Utils.basename(s));
       }
       statusWidget.setFileNames(basenames);
@@ -1163,12 +1163,12 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
       return;
     } else if (Utils.getXmlNodeValue(doc, TAG_WAIT) != null) {
       if (serverResponse != null) {
-        log("server response received, cancelling the upload " + getFileInputNames() + " " + serverResponse, null);
+        log("server response received, cancelling the upload " + getFileNames() + " " + serverResponse, null);
         successful = true;
         uploadFinished();
       }
     } else if (Utils.getXmlNodeValue(doc, TAG_CANCELED) != null) {
-      log("server response is: canceled " + getFileInputNames(), null);
+      log("server response is: canceled " + getFileNames(), null);
       successful = false;
       canceled = true;
       uploadFinished();
@@ -1186,7 +1186,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
       long transferredKB = Long.valueOf(Utils.getXmlNodeValue(doc, TAG_CURRENT_BYTES)) / 1024;
       long totalKB = Long.valueOf(Utils.getXmlNodeValue(doc, TAG_TOTAL_BYTES)) / 1024;
       statusWidget.setProgress(transferredKB, totalKB);
-      log("server response transferred  " + transferredKB + "/" + totalKB + " " + getFileInputNames(), null);
+      log("server response transferred  " + transferredKB + "/" + totalKB + " " + getFileNames(), null);
       if (onSubmitComplete) {
         successful = false;
         String msg = i18nStrs.uploaderBadServerResponse() + "\n" + serverResponse;
@@ -1199,7 +1199,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
       }
       return;
     } else {
-      log("incorrect response: " + getFileInputNames() + " " + responseTxt, null);
+      log("incorrect response: " + getFileNames() + " " + responseTxt, null);
     }
     
     if (uploadTimeout > 0 && now() - lastData >  uploadTimeout) {
@@ -1230,8 +1230,10 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
   }
 
   private void sendAjaxRequestToDeleteUploadedFile() throws RequestException {
-    RequestBuilder reqBuilder = new RequestBuilder(RequestBuilder.GET, composeURL(PARAM_REMOVE + "=" + getInputName()));
-    reqBuilder.sendRequest("remove_file", onDeleteFileCallback);
+    for (UploadedInfo info: serverInfo.getUploadedFiles()) { 
+      RequestBuilder reqBuilder = new RequestBuilder(RequestBuilder.GET, composeURL(PARAM_REMOVE + "=" + info.getField()));
+      reqBuilder.sendRequest("remove_file", onDeleteFileCallback);
+    }
   }
   
   /**
@@ -1324,10 +1326,6 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     return valid;
   }
   
-  public List<String> getFileInputNames() {
-    return fileInput.getFilenames();
-  }
-
   public boolean anyFileIsRepeated(boolean checkOnlyUploadedFiles) {
     for (String s: fileInput.getFilenames()) {
       if (fileDone.contains(s) || (!checkOnlyUploadedFiles && fileUploading.contains(s)))
