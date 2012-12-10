@@ -216,5 +216,4 @@ public class UploadAction extends UploadServlet {
       removeSessionFileItems(request, removeData);
     }
   }
-  
 }

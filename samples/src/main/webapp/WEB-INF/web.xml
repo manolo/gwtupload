@@ -5,22 +5,21 @@
 
 <web-app>
 
-  <context-param>
-    <param-name>maxSize</param-name>
-<!--    <param-value>3145728</param-value>-->
-    <param-value>1024000</param-value>
-  </context-param>
-  
-  <context-param>
-    <param-name>slowUploads</param-name>
-    <param-value>true</param-value>
-  </context-param>
-
   <servlet>
     <servlet-name>uploadServlet</servlet-name>
     <servlet-class>gwtuploadsample.server.SampleUploadServlet</servlet-class>
-<!--     <servlet-class>gwtupload.server.UploadServlet</servlet-class> -->
-<!--    <servlet-class>gwtupload.server.appeng.AppEngineUploadServlet</servlet-class>-->
+    <init-param>
+	    <param-name>maxSize</param-name>
+	    <param-value>1024000</param-value>
+    </init-param>
+    <init-param>
+	    <param-name>slowUploads</param-name>
+	    <param-value>true</param-value>
+    </init-param>
+    <init-param>
+	    <param-name>corsDomainsRegex</param-name>
+	    <param-value>.*</param-value>
+    </init-param>
   </servlet>
   
   <servlet-mapping>

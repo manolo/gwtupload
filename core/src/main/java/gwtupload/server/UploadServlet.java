@@ -132,6 +132,8 @@ public class UploadServlet extends HttpServlet implements Servlet {
 
   private static String XML_TPL = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<response>%%MESSAGE%%</response>\n";
   
+  private String corsDomainsRegex = "^$";
+  
   /**
    * Copy the content of an input stream to an output one.
    * 
@@ -367,12 +369,37 @@ public class UploadServlet extends HttpServlet implements Servlet {
    * Writes a response to the client.
    */
   protected static void renderMessage(HttpServletResponse response, String message, String contentType) throws IOException {
+    response.addHeader("Cache-Control", "no-cache");
     response.setContentType(contentType + "; charset=UTF-8");
     response.setCharacterEncoding("UTF-8");
     PrintWriter out = response.getWriter();
     out.print(message);
     out.flush();
     out.close();
+  }
+  
+  @Override
+  protected void doOptions(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    if (checkCORS(request, response)) {
+      String method = request.getHeader("Access-Control-Request-Method");
+      response.addHeader("Access-Control-Allow-Methods", method);
+      response.setHeader("Allow", method);
+      String headers = request.getHeader("Access-Control-Request-Headers");
+      response.addHeader("Access-Control-Allow-Headers", headers);
+      response.setContentType("text/plain");
+      response.getWriter().flush();
+    } else {
+      super.doOptions(request, response);
+    }
+  }
+  
+  private boolean checkCORS(HttpServletRequest request, HttpServletResponse response) {
+    String origin = request.getHeader("Origin");
+    if (origin != null && origin.matches(corsDomainsRegex)) {
+      response.addHeader("Access-Control-Allow-Origin", origin);
+      return true;
+    }
+    return false;
   }
 
   /**
@@ -532,6 +559,11 @@ public class UploadServlet extends HttpServlet implements Servlet {
     } else {
       appEngine = isAppEngine();
     }
+    
+    String cors = getInitParameter("corsDomainsRegex");
+    if (cors != null) {
+      corsDomainsRegex = cors;
+    }
 
     logger.info("UPLOAD-SERVLET init: maxSize=" + maxSize + ", slowUploads=" + slow + ", isAppEngine=" + isAppEngine());
   }
@@ -556,33 +588,37 @@ public class UploadServlet extends HttpServlet implements Servlet {
    */
   protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
     perThreadRequest.set(request);
-    if (request.getParameter(UConsts.PARAM_SESSION) != null) {
-      logger.debug("UPLOAD-SERVLET (" + request.getSession().getId() + ") new session, blobstore=" + (isAppEngine() && useBlobstore));
-      request.getSession();
-      renderXmlResponse(request, response, "<" + TAG_BLOBSTORE + ">" + (isAppEngine() && useBlobstore) + "</" + TAG_BLOBSTORE + ">");
-    } else if (isAppEngine() && (request.getParameter(UConsts.PARAM_BLOBSTORE) != null || request.getParameterMap().size() == 0)) {
-      String blobStorePath = getBlobstorePath(request);
-      logger.debug("UPLOAD-SERVLET (" + request.getSession().getId() + ") getBlobstorePath=" + blobStorePath);
-      renderXmlResponse(request, response, "<" + TAG_BLOBSTORE_PATH + ">" + blobStorePath + "</" + TAG_BLOBSTORE_PATH + ">");
-    } else if (request.getParameter(UConsts.PARAM_SHOW) != null) {
-      getUploadedFile(request, response);
-    } else if (request.getParameter(UConsts.PARAM_CANCEL) != null) {
-      cancelUpload(request);
-      renderXmlResponse(request, response, XML_CANCELED_TRUE);
-    } else if (request.getParameter(UConsts.PARAM_REMOVE) != null) {
-      removeUploadedFile(request, response);
-    } else if (request.getParameter(UConsts.PARAM_CLEAN) != null) {
-      logger.debug("UPLOAD-SERVLET (" + request.getSession().getId() + ") cleanListener");
-      AbstractUploadListener listener = getCurrentListener(request);
-      if (listener != null) {
-        listener.remove();
+    try {
+      checkCORS(request, response);
+      if (request.getParameter(UConsts.PARAM_SESSION) != null) {
+        logger.debug("UPLOAD-SERVLET (" + request.getSession().getId() + ") new session, blobstore=" + (isAppEngine() && useBlobstore));
+        request.getSession();
+        renderXmlResponse(request, response, "<" + TAG_BLOBSTORE + ">" + (isAppEngine() && useBlobstore) + "</" + TAG_BLOBSTORE + ">");
+      } else if (isAppEngine() && (request.getParameter(UConsts.PARAM_BLOBSTORE) != null || request.getParameterMap().size() == 0)) {
+        String blobStorePath = getBlobstorePath(request);
+        logger.debug("UPLOAD-SERVLET (" + request.getSession().getId() + ") getBlobstorePath=" + blobStorePath);
+        renderXmlResponse(request, response, "<" + TAG_BLOBSTORE_PATH + ">" + blobStorePath + "</" + TAG_BLOBSTORE_PATH + ">");
+      } else if (request.getParameter(UConsts.PARAM_SHOW) != null) {
+        getUploadedFile(request, response);
+      } else if (request.getParameter(UConsts.PARAM_CANCEL) != null) {
+        cancelUpload(request);
+        renderXmlResponse(request, response, XML_CANCELED_TRUE);
+      } else if (request.getParameter(UConsts.PARAM_REMOVE) != null) {
+        removeUploadedFile(request, response);
+      } else if (request.getParameter(UConsts.PARAM_CLEAN) != null) {
+        logger.debug("UPLOAD-SERVLET (" + request.getSession().getId() + ") cleanListener");
+        AbstractUploadListener listener = getCurrentListener(request);
+        if (listener != null) {
+          listener.remove();
+        }
+        renderXmlResponse(request, response, XML_FINISHED_OK);
+      } else {
+        String message = statusToString(getUploadStatus(request, request.getParameter(UConsts.PARAM_FILENAME), null)); 
+        renderXmlResponse(request, response, message);
       }
-      renderXmlResponse(request, response, XML_FINISHED_OK);
-    } else {
-      String message = statusToString(getUploadStatus(request, request.getParameter(UConsts.PARAM_FILENAME), null)); 
-      renderXmlResponse(request, response, message);
+    } finally {
+      perThreadRequest.set(null);
     }
-    perThreadRequest.set(null);
   }
   
   protected String statusToString(Map<String, String> stat) {
@@ -610,6 +646,7 @@ public class UploadServlet extends HttpServlet implements Servlet {
     perThreadRequest.set(request);
     String error;
     try {
+      checkCORS(request, response);
       error = parsePostRequest(request, response);
       finish(request);
       Map<String, String> stat = new HashMap<String, String>();
