@@ -32,11 +32,10 @@ import com.google.gwt.xml.client.NodeList;
       if (list.getLength() == 0) {
         return null;
       }
-		return getXmlNodeValue(list, tag);
+		return getXmlNodeValue(list.item(0));
     }
 
-    public static String getXmlNodeValue(NodeList list, String tagName) {
-    	Node node = list.item(0);
+    public static String getXmlNodeValue(Node node) {
     	if (node.getNodeType() != Node.ELEMENT_NODE) {
     		return null;
     	}

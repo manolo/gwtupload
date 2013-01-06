@@ -3,6 +3,9 @@ package gwtupload.shared;
 public class UConsts {
 
   public static final String TAG_BLOBSTORE_PATH = "blobpath";
+  public static final String TAG_BLOBSTORE_NAME = "blobname";
+  public static final String TAG_BLOBSTORE_PARAM = "blobparam";
+  public static final String ATTR_BLOBSTORE_PARAM_NAME = "name";
   public static final String TAG_BLOBSTORE = "blobstore";
   public static final String TAG_KEY = "key";
   @Deprecated
@@ -35,6 +38,7 @@ public class UConsts {
   public static final String PARAM_CLEAN = "clean";
   public static final String PARAM_DELAY = "delay";
   public static final String PARAM_FILENAME = "filename";
+  public static final String PARAM_NAME = "name";
   public static final String PARAM_REMOVE = "remove";
   public static final String PARAM_SESSION = "new_session";
   public static final String PARAM_SHOW = "show";
