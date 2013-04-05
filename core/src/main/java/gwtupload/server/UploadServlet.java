@@ -16,7 +16,31 @@
  */
 package gwtupload.server;
 
-import static gwtupload.shared.UConsts.*;
+import static gwtupload.shared.UConsts.PARAM_DELAY;
+import static gwtupload.shared.UConsts.TAG_BLOBSTORE;
+import static gwtupload.shared.UConsts.TAG_BLOBSTORE_PATH;
+import static gwtupload.shared.UConsts.TAG_CANCELED;
+import static gwtupload.shared.UConsts.TAG_CTYPE;
+import static gwtupload.shared.UConsts.TAG_CURRENT_BYTES;
+import static gwtupload.shared.UConsts.TAG_DELETED;
+import static gwtupload.shared.UConsts.TAG_ERROR;
+import static gwtupload.shared.UConsts.TAG_FIELD;
+import static gwtupload.shared.UConsts.TAG_FILE;
+import static gwtupload.shared.UConsts.TAG_FILES;
+import static gwtupload.shared.UConsts.TAG_FINISHED;
+import static gwtupload.shared.UConsts.TAG_KEY;
+import static gwtupload.shared.UConsts.TAG_MSG_END;
+import static gwtupload.shared.UConsts.TAG_MSG_GT;
+import static gwtupload.shared.UConsts.TAG_MSG_LT;
+import static gwtupload.shared.UConsts.TAG_MSG_START;
+import static gwtupload.shared.UConsts.TAG_NAME;
+import static gwtupload.shared.UConsts.TAG_PARAM;
+import static gwtupload.shared.UConsts.TAG_PARAMS;
+import static gwtupload.shared.UConsts.TAG_PERCENT;
+import static gwtupload.shared.UConsts.TAG_SESSION_ID;
+import static gwtupload.shared.UConsts.TAG_SIZE;
+import static gwtupload.shared.UConsts.TAG_TOTAL_BYTES;
+import static gwtupload.shared.UConsts.TAG_VALUE;
 import gwtupload.server.exceptions.UploadActionException;
 import gwtupload.server.exceptions.UploadCanceledException;
 import gwtupload.server.exceptions.UploadException;
@@ -49,6 +73,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
+import org.apache.commons.fileupload.FileUploadBase;
 import org.apache.commons.fileupload.FileUploadBase.SizeLimitExceededException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
@@ -489,9 +514,9 @@ public class UploadServlet extends HttpServlet implements Servlet {
    * @throws RuntimeException
    */
   public void checkRequest(HttpServletRequest request) {
-    logger.debug("UPLOAD-SERVLET (" + request.getSession().getId() + ") procesing a request with size: " + request.getContentLength() + " bytes.");
-    if (request.getContentLength() > maxSize) {
-      throw new UploadSizeLimitException(maxSize, request.getContentLength());
+    logger.debug("UPLOAD-SERVLET (" + request.getSession().getId() + ") procesing a request with size: " + getContentLength(request) + " bytes.");
+    if (getContentLength(request) > maxSize) {
+      throw new UploadSizeLimitException(maxSize, getContentLength(request));
     }
   }
 
@@ -582,10 +607,19 @@ public class UploadServlet extends HttpServlet implements Servlet {
    */
   protected AbstractUploadListener createNewListener(HttpServletRequest request) {
     if (isAppEngine()) {
-      return new MemoryUploadListener(uploadDelay, request.getContentLength());
+      return new MemoryUploadListener(uploadDelay, getContentLength(request));
     } else {
-      return new UploadListener(uploadDelay, request.getContentLength());
+      return new UploadListener(uploadDelay, getContentLength(request));
     }
+  }
+  
+  private long getContentLength(HttpServletRequest request) {
+    long size = -1;
+    try {
+      size = Long.parseLong(request.getHeader(FileUploadBase.CONTENT_LENGTH));
+    } catch (NumberFormatException e) {
+    }
+    return size;
   }
   
   /**
@@ -762,7 +796,7 @@ public class UploadServlet extends HttpServlet implements Servlet {
    * 
    * @return FileItemFactory
    */
-  protected FileItemFactory getFileItemFactory(int requestSize) {
+  protected FileItemFactory getFileItemFactory(long requestSize) {
     return new DiskFileItemFactory();
   }
 
@@ -881,7 +915,7 @@ public class UploadServlet extends HttpServlet implements Servlet {
       checkRequest(request);
 
       // Create the factory used for uploading files,
-      FileItemFactory factory = getFileItemFactory(request.getContentLength());
+      FileItemFactory factory = getFileItemFactory(getContentLength(request));
       ServletFileUpload uploader = new ServletFileUpload(factory);
       uploader.setSizeMax(maxSize);
       uploader.setProgressListener(listener);
