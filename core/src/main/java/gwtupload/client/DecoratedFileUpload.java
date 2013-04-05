@@ -302,10 +302,11 @@ public class DecoratedFileUpload extends Composite implements HasText, HasName, 
       DOM.setStyleAttribute(wrapper.getElement(), "textAlign", "left");
       DOM.setStyleAttribute(wrapper.getElement(), "zIndex", "1");
       DOM.setStyleAttribute(input.getElement(), "marginLeft", "-1500px");
-      DOM.setStyleAttribute(input.getElement(), "fontSize", "500px");
+      DOM.setStyleAttribute(input.getElement(), "fontSize", "350px");
       DOM.setStyleAttribute(input.getElement(), "borderWidth", "0px");
       DOM.setStyleAttribute(input.getElement(), "opacity", "0");
       DOM.setElementAttribute(input.getElement(), "size", "1");
+      DOM.setElementAttribute(input.getElement(), "cursor", "pointer");
       
       // Trigger over and out handlers which already exist in the covered button.
       input.addMouseOverHandler(new MouseOverHandler() {
