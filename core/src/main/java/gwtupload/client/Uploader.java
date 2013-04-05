@@ -18,6 +18,7 @@ package gwtupload.client;
 
 import static gwtupload.shared.UConsts.*;
 import gwtupload.client.IFileInput.FileInputType;
+import gwtupload.client.ISession.Session;
 import gwtupload.client.IUploadStatus.Status;
 
 import java.util.ArrayList;
@@ -26,7 +27,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.logging.Logger;
 
 import com.google.gwt.core.client.GWT;
@@ -36,9 +36,7 @@ import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.http.client.Request;
-import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.RequestCallback;
-import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.RequestTimeoutException;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.user.client.Timer;
@@ -131,7 +129,6 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
   protected static final String STYLE_STATUS = "upld-status";
   static HTML mlog;
   static Logger logger;
-  private static final int DEFAULT_AJAX_TIMEOUT = 10000;
   private static final int DEFAULT_AUTOUPLOAD_DELAY = 600;
   
   private static final int DEFAULT_TIME_MAX_WITHOUT_RESPONSE = 60000;
@@ -221,7 +218,6 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
   protected String fileInputPrefix = "GWTU";
   private FileInputType fileInputType;
   private boolean finished = false;
-  private boolean hasSession = false;
   private long lastData = now();
   private final RequestCallback onBlobstoreReceivedCallback = new RequestCallback() {
     public void onError(Request request, Throwable exception) {
@@ -245,6 +241,8 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
       }
       if (url != null && url.length() > 0 && !"null".equalsIgnoreCase(url)) {
         uploadForm.setAction(url);
+      } else {
+        uploadForm.setAction(session.getServletPath());
       }
       receivedBlobPath = true;
       uploadForm.submit();
@@ -304,7 +302,6 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
       cancelUpload(i18nStrs.uploaderServerUnavailable() + " (2) " + getServletPath() + "\n\n" + message);
     }
     public void onResponseReceived(Request request, Response response) {
-      hasSession = true;
       try {
         String s = Utils.getXmlNodeValue(XMLParser.parse(response.getText()), TAG_BLOBSTORE);
         blobstore = "true".equalsIgnoreCase(s);
@@ -312,6 +309,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
         if (blobstore) {
           updateStatusTimer.setInterval(5000);
         }
+        uploadForm.setAction(session.getServletPath());
         uploadForm.submit();
       } catch (Exception e) {
         String message = e.getMessage().contains("error:") 
@@ -434,23 +432,19 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
         return;
       }
 
-      if (!hasSession) {
+      if (session == null) {
         event.cancel();
-        try {
-          sendAjaxRequestToValidateSession();
-        } catch (Exception e) {
-          log("Exception in validateSession", null);
-        }
+        // Sends a request to the server in order to get the session
+        // When the response with the session comes, it re-submits the form.
+        session = Session.createSession(servletPath, onSessionReceivedCallback);
         return;
       }
       
       if (blobstore && !receivedBlobPath) {
         event.cancel();
-        try {
-          sendAjaxRequestToGetBlobstorePath();
-        } catch (Exception e) {
-          log("Exception in getblobstorePath", null);
-        }
+        // Sends a request to the server in order to get the blobstore path.
+        // When the response with the blobstore path comes, it re-submits the form.
+        session.sendRequest("blobstore", onBlobstoreReceivedCallback, PARAM_BLOBSTORE + "=true");
         return;
       }
       receivedBlobPath = false;
@@ -476,6 +470,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
   private ServerInfo serverInfo = new ServerInfo();
   
   private String servletPath = "servlet.gupld";
+  private ISession session = null;
 
   private IUploadStatus.UploadStatusChangedHandler statusChangedHandler = new IUploadStatus.UploadStatusChangedHandler() {
     public void onStatusChanged(IUploadStatus statusWiget) {
@@ -566,7 +561,6 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     uploadForm = form;
     uploadForm.setEncoding(FormPanel.ENCODING_MULTIPART);
     uploadForm.setMethod(FormPanel.METHOD_POST);
-    uploadForm.setAction(servletPath);
     uploadForm.addSubmitHandler(onSubmitFormHandler);
     uploadForm.addSubmitCompleteHandler(onSubmitCompleteHandler);
 
@@ -746,7 +740,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
   }
   
   private String fileUrl(UploadedInfo info) {
-    String ret =  composeURL(PARAM_SHOW + "=" + info.getField());
+    String ret = session.composeURL(PARAM_SHOW + "=" + info.getField());
     if (info.getKey() != null) {
       ret += "&" + PARAM_BLOBKEY + "=" + info.getKey();
     }
@@ -943,8 +937,8 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
    */
   public void setServletPath(String path) {
     if (path != null) {
+      session = null;
       servletPath = path;
-      uploadForm.setAction(path);
     }
   }
 
@@ -1021,19 +1015,11 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
    * @see gwtupload.client.IUpdateable#update()
    */
   public void update() {
-    try {
-      if (waitingForResponse) {
-        return;
-      }
-      waitingForResponse = true;
-      // Using a reusable builder makes IE fail because it caches the response
-      // So it's better to change the request path sending an additional variable parameter
-      RequestBuilder reqBuilder = new RequestBuilder(RequestBuilder.GET, composeURL("filename=" + fileInput.getName() , "c=" + requestsCounter++));
-      reqBuilder.setTimeoutMillis(DEFAULT_AJAX_TIMEOUT);
-      reqBuilder.sendRequest("get_status", onStatusReceivedCallback);
-    } catch (RequestException e) {
-      e.printStackTrace();
+    if (waitingForResponse) {
+      return;
     }
+    waitingForResponse = true;
+    session.sendRequest("get_status", onStatusReceivedCallback, "filename=" + fileInput.getName() , "c=" + requestsCounter++);
   }
   
   /**
@@ -1107,21 +1093,6 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     uploadFinished();
     statusWidget.setStatus(IUploadStatus.Status.ERROR);
     statusWidget.setError(msg);
-  }
-
-  private String composeURL(String... params) {
-    String ret = getServletPath();
-    ret = ret.replaceAll("[\\?&]+$", "");
-    String sep = ret.contains("?") ? "&" : "?";
-    for (String par : params) { 
-      ret += sep + par;
-      sep = "&";
-    }
-    for (Entry<String, List<String>> e : Window.Location.getParameterMap().entrySet()) {
-      ret += sep + e.getKey() + "=" + e.getValue().get(0);
-    }
-    ret += sep + "random=" + Math.random();
-    return ret;
   }
 
   private native JavaScriptObject getDataImpl(String url, String inputName, String fileName, String baseName, String serverResponse, String serverMessage, String status, int size) /*-{
@@ -1224,49 +1195,16 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     return message.replaceAll("<[^>]+>", "");
   }
 
-  private void sendAjaxRequestToCancelCurrentUpload() throws RequestException {
-    RequestBuilder reqBuilder = new RequestBuilder(RequestBuilder.GET, composeURL(PARAM_CANCEL + "=true"));
-    reqBuilder.sendRequest("cancel_upload", onCancelReceivedCallback);
+  private void sendAjaxRequestToCancelCurrentUpload() {
+    session.sendRequest("cancel_upload", onCancelReceivedCallback, PARAM_CANCEL + "=true");
   }
 
-  private void sendAjaxRequestToDeleteUploadedFile() throws RequestException {
+  private void sendAjaxRequestToDeleteUploadedFile() {
     for (UploadedInfo info: serverInfo.getUploadedFiles()) { 
-      RequestBuilder reqBuilder = new RequestBuilder(RequestBuilder.GET, composeURL(PARAM_REMOVE + "=" + info.getField()));
-      reqBuilder.sendRequest("remove_file", onDeleteFileCallback);
+      session.sendRequest("remove_file", onDeleteFileCallback, PARAM_REMOVE + "=" + info.getField());
     }
   }
   
-  /**
-   * Sends a request to the server in order to get the blobstore path.
-   * When the response with the session comes, it submits the form.
-   */
-  private void sendAjaxRequestToGetBlobstorePath() throws RequestException {
-    RequestBuilder reqBuilder = new RequestBuilder(RequestBuilder.GET, composeURL(PARAM_BLOBSTORE + "=true"));
-    reqBuilder.setTimeoutMillis(DEFAULT_AJAX_TIMEOUT);
-    reqBuilder.sendRequest("blobstore", onBlobstoreReceivedCallback);
-  }
-
-  /**
-   * Sends a request to the server in order to get the session cookie,
-   * when the response with the session comes, it submits the form.
-   * 
-   * This is needed because this client application usually is part of 
-   * static files, and the server doesn't set the session until dynamic pages
-   * are requested.
-   * 
-   * If we submit the form without a session, the server creates a new
-   * one and send a cookie in the response, but the response with the
-   * cookie comes to the client at the end of the request, and in the
-   * meanwhile the client needs to know the session in order to ask
-   * the server for the upload status.
-   */
-  private void sendAjaxRequestToValidateSession() throws RequestException {
-    // Using a reusable builder makes IE fail
-    RequestBuilder reqBuilder = new RequestBuilder(RequestBuilder.GET, composeURL(PARAM_SESSION + "=true"));
-    reqBuilder.setTimeoutMillis(DEFAULT_AJAX_TIMEOUT);
-    reqBuilder.sendRequest("create_session", onSessionReceivedCallback);
-  }
-
   /**
    * Called when the uploader detects that the upload process has finished:
    * - in the case of submit complete.

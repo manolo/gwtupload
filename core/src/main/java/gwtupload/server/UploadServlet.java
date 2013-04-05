@@ -41,6 +41,7 @@ import java.util.ResourceBundle;
 import javax.servlet.Servlet;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -396,6 +397,11 @@ public class UploadServlet extends HttpServlet implements Servlet {
   private boolean checkCORS(HttpServletRequest request, HttpServletResponse response) {
     String origin = request.getHeader("Origin");
     if (origin != null && origin.matches(corsDomainsRegex)) {
+      // Maybe the user has used this domain before and has a session-cookie, we delete it
+      Cookie c  = new Cookie("JSESSIONID", "");
+      c.setMaxAge(0);
+      response.addCookie(c);
+      // All doXX methods should set this header
       response.addHeader("Access-Control-Allow-Origin", origin);
       return true;
     }
@@ -592,8 +598,10 @@ public class UploadServlet extends HttpServlet implements Servlet {
       checkCORS(request, response);
       if (request.getParameter(UConsts.PARAM_SESSION) != null) {
         logger.debug("UPLOAD-SERVLET (" + request.getSession().getId() + ") new session, blobstore=" + (isAppEngine() && useBlobstore));
-        request.getSession();
-        renderXmlResponse(request, response, "<" + TAG_BLOBSTORE + ">" + (isAppEngine() && useBlobstore) + "</" + TAG_BLOBSTORE + ">");
+        String sessionId = request.getSession().getId();
+        renderXmlResponse(request, response, 
+            "<" + TAG_BLOBSTORE + ">" + (isAppEngine() && useBlobstore) + "</" + TAG_BLOBSTORE + ">" +
+            "<" + TAG_SESSION_ID + ">" + sessionId + "</" + TAG_SESSION_ID + ">");
       } else if (isAppEngine() && (request.getParameter(UConsts.PARAM_BLOBSTORE) != null || request.getParameterMap().size() == 0)) {
         String blobStorePath = getBlobstorePath(request);
         logger.debug("UPLOAD-SERVLET (" + request.getSession().getId() + ") getBlobstorePath=" + blobStorePath);

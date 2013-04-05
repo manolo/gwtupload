@@ -23,6 +23,7 @@ public class UConsts {
   public static final String TAG_VALUE = "value";
   public static final String TAG_PARAM = "parameter";
   public static final String TAG_PARAMS = "parameters";
+  public static final String TAG_SESSION_ID = "sessionid";
   
   public static final String TAG_MSG_START = "%%%INI%%%";
   public static final String TAG_MSG_END = "%%%END%%%";
