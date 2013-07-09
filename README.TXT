@@ -1,4 +1,3 @@
-
 GWTUpload & JSUpload
 
 GWTUpload is a library for uploading files to web servers, showing a progress bar with real information about the process (file size, bytes transferred, etc). It uses ajax requests to ask the web server for the upload progress. It has two components written in java, the server side with servlet and utility classes, and the client side that is compiled into javascript using gwt.
@@ -11,7 +10,7 @@ GWTUpload-GAE is a library including a special servlet to handle uploads in Goog
 BUILDING:
 
 - Checkout the code from either github or googlecode:
-  git clone git@github.com:manolo/gwtupload.git
+  git clone https://github.com/manolo/gwtupload.git
   git clone https://code.google.com/p/gwtupload/
 
 - Assuming you have already installed maven in your system just run:
