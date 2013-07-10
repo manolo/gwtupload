@@ -7,6 +7,10 @@
   <source path="client"/>
   <source path="shared"/>
 
+  <replace-with class="gwtupload.client.DecoratedFileUpload.DecoratedFileUploadImplNoClick">
+    <when-type-is class="gwtupload.client.DecoratedFileUpload.DecoratedFileUploadImpl"/>
+  </replace-with>
+
   <replace-with class="gwtupload.client.DecoratedFileUpload.DecoratedFileUploadImplIE">
     <when-type-is class="gwtupload.client.DecoratedFileUpload.DecoratedFileUploadImpl"/>
     <any>
@@ -20,17 +24,12 @@
     <any>
       <when-property-is name="user.agent" value="ie9" />
       <when-property-is name="user.agent" value="safari"/>
-    </any>
-  </replace-with>
-
-  <replace-with class="gwtupload.client.DecoratedFileUpload.DecoratedFileUploadImplNoClick">
-    <when-type-is class="gwtupload.client.DecoratedFileUpload.DecoratedFileUploadImpl"/>
-    <any>
       <when-property-is name="user.agent" value="gecko"/>
       <when-property-is name="user.agent" value="gecko1_8" />
       <when-property-is name="user.agent" value="opera"/>
     </any>
   </replace-with>
+
   
   <!-- 
       FileUploadImplOpera has a hack to avoid firing onChange each time
