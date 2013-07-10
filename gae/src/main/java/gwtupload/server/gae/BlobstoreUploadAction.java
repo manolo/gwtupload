@@ -240,7 +240,7 @@ public class BlobstoreUploadAction extends UploadAction {
   }
 
   @Override
-  protected final FileItemFactory getFileItemFactory(int requestSize) {
+  protected final FileItemFactory getFileItemFactory(long requestSize) {
     return new BlobstoreFileItemFactory();
   }
 }

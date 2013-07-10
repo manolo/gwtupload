@@ -99,7 +99,7 @@ public class FilesApiUploadAction extends UploadAction {
   }
 
   @Override
-  protected FileItemFactory getFileItemFactory(int requestSize) {
+  protected FileItemFactory getFileItemFactory(long requestSize) {
     return new FilesApiFileItemFactory();
   }
 

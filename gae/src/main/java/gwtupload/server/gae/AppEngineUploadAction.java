@@ -92,7 +92,7 @@ public class AppEngineUploadAction extends UploadAction {
   }
 
   @Override
-  protected final FileItemFactory getFileItemFactory(int requestSize) {
+  protected final FileItemFactory getFileItemFactory(long requestSize) {
     return new MemCacheFileItemFactory();
   }
 
