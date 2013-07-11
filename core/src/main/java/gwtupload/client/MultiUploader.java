@@ -279,10 +279,10 @@ public class MultiUploader extends Composite implements IUploader {
   }
 
   /* (non-Javadoc)
-   * @see gwtupload.client.IUploader#fileUrls()
+   * @see gwtupload.client.IUploader#fileUrl()
    */
-  public List<String> fileUrls() {
-    return lastUploader.fileUrls();
+  public String fileUrl() {
+    return lastUploader.fileUrl();
   }
 
   /* (non-Javadoc)
@@ -329,23 +329,19 @@ public class MultiUploader extends Composite implements IUploader {
     return ret;
   }
 
-  /* (non-Javadoc)
-   * @see gwtupload.client.IUploader#getServerResponse()
-   */
+  @Deprecated
   public String getServerResponse() {
+    return getServerRawResponse();
+  }
+  
+  public String getServerRawResponse() {
     return lastUploader.getServerResponse();
   }
 
-  /* (non-Javadoc)
-   * @see gwtupload.client.IUploader#getServerInfo()
-   */
-  public ServerInfo getServerInfo() {
+  public UploadedInfo getServerInfo() {
     return lastUploader.getServerInfo();
   }
 
-  /* (non-Javadoc)
-   * @see gwtupload.client.IUploader#getServletPath()
-   */
   public String getServletPath() {
     return currentUploader.getServletPath();
   }
@@ -381,7 +377,7 @@ public class MultiUploader extends Composite implements IUploader {
    */
   public Status getStatus(String name) { 
     for (IUploader u : uploaders) {
-      if (u.getInputName().equals(name) || u.getServerInfo().getUploadedFileNames().contains(name)) {
+      if (u.getInputName().equals(name) || u.getServerMessage().getUploadedFileNames().contains(name)) {
         return u.getStatus();
       }
     }
@@ -535,13 +531,6 @@ public class MultiUploader extends Composite implements IUploader {
     currentUploader.submit();
   }
   
-  /* (non-Javadoc)
-  * @see gwtupload.client.IUploader#setUploaded()
-  */
-  public void setUploaded(ServerInfo info) {
-	currentUploader.setUploaded(info);
-  }
-
   protected IUploader getUploaderInstance() {
     return new Uploader(fileInputType, autoSubmit);
   }
@@ -640,6 +629,14 @@ public class MultiUploader extends Composite implements IUploader {
 
   public void setMultipleSelection(boolean b) {
     getFileInput().enableMultiple(b);
+  }
+
+  public void setServerMessage(ServerMessage msg) {
+    currentUploader.setServerMessage(msg);
+  }
+
+  public ServerMessage getServerMessage() {
+    return currentUploader.getServerMessage();
   }
 
 }

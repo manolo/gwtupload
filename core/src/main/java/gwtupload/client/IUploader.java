@@ -19,6 +19,7 @@ package gwtupload.client;
 import gwtupload.client.IUploadStatus.Status;
 import gwtupload.client.IUploadStatus.UploadStatusConstants;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gwt.event.shared.EventHandler;
@@ -36,6 +37,146 @@ import com.google.gwt.user.client.ui.Widget;
  *
  */
 public interface IUploader extends HasJsData, HasWidgets, IsWidget {
+  
+  public static class ServerMessage {
+    /**
+     * Special message sent back by the server.
+     */
+    String message;
+
+    List<UploadedInfo> uploadedInfos = new ArrayList<UploadedInfo>();
+    
+    public List<String> getUploadedFileNames() {
+      List<String> result = new ArrayList<String>();
+      for (UploadedInfo info: uploadedInfos) {
+        result.add(info.getFileName());
+      }
+      return result;
+    }
+    
+    public List<String> getUploadedFieldNames() {
+      List<String> result = new ArrayList<String>();
+      for (UploadedInfo info: uploadedInfos) {
+        result.add(info.getField());
+      }
+      return result;
+    }
+    
+    /**
+     * Returns the links to get the uploaded files from the server
+     * It's useful to display uploaded images or generate links to uploaded files.
+     */
+    public List<String> getUploadedFileUrls() {
+      List<String> result = new ArrayList<String>();
+      for (UploadedInfo info: uploadedInfos) { 
+        result.add(info.getFileUrl());
+      }
+      return result;
+    }
+    
+    public List<UploadedInfo> getUploadedInfos() {
+      return uploadedInfos;
+    }
+    
+    public String getMessage() {
+      return message;
+    }
+
+    public void setMessage(String msg) {
+      message = msg;
+    }
+  }
+  
+  public static class UploadedInfo {
+    /**
+     * Field name sent to the server
+     */
+    public String field;
+
+    /**
+     * File name sent by the client
+     */
+    public String name;
+
+    /**
+     * Content-type sent by the client
+     */
+    public String ctype;
+
+    /**
+     * Size in bytes calculated in the server
+     */
+    public int size = 0;
+
+    /**
+     * Used when the server sends a special key to identify the file.
+     * Blobstore uses it.
+     */
+    public String key;
+
+    /**
+     * Url to download the file from the server using gwtupload servlet.
+     */
+    public String fileUrl;
+
+    /**
+     * @deprecated use uploader.getServerMessage().getMessage()
+     */
+    @Deprecated
+    public String message;
+
+    /**
+     * Returns the name of the file selected by the user reported by the browser
+     * or an empty string when the user has not selected any one.
+     */
+    public String getFileName() {
+      return name;
+    }
+
+    public String getCtype() {
+      return ctype;
+    }
+
+    public int getSize() {
+      return size;
+    }
+
+    public String getKey() {
+      return key;
+    }
+    
+    public void setKey(String key) {
+      this.key = key;
+    }
+
+    public void setName(String name) {
+      this.name = name;
+    }
+
+    public void setCtype(String ctype) {
+      this.ctype = ctype;
+    }
+
+    public void setSize(int size) {
+      this.size = size;
+    }
+
+    public String getField() {
+      return field;
+    }
+
+    public void setField(String field) {
+      this.field = field;
+    }
+
+    public String getFileUrl() {
+      return fileUrl;
+    }
+
+    public void setFileUrl(String fileUrl) {
+      this.fileUrl = fileUrl;
+    }
+  }
 
   /**
    * Interface for onCancelUpload events.
@@ -187,15 +328,16 @@ public interface IUploader extends HasJsData, HasWidgets, IsWidget {
   void cancel();
 
   /**
-   * Returns the link references to the uploaded files in the web server.
+   * Returns the link references to the first uploaded file in the web server.
    * It is useful to show uploaded images or to create links to uploaded documents.
    * 
    * In multi-uploader panels, this method has to return the links to the most recently
-   * uploaded files
+   * uploaded file
    * 
-   * @return List<String>   
+   * @deprecated use fileUrls instead
    */
-  List<String> fileUrls();
+  @Deprecated
+  String fileUrl();
 
   /**
    * Return the FileInput used.
@@ -210,6 +352,12 @@ public interface IUploader extends HasJsData, HasWidgets, IsWidget {
   String getInputName();
 
   /**
+   * @deprecated use getServerRawResponse instead
+   */
+  @Deprecated
+  String getServerResponse();
+  
+  /**
    * Returns the last response returned by the server when the upload
    * process has finished.
    * 
@@ -222,13 +370,18 @@ public interface IUploader extends HasJsData, HasWidgets, IsWidget {
    * upload process has not finished.
    * 
    */
-  String getServerResponse();
+  String getServerRawResponse();
   
   /**
-   * Returns the file info provided by the server or null
+   * Returns the last uploaded file info provided by the server or null
    * if the server did not return a valid xml message.
+   * 
+   * Notice that in the case of multile enabled uploaders, it returns the first
+   * uploaded info, so in this case you must use uploader.getServerMessage.getUploadedInfos()
+   * to get the list of uploaded infos.
+   * 
    */
-  ServerInfo getServerInfo();
+  UploadedInfo getServerInfo();
 
   /**
    * Return the status of the upload process.
@@ -330,7 +483,7 @@ public interface IUploader extends HasJsData, HasWidgets, IsWidget {
    * Sets the uploader in uploaded state with given file info
    * @param info
    */
-  void setUploaded(ServerInfo info);
+  void setServerMessage(ServerMessage msg);
   
   /**
    * Enable multiple selection of files when available (most
@@ -339,9 +492,15 @@ public interface IUploader extends HasJsData, HasWidgets, IsWidget {
   void setMultipleSelection(boolean b);
   
   /**
+   * Returns an object list with the uploaded files info provided by the server.
+   */
+  ServerMessage getServerMessage();
+  
+  /**
    * Return the widget instance.
    * @deprecated use asWidget instead
    */
   @Deprecated
   Widget getWidget();
+
 }

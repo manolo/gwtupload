@@ -45,8 +45,8 @@ public class MultipleUploadSample implements EntryPoint {
   private IUploader.OnFinishUploaderHandler onFinishUploaderHandler = new IUploader.OnFinishUploaderHandler() {
     public void onFinish(IUploader uploader) {
       if (uploader.getStatus() == Status.SUCCESS) {
-        for (int i = 0; i < uploader.fileUrls().size(); i++) {
-          new PreloadedImage(uploader.fileUrls().get(i), showImage);
+        for (String url : uploader.getServerMessage().getUploadedFileUrls()) {
+          new PreloadedImage(url, showImage);
         }
       }
     }

@@ -44,6 +44,7 @@ import gwtupload.client.PreloadedImage;
 import gwtupload.client.SingleUploader;
 import gwtupload.client.IFileInput.FileInputType;
 import gwtupload.client.IUploadStatus.Status;
+import gwtupload.client.IUploader.UploadedInfo;
 import gwtupload.client.PreloadedImage.OnLoadPreloadedImageHandler;
 import jsupload.client.ChismesUploadProgress;
 
@@ -101,9 +102,9 @@ public class ChismesUploadSample implements EntryPoint {
     public void onFinish(IUploader uploader) {
       if (uploader.getStatus() == Status.SUCCESS) {
         if (uploader.getStatus() == Status.SUCCESS) {
-          for (int i = 0; i < uploader.fileUrls().size(); i++) {
-            new PreloadedImage(uploader.fileUrls().get(i), uploader.getInputName(),  
-                uploader.getServerInfo().getUploadedFiles().get(i).getFileName(), addToThumbPanelHandler);
+          for (UploadedInfo info : uploader.getServerMessage().getUploadedInfos()) {
+            new PreloadedImage(info.getFileUrl(), info.getField(),  
+                info.getFileName(), addToThumbPanelHandler);
           }
         }        
       }
@@ -112,10 +113,12 @@ public class ChismesUploadSample implements EntryPoint {
 
   private IUploader.OnCancelUploaderHandler onStatusChangedHandler = new IUploader.OnCancelUploaderHandler() {
     public void onCancel(IUploader uploader) {
-      Widget w = loadedImages.get(uploader.getInputName());
-      if (w != null) {
-        w.removeFromParent();
-        loadedImages.remove(uploader.getInputName());
+      for (String iname : uploader.getServerMessage().getUploadedFieldNames()) {
+        Widget w = loadedImages.get(iname);
+        if (w != null) {
+          w.removeFromParent();
+          loadedImages.remove(uploader.getInputName());
+        }
       }
     }
   };

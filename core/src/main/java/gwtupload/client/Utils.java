@@ -1,6 +1,7 @@
 package gwtupload.client;
 
 import java.util.Collection;
+
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Node;
 import com.google.gwt.xml.client.NodeList;
@@ -21,22 +22,27 @@ public final class Utils {
   }
 
   /**
-   * return the text content of a tag in a xml document.
+   * return the text content of a first tag in a xml document
    */
   public static String getXmlNodeValue(Document doc, String tag) {
+    return getXmlNodeValue(doc, tag, 0);
+  }
+  
+  /**
+   * return the text content of a tag in the position idx inside a xml document
+   */
+  public static String getXmlNodeValue(Document doc, String tag, int idx) {
     if (doc == null) {
       return null;
     }
-
-    NodeList list = doc.getElementsByTagName(tag);
-    if (list.getLength() == 0) {
-      return null;
-    }
-    return getXmlNodeValue(list, tag);
+    return getXmlNodeValue(doc.getElementsByTagName(tag), tag, idx);
   }
 
-  public static String getXmlNodeValue(NodeList list, String tagName) {
-    Node node = list.item(0);
+  public static String getXmlNodeValue(NodeList list, String tagName, int idx) {
+    if (list == null || list.getLength() <= idx) {
+      return null;
+    }
+    Node node = list.item(idx);
     if (node.getNodeType() != Node.ELEMENT_NODE) {
       return null;
     }

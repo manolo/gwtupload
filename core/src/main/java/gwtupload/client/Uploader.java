@@ -41,19 +41,11 @@ import com.google.gwt.http.client.RequestTimeoutException;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.FormPanel;
+import com.google.gwt.user.client.ui.*;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
 import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
 import com.google.gwt.user.client.ui.FormPanel.SubmitHandler;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.Hidden;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Panel;
-import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.NodeList;
 import com.google.gwt.xml.client.XMLParser;
@@ -369,24 +361,39 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
       }
       log("onSubmitComplete: " + serverResponse, null);
       try {
-        // Parse the xml and extract serverInfo
+        // Parse the xml and extract UploadedInfos
         Document doc = XMLParser.parse(serverResponse);
-        serverInfo.setMessage(Utils.getXmlNodeValue(doc, TAG_MESSAGE));
-        serverInfo.setField(Utils.getXmlNodeValue(doc, TAG_FIELD));
 
+        String msg = Utils.getXmlNodeValue(doc, TAG_MESSAGE);
+        serverMessage.setMessage(msg);
+        String fld = Utils.getXmlNodeValue(doc, TAG_FIELD);
+        
         NodeList list = doc.getElementsByTagName(TAG_FILE);
-
-        for (int i = 0; i < list.getLength(); i++) {
-        	UploadedInfo info = new UploadedInfo();
-        	info.setField(getInputName() + "-" + i);
-        	info.setName(doc.getElementsByTagName(TAG_NAME).item(i).getFirstChild().getNodeValue());
-        	info.setCtype(doc.getElementsByTagName(TAG_CTYPE).item(i).getFirstChild().getNodeValue());
-        	String size = doc.getElementsByTagName(TAG_SIZE).item(i).getFirstChild().getNodeValue();
-        	if (size != null) {
-        		info.setSize(Integer.parseInt(size));
-        	}
-        	serverInfo.add(info);
+        for (int i = 0, l = list.getLength(); i < l; i++) {
+          UploadedInfo info = new UploadedInfo();
+          info.setField(getInputName() + "-" + i);
+          info.setName(Utils.getXmlNodeValue(doc, TAG_NAME, i));
+          info.setCtype(Utils.getXmlNodeValue(doc, TAG_CTYPE, i));
+          
+          // TODO: test
+          info.setKey (Utils.getXmlNodeValue(doc, TAG_KEY, i));
+          
+          // TODO: remove
+          info.message = msg;
+          
+          String url = session.composeURL(PARAM_SHOW + "=" + info.getField());
+          if (info.getKey() != null) {
+            url += "&" + PARAM_BLOBKEY + "=" + info.getKey();
+          }
+          info.setFileUrl(url);
+          
+          String size = Utils.getXmlNodeValue(doc, TAG_SIZE, i);
+          if (size != null) {
+            info.setSize(Integer.parseInt(size));
+          }
+          serverMessage.getUploadedInfos().add(info);
         }
+
         // If the server response is a valid xml
         parseAjaxResponse(serverResponse);
       } catch (Exception e) {
@@ -453,7 +460,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
       uploading = true;
       finished = false;
       serverResponse = null;
-      serverInfo = new ServerInfo();
+      serverMessage = new ServerMessage();
 
       statusWidget.setVisible(true);
       updateStatusTimer.squeduleStart();
@@ -467,7 +474,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
   private int requestsCounter = 0;
 
   private String serverResponse = null;
-  private ServerInfo serverInfo = new ServerInfo();
+  private ServerMessage serverMessage = new ServerMessage();
   
   private String servletPath = "servlet.gupld";
   private ISession session = null;
@@ -728,23 +735,11 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
   }
 
   /**
-   * Returns the links for getting the uploaded files from the server
+   * Returns the link for get the last uploaded files from the server
    * It's useful to display uploaded images or generate links to uploaded files.
    */
-  public List<String> fileUrls() {
-	  List<String> list = new ArrayList<String>();
-	  for (UploadedInfo info: serverInfo.getUploadedFiles()) { 
-	    list.add(fileUrl(info));
- 	  }
-    return list;
-  }
-  
-  private String fileUrl(UploadedInfo info) {
-    String ret = session.composeURL(PARAM_SHOW + "=" + info.getField());
-    if (info.getKey() != null) {
-      ret += "&" + PARAM_BLOBKEY + "=" + info.getKey();
-    }
-    return ret;
+  public String fileUrl() {
+    return serverMessage.getUploadedInfos().get(0).getFileUrl();
   }
 
   /**
@@ -753,13 +748,13 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
    */
   public JavaScriptObject getData() {
     JsArray<JavaScriptObject> ret = JavaScriptObject.createArray().cast();
-	  for (UploadedInfo info: serverInfo.getUploadedFiles()) {
+	  for (UploadedInfo info: serverMessage.getUploadedInfos()) {
 		  ret.push(getDataImpl(
-		      fileUrl(info), info.getField(), 
+		      info.getFileUrl(), info.getField(), 
 		      info.getFileName(), 
 				  Utils.basename(info.getFileName()), 
 				  getServerResponse(), 
-				  getServerInfo().getMessage(), 
+				  serverMessage.getMessage(), 
 				  getStatus().toString(), 
 				  info.getSize()));
 	  }
@@ -792,25 +787,21 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     return i18nStrs;
   }
 
-  /* (non-Javadoc)
-   * @see gwtupload.client.IUploader#getInputName()
-   */
   public String getInputName() {
     return fileInput.getName().replace(MULTI_SUFFIX,"");
   }
 
-  /* (non-Javadoc)
-   * @see gwtupload.client.IUploader#getServerResponse()
-   */
+  @Deprecated
   public String getServerResponse() {
+    return getServerRawResponse();
+  }
+  
+  public String getServerRawResponse() {
     return serverResponse;
   }
   
-  /* (non-Javadoc)
-   * @see gwtupload.client.IUploader#getServerInfo()
-   */
-  public ServerInfo getServerInfo() {
-    return serverInfo;
+  public UploadedInfo getServerInfo() {
+    return serverMessage.getUploadedInfos().size() > 0 ? serverMessage.getUploadedInfos().get(0) : null;
   }
 
   /**
@@ -1001,17 +992,6 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
   }
 
   /* (non-Javadoc)
-   * @see gwtupload.client.IUploader#setUploaded()
-   */
-  public void setUploaded(ServerInfo serverInfo) {
-    this.serverInfo = serverInfo;
-    successful = true;
-    statusWidget.setFileNames(serverInfo.getUploadedFileNames());
-    fileInput.setName(serverInfo.getField());
-    uploadFinished();
-  }
-
-  /* (non-Javadoc)
    * @see gwtupload.client.IUpdateable#update()
    */
   public void update() {
@@ -1145,7 +1125,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
       uploadFinished();
       return;
     } else if (Utils.getXmlNodeValue(doc, TAG_FINISHED) != null) {
-      log("server response is: finished " + serverInfo.getUploadedFileNames(), null);
+      log("server response is: finished " + serverMessage.getUploadedFileNames(), null);
       successful = true;
       if (onSubmitComplete) {
         log("POST response from server has been received", null);
@@ -1200,8 +1180,8 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
   }
 
   private void sendAjaxRequestToDeleteUploadedFile() {
-    for (UploadedInfo info: serverInfo.getUploadedFiles()) { 
-      session.sendRequest("remove_file", onDeleteFileCallback, PARAM_REMOVE + "=" + info.getField());
+    for (String field: serverMessage.getUploadedFieldNames()) { 
+      session.sendRequest("remove_file", onDeleteFileCallback, PARAM_REMOVE + "=" + field);
     }
   }
   
@@ -1275,5 +1255,17 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
   public void setMultipleSelection(boolean b) {
     multiple = b;
     fileInput.enableMultiple(b);
+  }
+
+  
+  public void setServerMessage(ServerMessage msg) {
+    serverMessage = msg;
+    successful = true;
+    statusWidget.setFileNames(msg.getUploadedFileNames());
+    uploadFinished();
+  }
+
+  public ServerMessage getServerMessage() {
+    return serverMessage;
   }
 }
