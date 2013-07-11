@@ -32,6 +32,7 @@ import java.util.logging.Logger;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
+import com.google.gwt.core.client.JsArrayMixed;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -747,18 +748,15 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
    * It's useful in the exported version of the library. 
    */
   public JavaScriptObject getData() {
-    JsArray<JavaScriptObject> ret = JavaScriptObject.createArray().cast();
-	  for (UploadedInfo info: serverMessage.getUploadedInfos()) {
-		  ret.push(getDataImpl(
-		      info.getFileUrl(), info.getField(), 
-		      info.getFileName(), 
-				  Utils.basename(info.getFileName()), 
-				  getServerResponse(), 
-				  serverMessage.getMessage(), 
-				  getStatus().toString(), 
-				  info.getSize()));
-	  }
-	  return ret;
+    if (multiple) {
+      JsArray<JavaScriptObject> ret = JavaScriptObject.createArray().cast();
+      for (UploadedInfo info: serverMessage.getUploadedInfos()) {
+        ret.push(getDataInfo(info));
+      }
+      return ret;
+    } else {
+      return getDataInfo(getServerInfo());
+    }
   }
 
   public IFileInput getFileInput() {
@@ -1074,7 +1072,12 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     statusWidget.setStatus(IUploadStatus.Status.ERROR);
     statusWidget.setError(msg);
   }
-
+  
+  private JavaScriptObject getDataInfo(UploadedInfo info) {
+    return info == null ? JavaScriptObject.createObject() : 
+       getDataImpl(info.fileUrl, info.field, info.name, Utils.basename(info.name), serverResponse, info.message, getStatus().toString(), info.size);
+  }
+  
   private native JavaScriptObject getDataImpl(String url, String inputName, String fileName, String baseName, String serverResponse, String serverMessage, String status, int size) /*-{
     return {
        url: url,

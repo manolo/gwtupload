@@ -16,8 +16,6 @@
  */
 package jsupload.client;
 
-import java.util.List;
-
 import gwtupload.client.IFileInput.FileInputType;
 import gwtupload.client.IUploader;
 import gwtupload.client.MultiUploader;
@@ -170,14 +168,16 @@ public class Upload implements Exportable {
   }
 
   /**
-   * Returns a javascript array of as many elements as images uploaded by this 
-   * uploader instance, each element has the next structure:
-   *    upload.data().url      // The url to get the uploaded file from the server
+   * Depending on the multiple feature configuration, it returns a javascript 
+   * array of as many elements as images uploaded or one element.
+   *  
+   * The element with the uploaded info has this structure:
+   *    upload.data().url      // The url to download the uploaded file from the server
    *    upload.data().name     // The name of the input form element
    *    upload.data().filename // The name of the file selected by the user as is reported by the browser
    *    upload.data().basename // The name of the file selected by the user without path
-   *    upload.data().response // All the server xml response
-   *    upload.data().message  // Just the server text in the message tag
+   *    upload.data().response // The raw server xml response
+   *    upload.data().message  // The server text in the message tag
    *    upload.data().size     // The size of the file 
    *    upload.data().status   // The upload status (UNINITIALIZED, QUEUED, INPROGRESS, SUCCESS, ERROR, CANCELING, CANCELED, SUBMITING)
    */
@@ -185,13 +185,6 @@ public class Upload implements Exportable {
     return uploader.getData();
   }
 
-  /**
-   * returns the urls of the last uploaded files.
-   */
-  public List<String> fileUrls() {
-    return uploader.fileUrls();
-  }
-  
   /**
    * submit the upload form to the server.
    */
