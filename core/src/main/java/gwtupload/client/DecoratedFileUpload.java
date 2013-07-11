@@ -36,12 +36,13 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FileUpload;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HasName;
 import com.google.gwt.user.client.ui.HasText;
+import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -126,24 +127,161 @@ public class DecoratedFileUpload extends Composite implements HasText, HasName, 
    */
   private abstract static class DecoratedFileUploadImpl {
 
-    private static final int DEFAULT_HEIGHT = 15;
-    private static final int DEFAULT_WIDTH = 100;
     protected Widget button;
-    protected AbsolutePanel container;
+    protected Panel container;
     protected FileUploadWithMouseEvents input;
 
-    public void init(AbsolutePanel container, FileUploadWithMouseEvents input) {
+    public void init(Panel container, FileUploadWithMouseEvents input) {
       this.container = container;
       this.input = input;
-      DOM.setStyleAttribute(container.getElement(), "cssFloat", "left");
+      DOM.setStyleAttribute(container.getElement(), "display", "inline-block");
+      DOM.setStyleAttribute(container.getElement(), "float", "left");
     }
 
-    public void setSize(String width, String height) {
-       button.setSize(width, height);
-       container.setSize(width, height);
+    public void setButton(Widget widget) {
+      this.button = widget;
+      if (button instanceof HasMouseOverHandlers) {
+        ((HasMouseOverHandlers) button).addMouseOverHandler(new MouseOverHandler() {
+          public void onMouseOver(MouseOverEvent event) {
+            button.addStyleDependentName(STYLE_BUTTON_OVER_SUFFIX);
+            container.addStyleDependentName(STYLE_BUTTON_OVER_SUFFIX);
+          }
+        });
+      }
+      if (button instanceof HasMouseOutHandlers) {
+        ((HasMouseOutHandlers) button).addMouseOutHandler(new MouseOutHandler() {
+          public void onMouseOut(MouseOutEvent event) {
+            button.removeStyleDependentName(STYLE_BUTTON_OVER_SUFFIX);
+            container.removeStyleDependentName(STYLE_BUTTON_OVER_SUFFIX);
+          }
+        });
+      }
     }
+
+    public void onAttach() {
+    }
+
+    public void resize() {
+    }
+  }
+
+  /**
+   * Implementation for browsers which support the click() method:
+   * IE, Chrome, Safari
+   * 
+   * The hack here is to put the customized button
+   * and the file fileUplad statically positioned in an absolute panel. 
+   * This panel has the size of the button, and the fileUplad is not shown 
+   * because it is placed out of the width and height panel limits.
+   * 
+   */
+  private static class DecoratedFileUploadImplClick extends DecoratedFileUploadImpl {
+
+    private static HashMap<Widget, HandlerRegistration> clickHandlerCache = new HashMap<Widget, HandlerRegistration>();
+
+    private static native void clickOnInputFile(Element elem) /*-{
+      elem.click();
+    }-*/;
+
+    public void init(Panel container, FileUploadWithMouseEvents input) {
+      super.init(container, input);
+      container.add(input);
+      DOM.setStyleAttribute(input.getElement(), "position", "fixed");
+      DOM.setStyleAttribute(input.getElement(), "display", "inline");
+      DOM.setStyleAttribute(input.getElement(), "top", "-1000px");
+      DOM.setStyleAttribute(input.getElement(), "left", "-1000px");
+    }
+
+    public void setButton(Widget widget) {
+      super.setButton(widget);
+      HandlerRegistration clickRegistration = clickHandlerCache.get(widget);
+      if (clickRegistration != null) {
+        clickRegistration.removeHandler();
+      }
+      if (button != null) {
+        if (button instanceof HasClickHandlers) {
+          clickRegistration = ((HasClickHandlers) button).addClickHandler(new ClickHandler() {
+            public void onClick(ClickEvent event) {
+              clickOnInputFile(input.getElement());
+            }
+          });
+          clickHandlerCache.put(widget, clickRegistration);
+        }
+      }
+    }
+  }
+
+  /**
+   * Implementation for IE6-8
+   */
+  @SuppressWarnings("unused")
+  private static class DecoratedFileUploadImplIE extends DecoratedFileUploadImplClick {
+    public void init(Panel container, FileUploadWithMouseEvents input) {
+      super.init(container, input);
+      DOM.setStyleAttribute(input.getElement(), "position", "absolute");
+    }
+  }
+
+  /**
+   * Implementation for browsers which do not support the click() method:
+   * FF, Opera
+   * 
+   * The hack here is to place the customized button and the file fileUplad positioned
+   * statically in an absolute panel which has size of the button. 
+   * The file fileUplad is wrapped into a transparent panel, which also has the button
+   * size and is placed covering the customizable button.
+   * 
+   * When the user puts his mouse over the button and clicks on it, what really 
+   * happens is that the user clicks on the transparent file fileUplad showing
+   * the choose file dialog.
+   * 
+   */  
+  @SuppressWarnings("unused")
+  private static class DecoratedFileUploadImplNoClick extends DecoratedFileUploadImpl {
     
-    protected int width = 0, height = 0;
+    private static final int DEFAULT_HEIGHT = 15;
+    private static final int DEFAULT_WIDTH = 100;
+
+    private SimplePanel wrapper;
+
+    public void init(Panel container, FileUploadWithMouseEvents input) {
+      super.init(container, input);
+      wrapper = new SimplePanel();
+      wrapper.add(input);
+      container.add(wrapper);
+      wrapper.setStyleName("wrapper");
+      
+      // Not using the GWT 2.0.x way to set Style attributes in order to be
+      // compatible with old GWT releases
+      DOM.setStyleAttribute(container.getElement(), "position", "relative");
+      DOM.setStyleAttribute(container.getElement(), "overflow", "hidden");
+
+      DOM.setStyleAttribute(wrapper.getElement(), "position", "absolute");
+      DOM.setStyleAttribute(wrapper.getElement(), "textAlign", "left");
+      DOM.setStyleAttribute(wrapper.getElement(), "zIndex", "1");
+      DOM.setStyleAttribute(input.getElement(), "marginLeft", "-1500px");
+      DOM.setStyleAttribute(input.getElement(), "fontSize", "350px");
+      DOM.setStyleAttribute(input.getElement(), "borderWidth", "0px");
+      DOM.setStyleAttribute(input.getElement(), "opacity", "0");
+      DOM.setElementAttribute(input.getElement(), "size", "1");
+      DOM.setElementAttribute(input.getElement(), "cursor", "pointer");
+      
+      // Trigger over and out handlers which already exist in the covered button.
+      input.addMouseOverHandler(new MouseOverHandler() {
+        public void onMouseOver(MouseOverEvent event) {
+          if (button != null) {
+            button.fireEvent(event);
+          }
+        }
+      });
+      input.addMouseOutHandler(new MouseOutHandler() {
+        public void onMouseOut(MouseOutEvent event) {
+          if (button != null) {
+            button.fireEvent(event);
+          }
+        }
+      });
+    }
     
     public void onAttach() {
       if (width != 0 && height != 0) {
@@ -151,11 +289,16 @@ public class DecoratedFileUpload extends Composite implements HasText, HasName, 
       } else {
         resize();
       }
+      wrapper.setSize(width + "px", height + "px");
     }
+    
+    protected int width = 0, height = 0;
     
     // TODO: computed size
     public void resize() {
       if (button != null) {
+        DOM.setStyleAttribute(button.getElement(), "position", "absolute");
+
         int w = button.getElement().getOffsetWidth();
         int h = button.getElement().getOffsetHeight();
         if (w <= 0) {
@@ -190,153 +333,13 @@ public class DecoratedFileUpload extends Composite implements HasText, HasName, 
         }
         container.setSize(w + "px", h + "px");
       }
-    }
 
-    public void setButton(Widget widget) {
-      this.button = widget;
-      if (button instanceof HasMouseOverHandlers) {
-        ((HasMouseOverHandlers) button).addMouseOverHandler(new MouseOverHandler() {
-          public void onMouseOver(MouseOverEvent event) {
-            button.addStyleDependentName(STYLE_BUTTON_OVER_SUFFIX);
-            container.addStyleDependentName(STYLE_BUTTON_OVER_SUFFIX);
-          }
-        });
-      }
-      if (button instanceof HasMouseOutHandlers) {
-        ((HasMouseOutHandlers) button).addMouseOutHandler(new MouseOutHandler() {
-          public void onMouseOut(MouseOutEvent event) {
-            button.removeStyleDependentName(STYLE_BUTTON_OVER_SUFFIX);
-            container.removeStyleDependentName(STYLE_BUTTON_OVER_SUFFIX);
-          }
-        });
-      }
-    }
-
-  }
-
-  /**
-   * Implementation for browsers which support the click() method:
-   * IE, Chrome, Safari
-   * 
-   * The hack here is to put the customized button
-   * and the file fileUplad statically positioned in an absolute panel. 
-   * This panel has the size of the button, and the fileUplad is not shown 
-   * because it is placed out of the width and height panel limits.
-   * 
-   */
-  private static class DecoratedFileUploadImplClick extends DecoratedFileUploadImpl {
-
-    private static HashMap<Widget, HandlerRegistration> clickHandlerCache = new HashMap<Widget, HandlerRegistration>();
-
-    private static native void clickOnInputFile(Element elem) /*-{
-      elem.click();
-    }-*/;
-
-    public void init(AbsolutePanel container, FileUploadWithMouseEvents input) {
-      super.init(container, input);
-      container.add(input, 500, 500);
-      DOM.setStyleAttribute(input.getElement(), "position", "fixed");
-      DOM.setStyleAttribute(input.getElement(), "display", "inline");
-      DOM.setStyleAttribute(input.getElement(), "top", "-1000px");
-      DOM.setStyleAttribute(input.getElement(), "left", "-1000px");
-    }
-
-    public void setButton(Widget widget) {
-      super.setButton(widget);
-      HandlerRegistration clickRegistration = clickHandlerCache.get(widget);
-      if (clickRegistration != null) {
-        clickRegistration.removeHandler();
-      }
-      if (button != null) {
-        if (button instanceof HasClickHandlers) {
-          clickRegistration = ((HasClickHandlers) button).addClickHandler(new ClickHandler() {
-            public void onClick(ClickEvent event) {
-              clickOnInputFile(input.getElement());
-            }
-          });
-          clickHandlerCache.put(widget, clickRegistration);
-        }
-      }
-    }
-  }
-
-  /**
-   * Implementation for IE6-8
-   */
-  @SuppressWarnings("unused")
-  private static class DecoratedFileUploadImplIE extends DecoratedFileUploadImplClick {
-    public void init(AbsolutePanel container, FileUploadWithMouseEvents input) {
-      super.init(container, input);
-      DOM.setStyleAttribute(input.getElement(), "position", "absolute");
-    }
-  }
-
-  /**
-   * Implementation for browsers which do not support the click() method:
-   * FF, Opera
-   * 
-   * The hack here is to place the customized button and the file fileUplad positioned
-   * statically in an absolute panel which has size of the button. 
-   * The file fileUplad is wrapped into a transparent panel, which also has the button
-   * size and is placed covering the customizable button.
-   * 
-   * When the user puts his mouse over the button and clicks on it, what really 
-   * happens is that the user clicks on the transparent file fileUplad showing
-   * the choose file dialog.
-   * 
-   */  
-  @SuppressWarnings("unused")
-  private static class DecoratedFileUploadImplNoClick extends DecoratedFileUploadImpl {
-
-    private SimplePanel wrapper;
-
-    public void init(AbsolutePanel container, FileUploadWithMouseEvents input) {
-      super.init(container, input);
-      wrapper = new SimplePanel();
-      wrapper.add(input);
-      container.add(wrapper, 0, 0);
-      wrapper.setStyleName("wrapper");
-      
-      // Not using the GWT 2.0.x way to set Style attributes in order to be
-      // compatible with old GWT releases
-      DOM.setStyleAttribute(wrapper.getElement(), "textAlign", "left");
-      DOM.setStyleAttribute(wrapper.getElement(), "zIndex", "1");
-      DOM.setStyleAttribute(input.getElement(), "marginLeft", "-1500px");
-      DOM.setStyleAttribute(input.getElement(), "fontSize", "350px");
-      DOM.setStyleAttribute(input.getElement(), "borderWidth", "0px");
-      DOM.setStyleAttribute(input.getElement(), "opacity", "0");
-      DOM.setElementAttribute(input.getElement(), "size", "1");
-      DOM.setElementAttribute(input.getElement(), "cursor", "pointer");
-      
-      // Trigger over and out handlers which already exist in the covered button.
-      input.addMouseOverHandler(new MouseOverHandler() {
-        public void onMouseOver(MouseOverEvent event) {
-          if (button != null) {
-            button.fireEvent(event);
-          }
-        }
-      });
-      input.addMouseOutHandler(new MouseOutHandler() {
-        public void onMouseOut(MouseOutEvent event) {
-          if (button != null) {
-            button.fireEvent(event);
-          }
-        }
-      });
-    }
-    
-    public void onAttach() {
-      super.onAttach();
-      wrapper.setSize(width + "px", height + "px");
-    }
-
-    public void resize() {
-      super.resize();
       wrapper.setSize(width + "px", height + "px");
     }
     
     public void setSize(String width, String height) {
-      super.setSize(width, height);
+      button.setSize(width, height);
+      container.setSize(width, height);
       wrapper.setSize(width, height);
     }
   }
@@ -345,7 +348,7 @@ public class DecoratedFileUpload extends Composite implements HasText, HasName, 
   private static final String STYLE_CONTAINER = "DecoratedFileUpload";
   private static final String STYLE_DISABLED = "disabled";
   protected Widget button;
-  protected AbsolutePanel container;
+  protected Panel container;
   protected FileUploadWithMouseEvents input;;
   protected boolean reuseButton = false;
   private DecoratedFileUploadImpl impl;
@@ -371,7 +374,7 @@ public class DecoratedFileUpload extends Composite implements HasText, HasName, 
   
   public DecoratedFileUpload(Widget button, FileUploadWithMouseEvents in) {
     impl = GWT.create(DecoratedFileUploadImpl.class);
-    container = new AbsolutePanel();
+    container = new FlowPanel();
     container.addStyleName(STYLE_CONTAINER);
     initWidget(container);
     input = in;
@@ -464,7 +467,7 @@ public class DecoratedFileUpload extends Composite implements HasText, HasName, 
       container.remove(this.button);
     }
     this.button = button;
-    container.add(button, 0, 0);
+    container.add(button);
     impl.setButton(button);
     updateSize();
   }

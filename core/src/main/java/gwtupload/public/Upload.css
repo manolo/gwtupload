@@ -104,6 +104,7 @@
 
 .GWTUpld .DecoratedFileUpload {
 	margin-right: 5px;
+	display: inline-block;
 }
 
 .GWTUpld .DecoratedFileUpload .gwt-Button,

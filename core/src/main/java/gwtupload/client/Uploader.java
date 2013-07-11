@@ -355,15 +355,15 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     public void onSubmitComplete(SubmitCompleteEvent event) {
       updateStatusTimer.cancel();
       onSubmitComplete = true;
-      serverResponse = event.getResults();
-      if (serverResponse != null) {
-        serverResponse = serverResponse.replaceFirst(".*" + TAG_MSG_START + "([\\s\\S]*?)" + TAG_MSG_END + ".*", "$1");
-        serverResponse = serverResponse.replace(TAG_MSG_LT, "<").replace(TAG_MSG_GT, ">").replace("&lt;", "<").replaceAll("&gt;", ">");
+      serverRawResponse = event.getResults();
+      if (serverRawResponse != null) {
+        serverRawResponse = serverRawResponse.replaceFirst(".*" + TAG_MSG_START + "([\\s\\S]*?)" + TAG_MSG_END + ".*", "$1");
+        serverRawResponse = serverRawResponse.replace(TAG_MSG_LT, "<").replace(TAG_MSG_GT, ">").replace("&lt;", "<").replaceAll("&gt;", ">");
       }
-      log("onSubmitComplete: " + serverResponse, null);
+      log("onSubmitComplete: " + serverRawResponse, null);
       try {
         // Parse the xml and extract UploadedInfos
-        Document doc = XMLParser.parse(serverResponse);
+        Document doc = XMLParser.parse(serverRawResponse);
 
         String msg = Utils.getXmlNodeValue(doc, TAG_MESSAGE);
         serverMessage.setMessage(msg);
@@ -396,7 +396,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
         }
 
         // If the server response is a valid xml
-        parseAjaxResponse(serverResponse);
+        parseAjaxResponse(serverRawResponse);
       } catch (Exception e) {
     	  log("onSubmitComplete exception parsing response: ", e);
     	  // Otherwise force an ajax request so as we have not to wait to the timer schedule
@@ -415,6 +415,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
    */
   private SubmitHandler onSubmitFormHandler = new SubmitHandler() {
     public void onSubmit(SubmitEvent event) {
+      
       if (!finished && uploading) {
         uploading = false;
         statusWidget.setStatus(IUploadStatus.Status.CANCELED);
@@ -460,7 +461,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
       addToQueue();
       uploading = true;
       finished = false;
-      serverResponse = null;
+      serverRawResponse = null;
       serverMessage = new ServerMessage();
 
       statusWidget.setVisible(true);
@@ -474,7 +475,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
 
   private int requestsCounter = 0;
 
-  private String serverResponse = null;
+  private String serverRawResponse = null;
   private ServerMessage serverMessage = new ServerMessage();
   
   private String servletPath = "servlet.gupld";
@@ -795,7 +796,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
   }
   
   public String getServerRawResponse() {
-    return serverResponse;
+    return serverRawResponse;
   }
   
   public UploadedInfo getServerInfo() {
@@ -1075,7 +1076,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
   
   private JavaScriptObject getDataInfo(UploadedInfo info) {
     return info == null ? JavaScriptObject.createObject() : 
-       getDataImpl(info.fileUrl, info.field, info.name, Utils.basename(info.name), serverResponse, info.message, getStatus().toString(), info.size);
+       getDataImpl(info.fileUrl, info.field, info.name, Utils.basename(info.name), serverRawResponse, info.message, getStatus().toString(), info.size);
   }
   
   private native JavaScriptObject getDataImpl(String url, String inputName, String fileName, String baseName, String serverResponse, String serverMessage, String status, int size) /*-{
@@ -1116,8 +1117,8 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
       cancelUpload(error);
       return;
     } else if (Utils.getXmlNodeValue(doc, TAG_WAIT) != null) {
-      if (serverResponse != null) {
-        log("server response received, cancelling the upload " + getFileNames() + " " + serverResponse, null);
+      if (serverRawResponse != null) {
+        log("server response received, cancelling the upload " + getFileNames() + " " + serverRawResponse, null);
         successful = true;
         uploadFinished();
       }
@@ -1143,7 +1144,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
       log("server response transferred  " + transferredKB + "/" + totalKB + " " + getFileNames(), null);
       if (onSubmitComplete) {
         successful = false;
-        String msg = i18nStrs.uploaderBadServerResponse() + "\n" + serverResponse;
+        String msg = i18nStrs.uploaderBadServerResponse() + "\n" + serverRawResponse;
         if (blobstore) {
           msg += "\n" + i18nStrs.uploaderBlobstoreBilling();
         }
