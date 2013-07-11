@@ -16,6 +16,8 @@
  */
 package jsupload.client;
 
+import jsupload.client.bundle.JsUploadCss;
+
 import com.google.gwt.widgetideas.client.ProgressBar;
 import com.google.gwt.widgetideas.client.ProgressBar.TextFormatter;
 
@@ -30,6 +32,10 @@ import gwtupload.client.IUploadStatus;
  * @author Manolo Carrasco Moñino
  */
 public class IncubatorUploadProgress extends BaseUploadStatus {
+  
+  static {
+    JsUploadCss.INSTANCE.css().ensureInjected();
+  }
 
   TextFormatter formater = new TextFormatter() {
     protected String getText(ProgressBar bar, double curProgress) {

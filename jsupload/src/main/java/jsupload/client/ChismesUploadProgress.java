@@ -16,6 +16,7 @@
  */
 package jsupload.client;
 
+import jsupload.client.bundle.JsUploadCss;
 import gwtupload.client.BaseUploadStatus;
 import gwtupload.client.IUploadStatus;
 
@@ -34,6 +35,10 @@ import com.google.gwt.user.client.ui.Widget;
  *
  */
 public class ChismesUploadProgress extends BaseUploadStatus {
+  
+  static {
+    JsUploadCss.INSTANCE.css().ensureInjected();
+  }
 
   public int prgBarElements = 40;
   public int prgBarOption = GWTCProgress.SHOW_NUMBERS | GWTCProgress.SHOW_TEXT;

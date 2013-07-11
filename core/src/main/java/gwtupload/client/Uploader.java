@@ -16,10 +16,35 @@
  */
 package gwtupload.client;
 
-import static gwtupload.shared.UConsts.*;
+import static gwtupload.shared.UConsts.MULTI_SUFFIX;
+import static gwtupload.shared.UConsts.PARAM_BLOBKEY;
+import static gwtupload.shared.UConsts.PARAM_BLOBSTORE;
+import static gwtupload.shared.UConsts.PARAM_CANCEL;
+import static gwtupload.shared.UConsts.PARAM_REMOVE;
+import static gwtupload.shared.UConsts.PARAM_SHOW;
+import static gwtupload.shared.UConsts.TAG_BLOBSTORE;
+import static gwtupload.shared.UConsts.TAG_BLOBSTORE_PATH;
+import static gwtupload.shared.UConsts.TAG_CANCELED;
+import static gwtupload.shared.UConsts.TAG_CTYPE;
+import static gwtupload.shared.UConsts.TAG_CURRENT_BYTES;
+import static gwtupload.shared.UConsts.TAG_FIELD;
+import static gwtupload.shared.UConsts.TAG_FILE;
+import static gwtupload.shared.UConsts.TAG_FINISHED;
+import static gwtupload.shared.UConsts.TAG_KEY;
+import static gwtupload.shared.UConsts.TAG_MESSAGE;
+import static gwtupload.shared.UConsts.TAG_MSG_END;
+import static gwtupload.shared.UConsts.TAG_MSG_GT;
+import static gwtupload.shared.UConsts.TAG_MSG_LT;
+import static gwtupload.shared.UConsts.TAG_MSG_START;
+import static gwtupload.shared.UConsts.TAG_NAME;
+import static gwtupload.shared.UConsts.TAG_PERCENT;
+import static gwtupload.shared.UConsts.TAG_SIZE;
+import static gwtupload.shared.UConsts.TAG_TOTAL_BYTES;
+import static gwtupload.shared.UConsts.TAG_WAIT;
 import gwtupload.client.IFileInput.FileInputType;
 import gwtupload.client.ISession.Session;
 import gwtupload.client.IUploadStatus.Status;
+import gwtupload.client.bundle.UploadCss;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -32,7 +57,6 @@ import java.util.logging.Logger;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
-import com.google.gwt.core.client.JsArrayMixed;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -42,11 +66,19 @@ import com.google.gwt.http.client.RequestTimeoutException;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
 import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
 import com.google.gwt.user.client.ui.FormPanel.SubmitHandler;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.Hidden;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.NodeList;
 import com.google.gwt.xml.client.XMLParser;
@@ -80,6 +112,12 @@ import com.google.gwt.xml.client.impl.DOMParseException;
  *         </ul>
  */
 public class Uploader extends Composite implements IsUpdateable, IUploader, HasJsData {
+  
+  
+  static {
+    UploadCss.INSTANCE.css().ensureInjected();
+  }
+  
   
   public Widget getWidget(){
     return this;

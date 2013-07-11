@@ -140,9 +140,6 @@
             <configuration>
               <tasks>
                 <exec dir="." executable="perl">
-                  <arg line="css_compress.pl target/${project.build.finalName}/jsupload/JsUpload.css" />
-                </exec>
-                <exec dir="." executable="perl">
                   <arg line="-pi -e 's#^\s*(containerId: .*)$#$1 action: &quot;/cgi-bin/jsupload.cgi.pl&quot;, #g' target/${project.build.finalName}/jsupload/JsUpload.html" />
                 </exec>
                 <exec dir="target" executable="svn">
