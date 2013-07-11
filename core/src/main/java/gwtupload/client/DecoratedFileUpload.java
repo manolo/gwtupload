@@ -134,8 +134,6 @@ public class DecoratedFileUpload extends Composite implements HasText, HasName, 
     public void init(Panel container, FileUploadWithMouseEvents input) {
       this.container = container;
       this.input = input;
-      DOM.setStyleAttribute(container.getElement(), "display", "inline-block");
-      DOM.setStyleAttribute(container.getElement(), "float", "left");
     }
 
     public void setButton(Widget widget) {
