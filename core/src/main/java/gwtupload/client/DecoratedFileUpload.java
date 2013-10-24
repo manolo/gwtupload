@@ -16,6 +16,8 @@
  */
 package gwtupload.client;
 
+import gwtupload.client.IFileInput.FileInputType;
+
 import java.util.HashMap;
 import java.util.List;
 
@@ -47,11 +49,22 @@ import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
- * A widget which hides a FileUpload showing a clickable, customizable
- * and stylable Widget, normally a button.
+ * A widget which wraps a FileUpload (native input file), hidding it
+ * and replacing it by any clickable, customizable and stylable Widget.
  * 
- * If you want to use this widget in your application, define these
- * css rules:
+ * To use it, first attach any HasClickHandlers widget to your display,
+ * then wrap it with the DecoratedFileUpload.
+ * 
+ * <pre>
+ 
+  Button myButton = new Button("Upload a file");
+  RootPanel.get().add(myButton);
+  
+  DecoratedFileUpload d = new DecoratedFileUpload(myButton);
+ 
+ * </pre>
+ * 
+ * CSS Rules:
  * 
  * <pre>
 .DecoratedFileUpload {
