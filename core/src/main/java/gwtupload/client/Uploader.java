@@ -311,7 +311,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
         basenames.add(Utils.basename(s));
       }
       statusWidget.setFileNames(basenames);
-      if (avoidRepeatedFiles && anyFileIsRepeated(false)) {
+      if (anyFileIsRepeated(false)) {
         statusWidget.setStatus(Status.REPEATED);
         return;
       }
@@ -466,7 +466,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
         return;
       }
       
-      if (avoidEmptyFile && anyFileIsRepeated(true)) {
+      if (anyFileIsRepeated(true)) {
         statusWidget.setStatus(IUploadStatus.Status.REPEATED);
         successful = true;
         event.cancel();
@@ -710,8 +710,10 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
 
   /**
    * Don't send files that have already been uploaded.
+   * Note that this feature only works when multiple = false;
    */
   public void avoidRepeatFiles(boolean avoidRepeat) {
+    if (avoidRepeat) multiple = false;
     this.avoidRepeatedFiles = avoidRepeat;
   }
 
@@ -1085,7 +1087,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     if (!fileQueue.contains(getInputName())) {
       onStartUpload();
       fileQueue.add(getInputName());
-      if (avoidRepeatedFiles) {
+      if (!multiple && avoidRepeatedFiles) {
         fileUploading.add(getFileName());
       }
     }
@@ -1287,9 +1289,11 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
   }
   
   public boolean anyFileIsRepeated(boolean checkOnlyUploadedFiles) {
-    for (String s: fileInput.getFilenames()) {
-      if (fileDone.contains(s) || (!checkOnlyUploadedFiles && fileUploading.contains(s)))
-        return true;
+    if (!multiple && avoidRepeatedFiles) {
+      for (String s: fileInput.getFilenames()) {
+        if (fileDone.contains(s) || (!checkOnlyUploadedFiles && fileUploading.contains(s)))
+          return true;
+      }
     }
     return false;
   }
