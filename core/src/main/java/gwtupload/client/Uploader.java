@@ -128,7 +128,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
    * This class override the add method to allow multiple additions
    * to a flowPanel.
    */
-  public class FormFlowPanel extends FormPanel {
+  public static class FormFlowPanel extends FormPanel {
     FlowPanel formElements = new FlowPanel();
     public FormFlowPanel() {
       super.add(formElements);
@@ -146,7 +146,6 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     }
     public void clear() {
       formElements.clear();
-      add(fileInput.asWidget());
     }
   }
   
@@ -774,6 +773,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
    */
   public void clear() {
     uploadForm.clear();
+    uploadForm.add(fileInput.asWidget());
   }
 
   /**
