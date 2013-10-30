@@ -16,30 +16,16 @@
  */
 package gwtupload.client;
 
-import gwtupload.client.IFileInput.FileInputType;
-
 import java.util.HashMap;
 import java.util.List;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ChangeEvent;
-import com.google.gwt.event.dom.client.ChangeHandler;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.HasChangeHandlers;
-import com.google.gwt.event.dom.client.HasClickHandlers;
-import com.google.gwt.event.dom.client.HasMouseOutHandlers;
-import com.google.gwt.event.dom.client.HasMouseOverHandlers;
-import com.google.gwt.event.dom.client.MouseOutEvent;
-import com.google.gwt.event.dom.client.MouseOutHandler;
-import com.google.gwt.event.dom.client.MouseOverEvent;
-import com.google.gwt.event.dom.client.MouseOverHandler;
+import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FileUpload;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HasName;
@@ -61,6 +47,16 @@ import com.google.gwt.user.client.ui.Widget;
   RootPanel.get().add(myButton);
   
   DecoratedFileUpload d = new DecoratedFileUpload(myButton);
+ 
+ * </pre>
+ * 
+ * To use it in UiBinder
+ * 
+ * <pre>
+ 
+     <up:DecoratedFileUpload>
+        <g:Button>Select a file ...</g:Button>
+     </up:DecoratedFileUpload>
  
  * </pre>
  * 
@@ -103,7 +99,7 @@ import com.google.gwt.user.client.ui.Widget;
  * @author Manuel Carrasco Moñino
  *
  */
-public class DecoratedFileUpload extends Composite implements HasText, HasName, HasChangeHandlers {
+public class DecoratedFileUpload extends FlowPanel implements HasName, HasChangeHandlers {
 
   /**
    * A FileUpload which implements onChange, onMouseOver and onMouseOut events.
@@ -359,7 +355,6 @@ public class DecoratedFileUpload extends Composite implements HasText, HasName, 
   private static final String STYLE_CONTAINER = "DecoratedFileUpload";
   private static final String STYLE_DISABLED = "disabled";
   protected Widget button;
-  protected Panel container;
   protected FileUploadWithMouseEvents input;;
   protected boolean reuseButton = false;
   private DecoratedFileUploadImpl impl;
@@ -392,14 +387,12 @@ public class DecoratedFileUpload extends Composite implements HasText, HasName, 
   
   public DecoratedFileUpload(Widget button, FileUploadWithMouseEvents in) {
     impl = GWT.create(DecoratedFileUploadImpl.class);
-    container = new FlowPanel();
-    container.addStyleName(STYLE_CONTAINER);
-    initWidget(container);
+    this.addStyleName(STYLE_CONTAINER);
     input = in;
     if (input == null) {
       input = new FileUploadWithMouseEvents();
     }
-    impl.init(container, input);
+    impl.init(this, input);
     setButton(button);
   }
 
@@ -483,10 +476,10 @@ public class DecoratedFileUpload extends Composite implements HasText, HasName, 
     if (button != null) {
       assert button instanceof HasClickHandlers : "Button should implement HasClickHandlers";
       if (this.button != null) {
-        container.remove(this.button);
+        this.remove(this.button);
       }
       this.button = button;
-      container.add(button);
+      super.add(button);
       impl.setButton(button);
       updateSize();
     }
@@ -506,9 +499,9 @@ public class DecoratedFileUpload extends Composite implements HasText, HasName, 
   public void setEnabled(boolean b) {
     input.setEnabled(b);
     if (b) {
-      container.removeStyleDependentName(STYLE_DISABLED);
+      this.removeStyleDependentName(STYLE_DISABLED);
     } else {
-      container.addStyleDependentName(STYLE_DISABLED);
+      this.addStyleDependentName(STYLE_DISABLED);
     }
   }
   
@@ -551,4 +544,14 @@ public class DecoratedFileUpload extends Composite implements HasText, HasName, 
   public void setAccept(String s) {
     input.setAccept(s);
   }
+  
+  @Override
+  public void add(Widget widget) {
+    if (widget instanceof HasClickHandlers) {
+      setButton(widget);
+    } else {
+      super.add(widget);
+    }
+  }
+  
 }
