@@ -60,6 +60,7 @@
           type: "incubator",
           containerId: "uploader1",
           multiple: true, 
+          multiSelection: true,
           auto: true,
           /* 
            * Uncomment the next line to handle actions when 
@@ -72,6 +73,7 @@
         new jsu.Upload({
            containerId: "uploader2",
            multiple: true, 
+           multiSelection: false,
            auto: true,
            chooser: "anchor",    
            onFinish: loadImage
@@ -81,6 +83,7 @@
           type: "basic",
           containerId: "uploader3",
           multiple: true, 
+          multiSelection: true,
           auto: true,
           onChange: null,
           onStart: null,
@@ -98,6 +101,7 @@
           type: "basic",
           containerId: "uploader4",
           onFinish: loadImage,
+          multiSelection: true,
           regional: {
         	uploaderSend: "Send File."    
           }

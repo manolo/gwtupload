@@ -1,4 +1,5 @@
 <module rename-to="jsupload">
   <inherits name="jsupload.JsUpload" />
   <add-linker name="xsiframe"/>
+  <collapse-property name="user.agent" values="*" />
 </module>

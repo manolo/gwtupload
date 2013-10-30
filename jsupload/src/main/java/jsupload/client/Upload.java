@@ -65,7 +65,7 @@ public class Upload implements Exportable {
 
     this.jsProp = new JsProperties(prop);
 
-    boolean multiple = jsProp.getBoolean(Const.MULTIPLE);
+    boolean multipleUploader = jsProp.getBoolean(Const.MULTIPLE);
     ChismesUploadProgress status = null;
     FileInputType type = FileInputType.BROWSER_INPUT;
     
@@ -79,31 +79,34 @@ public class Upload implements Exportable {
     }
     
     if ("incubator".equals(jsProp.get(Const.TYPE))) {
-      if (multiple) {
+      if (multipleUploader) {
         uploader = new MultiUploader(type, new IncubatorUploadProgress());
         
       } else {
         uploader = new SingleUploader(type);
       }
     } else if ("basic".equals(jsProp.get(Const.TYPE))) {
-      if (multiple) {
+      if (multipleUploader) {
         uploader = new MultiUploader(type);
       } else {
         uploader = new SingleUploader(type);
       }
     } else {
-      status = new ChismesUploadProgress(!multiple);
-      uploader = multiple ? new MultiUploader(type, status) : new SingleUploader(type, status); 
+      status = new ChismesUploadProgress(!multipleUploader);
+      uploader = multipleUploader ? new MultiUploader(type, status) : new SingleUploader(type, status); 
     }
     
-    if (multiple) {
+    if (multipleUploader) {
       ((MultiUploader) uploader).setMaximumFiles(jsProp.getInt(Const.MAX_FILES));
     } else if (jsProp.getBoolean(Const.EMPTY)){
       ((SingleUploader) uploader).avoidEmptyFiles(false);
     }
     
-    boolean auto = jsProp.defined(Const.AUTO) ? jsProp.getBoolean(Const.AUTO) : multiple;
+    boolean auto = jsProp.defined(Const.AUTO) ? jsProp.getBoolean(Const.AUTO) : multipleUploader;
     uploader.setAutoSubmit(auto);
+
+    boolean multipleSelection = jsProp.getBoolean(Const.MULTIPLE_SELECTION);
+    uploader.setMultipleSelection(multipleSelection);
     
     uploader.addOnStartUploadHandler(JsUtils.getOnStartUploaderHandler(jsProp.getClosure(Const.ON_START)));
     uploader.addOnChangeUploadHandler(JsUtils.getOnChangeUploaderHandler(jsProp.getClosure(Const.ON_CHANGE)));
