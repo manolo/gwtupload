@@ -25,11 +25,11 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FileUpload;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HasName;
 import com.google.gwt.user.client.ui.HasText;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -67,9 +67,7 @@ import com.google.gwt.user.client.ui.Widget;
   margin-right: 5px;
 }
 
-.DecoratedFileUpload .gwt-Button,
-.DecoratedFileUpload .gwt-Anchor,
-.DecoratedFileUpload .gwt-Label {
+.DecoratedFileUpload-button {
   white-space: nowrap;
   font-size: 10px;
   min-height: 15px;
@@ -82,7 +80,7 @@ import com.google.gwt.user.client.ui.Widget;
   cursor: pointer;
 }
 
-.DecoratedFileUpload .gwt-Button:HOVER,
+.DecoratedFileUpload-button:HOVER,
 .DecoratedFileUpload .gwt-Button-over,
 .DecoratedFileUpload .gwt-Anchor-over,
 .DecoratedFileUpload .gwt-Label-over {
@@ -150,7 +148,7 @@ public class DecoratedFileUpload extends FlowPanel implements HasName, HasChange
       if (button instanceof HasMouseOverHandlers) {
         ((HasMouseOverHandlers) button).addMouseOverHandler(new MouseOverHandler() {
           public void onMouseOver(MouseOverEvent event) {
-            button.addStyleDependentName(STYLE_BUTTON_OVER_SUFFIX);
+            button.addStyleName(STYLE_CLICKABLE_WIDGET + "-" + STYLE_BUTTON_OVER_SUFFIX);
             container.addStyleDependentName(STYLE_BUTTON_OVER_SUFFIX);
           }
         });
@@ -158,7 +156,7 @@ public class DecoratedFileUpload extends FlowPanel implements HasName, HasChange
       if (button instanceof HasMouseOutHandlers) {
         ((HasMouseOutHandlers) button).addMouseOutHandler(new MouseOutHandler() {
           public void onMouseOut(MouseOutEvent event) {
-            button.removeStyleDependentName(STYLE_BUTTON_OVER_SUFFIX);
+            button.removeStyleName(STYLE_CLICKABLE_WIDGET + "-" + STYLE_BUTTON_OVER_SUFFIX);
             container.removeStyleDependentName(STYLE_BUTTON_OVER_SUFFIX);
           }
         });
@@ -353,7 +351,8 @@ public class DecoratedFileUpload extends FlowPanel implements HasName, HasChange
 
   private static final String STYLE_BUTTON_OVER_SUFFIX = "over";
   private static final String STYLE_CONTAINER = "DecoratedFileUpload";
-  private static final String STYLE_DISABLED = "disabled";
+  private static final String STYLE_CLICKABLE_WIDGET = "DecoratedFileUpload-button";
+  private static final String STYLE_DISABLED_SUFFIX = "disabled";
   protected Widget button;
   protected FileUploadWithMouseEvents input;;
   protected boolean reuseButton = false;
@@ -459,7 +458,7 @@ public class DecoratedFileUpload extends FlowPanel implements HasName, HasChange
   public void onAttach() {
     super.onAttach();
     if (button == null) {
-      button = new Button(text);
+      button = new Label(text);
       setButton(button);
     }
     new Timer(){
@@ -481,6 +480,7 @@ public class DecoratedFileUpload extends FlowPanel implements HasName, HasChange
       this.button = button;
       super.add(button);
       impl.setButton(button);
+      button.addStyleName(STYLE_CLICKABLE_WIDGET);
       updateSize();
     }
   }
@@ -499,9 +499,9 @@ public class DecoratedFileUpload extends FlowPanel implements HasName, HasChange
   public void setEnabled(boolean b) {
     input.setEnabled(b);
     if (b) {
-      this.removeStyleDependentName(STYLE_DISABLED);
+      this.removeStyleDependentName(STYLE_DISABLED_SUFFIX);
     } else {
-      this.addStyleDependentName(STYLE_DISABLED);
+      this.addStyleDependentName(STYLE_DISABLED_SUFFIX);
     }
   }
   

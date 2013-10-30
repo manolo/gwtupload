@@ -130,9 +130,7 @@
   display: inline-block;
 }
 
-.GWTUpld .DecoratedFileUpload .gwt-Button,
-.GWTUpld .DecoratedFileUpload .gwt-Anchor,
-.GWTUpld .DecoratedFileUpload .gwt-Label {
+.GWTUpld .DecoratedFileUpload-button {
   white-space: nowrap;
   font-size: 10px;
 }
@@ -149,16 +147,12 @@
   cursor: pointer;
 }
 
-.GWTUpld .gwt-Button:HOVER,
-.GWTUpld .DecoratedFileUpload .gwt-Button-over,
-.GWTUpld .DecoratedFileUpload .gwt-Anchor-over,
-.GWTUpld .DecoratedFileUpload .gwt-Label-over {
+.GWTUpld .DecoratedFileUpload-button:HOVER,
+.GWTUpld .DecoratedFileUpload-button-over {
   color: #af6b29;
 }
 
-.GWTUpld .DecoratedFileUpload-disabled .gwt-Button,
-.GWTUpld .DecoratedFileUpload-disabled .gwt-Anchor,
-.GWTUpld .DecoratedFileUpload-disabled .gwt-Label {
+.GWTUpld .DecoratedFileUpload-disabled {
   color: grey;
 }
 
