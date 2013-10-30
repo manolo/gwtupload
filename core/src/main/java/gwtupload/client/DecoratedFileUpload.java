@@ -364,10 +364,17 @@ public class DecoratedFileUpload extends Composite implements HasText, HasName, 
   protected boolean reuseButton = false;
   private DecoratedFileUploadImpl impl;
   private String text = "";
+  
+  /**
+   * Default constructor.
+   */
+  public DecoratedFileUpload() {
+    this(null, null);
+  }
+
 
   /**
-   * Default constructor, it renders a default button with the provided 
-   * text when the element is attached.
+   * Set the text when the element is attached. 
    */
   public DecoratedFileUpload(String text) {
     this((Widget)null);
@@ -473,14 +480,16 @@ public class DecoratedFileUpload extends Composite implements HasText, HasName, 
    * Set the button the user has to click on to show the browse dialog. 
    */
   public void setButton(Widget button) {
-    assert button instanceof HasClickHandlers : "Button should implement HasClickHandlers";
-    if (this.button != null) {
-      container.remove(this.button);
+    if (button != null) {
+      assert button instanceof HasClickHandlers : "Button should implement HasClickHandlers";
+      if (this.button != null) {
+        container.remove(this.button);
+      }
+      this.button = button;
+      container.add(button);
+      impl.setButton(button);
+      updateSize();
     }
-    this.button = button;
-    container.add(button);
-    impl.setButton(button);
-    updateSize();
   }
 
   /**
