@@ -538,4 +538,8 @@ public class DecoratedFileUpload extends Composite implements HasText, HasName, 
   public void enableMultiple(boolean b) {
     input.enableMultiple(b);
   }
+  
+  public void setAccept(String s) {
+    input.setAccept(s);
+  }
 }

@@ -89,7 +89,6 @@ public interface IFileInput extends HasChangeHandlers, IsWidget {
    * 
    */
   public class ButtonFileInput extends DecoratedFileUpload implements IFileInput {
-    
     boolean i18n = true;
     
     public ButtonFileInput() {
@@ -319,5 +318,7 @@ public interface IFileInput extends HasChangeHandlers, IsWidget {
   void updateSize();
 
   void enableMultiple(boolean b);
+  
+  void setAccept(String accept);
 
 }

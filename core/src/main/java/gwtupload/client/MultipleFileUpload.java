@@ -47,6 +47,11 @@ public class MultipleFileUpload extends FileUpload {
       DOM.removeElementAttribute(getElement(), attr);
     }
   }
+  
+  public void setAccept(String accept) {
+    DOM.setElementAttribute(getElement(), "accept", accept);
+  }
+
 
 }
 

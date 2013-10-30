@@ -540,7 +540,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
 
   private boolean uploading = false;
   
-  private String[] validExtensions = null;
+  private List<String> validExtensions;
   
   private String validExtensionsMsg = "";
 
@@ -993,30 +993,29 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
   /* (non-Javadoc)
    * @see gwtupload.client.IUploader#setValidExtensions(java.lang.String[])
    */
-  public void setValidExtensions(String... validExtensions) {
-    if (validExtensions == null) {
-      this.validExtensions = new String[0];
+  public void setValidExtensions(String... extensions) {
+    this.validExtensions = new ArrayList<String>();
+    validExtensionsMsg = "";
+    if (extensions == null || extensions.length == 0) {
       return;
     }
-    this.validExtensions = new String[validExtensions.length];
-    validExtensionsMsg = "";
-    for (int i = 0, j = 0; i < validExtensions.length; i++) {
-      String ext = validExtensions[i];
+    List<String> v = new ArrayList<String>();
+    String accept = "";
+    for (String ext : extensions) {
       if (ext == null) {
         continue;
       }
-      if (ext.charAt(0) != '.') {
-        ext = "." + ext;
+      if (ext.contains("/")) {
+        accept += (accept.isEmpty() ? "" : ",") + ext;
+        continue;
       }
-      if (i > 0) {
-        validExtensionsMsg += ", ";
-      }
-      validExtensionsMsg += ext;
-
+      if (!ext.startsWith(".")) ext = "." + ext;
+      validExtensionsMsg += (validExtensionsMsg.isEmpty() ? "" : ",") + ext;
       ext = ext.replaceAll("\\.", "\\\\.");
       ext = ".+" + ext;
-      this.validExtensions[j++] = ext.toLowerCase();
+      validExtensions.add(ext);
     }
+    fileInput.setAccept(accept);
   }
   
   public void setValidExtensions(String ext) {
