@@ -16,31 +16,7 @@
  */
 package gwtupload.server;
 
-import static gwtupload.shared.UConsts.PARAM_DELAY;
-import static gwtupload.shared.UConsts.TAG_BLOBSTORE;
-import static gwtupload.shared.UConsts.TAG_BLOBSTORE_PATH;
-import static gwtupload.shared.UConsts.TAG_CANCELED;
-import static gwtupload.shared.UConsts.TAG_CTYPE;
-import static gwtupload.shared.UConsts.TAG_CURRENT_BYTES;
-import static gwtupload.shared.UConsts.TAG_DELETED;
-import static gwtupload.shared.UConsts.TAG_ERROR;
-import static gwtupload.shared.UConsts.TAG_FIELD;
-import static gwtupload.shared.UConsts.TAG_FILE;
-import static gwtupload.shared.UConsts.TAG_FILES;
-import static gwtupload.shared.UConsts.TAG_FINISHED;
-import static gwtupload.shared.UConsts.TAG_KEY;
-import static gwtupload.shared.UConsts.TAG_MSG_END;
-import static gwtupload.shared.UConsts.TAG_MSG_GT;
-import static gwtupload.shared.UConsts.TAG_MSG_LT;
-import static gwtupload.shared.UConsts.TAG_MSG_START;
-import static gwtupload.shared.UConsts.TAG_NAME;
-import static gwtupload.shared.UConsts.TAG_PARAM;
-import static gwtupload.shared.UConsts.TAG_PARAMS;
-import static gwtupload.shared.UConsts.TAG_PERCENT;
-import static gwtupload.shared.UConsts.TAG_SESSION_ID;
-import static gwtupload.shared.UConsts.TAG_SIZE;
-import static gwtupload.shared.UConsts.TAG_TOTAL_BYTES;
-import static gwtupload.shared.UConsts.TAG_VALUE;
+import static gwtupload.shared.UConsts.*;
 import gwtupload.server.exceptions.UploadActionException;
 import gwtupload.server.exceptions.UploadCanceledException;
 import gwtupload.server.exceptions.UploadException;
@@ -65,7 +41,6 @@ import java.util.ResourceBundle;
 import javax.servlet.Servlet;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -405,27 +380,34 @@ public class UploadServlet extends HttpServlet implements Servlet {
   }
   
   @Override
-  protected void doOptions(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    if (checkCORS(request, response)) {
+  protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    if (checkCORS(request, response) && request.getMethod().equals("OPTIONS")) {
       String method = request.getHeader("Access-Control-Request-Method");
-      response.addHeader("Access-Control-Allow-Methods", method);
-      response.setHeader("Allow", method);
+      if (method != null) {
+        response.addHeader("Access-Control-Allow-Methods", method);
+        response.setHeader("Allow", "GET, HEAD, POST, PUT, DELETE, TRACE, OPTIONS");
+      }
       String headers = request.getHeader("Access-Control-Request-Headers");
-      response.addHeader("Access-Control-Allow-Headers", headers);
+      if (headers != null) {
+        response.addHeader("Access-Control-Allow-Headers", headers);
+      }
+      response.addHeader("Access-Control-Allow-Credentials", "true");
       response.setContentType("text/plain");
       response.getWriter().flush();
     } else {
-      super.doOptions(request, response);
+      super.service(request, response);
     }
   }
   
   private boolean checkCORS(HttpServletRequest request, HttpServletResponse response) {
     String origin = request.getHeader("Origin");
+    logger.info("Check: " + origin + " " + corsDomainsRegex);
     if (origin != null && origin.matches(corsDomainsRegex)) {
+      logger.info("CORS request " + request.getMethod());
       // Maybe the user has used this domain before and has a session-cookie, we delete it
-      Cookie c  = new Cookie("JSESSIONID", "");
-      c.setMaxAge(0);
-      response.addCookie(c);
+      //   Cookie c  = new Cookie("JSESSIONID", "");
+      //   c.setMaxAge(0);
+      //   response.addCookie(c);
       // All doXX methods should set this header
       response.addHeader("Access-Control-Allow-Origin", origin);
       return true;
@@ -596,7 +578,7 @@ public class UploadServlet extends HttpServlet implements Servlet {
       corsDomainsRegex = cors;
     }
 
-    logger.info("UPLOAD-SERVLET init: maxSize=" + maxSize + ", slowUploads=" + slow + ", isAppEngine=" + isAppEngine());
+    logger.info("UPLOAD-SERVLET init: maxSize=" + maxSize + ", slowUploads=" + slow + ", isAppEngine=" + isAppEngine() + ", corsRegex=" + corsDomainsRegex);
   }
 
   /**
@@ -621,6 +603,7 @@ public class UploadServlet extends HttpServlet implements Servlet {
     }
     return size;
   }
+
   
   /**
    * The get method is used to monitor the uploading process or to get the
@@ -629,7 +612,6 @@ public class UploadServlet extends HttpServlet implements Servlet {
   protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
     perThreadRequest.set(request);
     try {
-      checkCORS(request, response);
       if (request.getParameter(UConsts.PARAM_SESSION) != null) {
         logger.debug("UPLOAD-SERVLET (" + request.getSession().getId() + ") new session, blobstore=" + (isAppEngine() && useBlobstore));
         String sessionId = request.getSession().getId();
@@ -688,7 +670,6 @@ public class UploadServlet extends HttpServlet implements Servlet {
     perThreadRequest.set(request);
     String error;
     try {
-      checkCORS(request, response);
       error = parsePostRequest(request, response);
       finish(request);
       Map<String, String> stat = new HashMap<String, String>();
