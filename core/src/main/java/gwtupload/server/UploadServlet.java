@@ -391,25 +391,21 @@ public class UploadServlet extends HttpServlet implements Servlet {
       if (headers != null) {
         response.addHeader("Access-Control-Allow-Headers", headers);
       }
-      response.addHeader("Access-Control-Allow-Credentials", "true");
       response.setContentType("text/plain");
-      response.getWriter().flush();
-    } else {
-      super.service(request, response);
     }
+    super.service(request, response);
   }
   
   private boolean checkCORS(HttpServletRequest request, HttpServletResponse response) {
     String origin = request.getHeader("Origin");
-    logger.info("Check: " + origin + " " + corsDomainsRegex);
     if (origin != null && origin.matches(corsDomainsRegex)) {
-      logger.info("CORS request " + request.getMethod());
       // Maybe the user has used this domain before and has a session-cookie, we delete it
       //   Cookie c  = new Cookie("JSESSIONID", "");
       //   c.setMaxAge(0);
       //   response.addCookie(c);
-      // All doXX methods should set this header
+      // All doXX methods should set these header
       response.addHeader("Access-Control-Allow-Origin", origin);
+      response.addHeader("Access-Control-Allow-Credentials", "true");
       return true;
     }
     return false;
