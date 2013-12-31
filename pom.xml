@@ -5,7 +5,7 @@
   <artifactId>gwtupload-project</artifactId>
   <name>GwtUpload project</name>
   <packaging>pom</packaging>
-  <version>0.6.7-SNAPSHOT</version>
+  <version>1.0.0-SNAPSHOT</version>
 
   <modules>
     <module>core</module>
