@@ -68,7 +68,7 @@ h2, p, ul {
 .customButton {
 	background: url(images/chooseFile.png);
 	font-size: 0px;
-	color: white;
+	color: transparent;
 }
 
 .customButton-over {
