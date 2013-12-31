@@ -262,7 +262,7 @@ public class BaseUploadStatus implements IUploadStatus {
         break;
       case INVALID:
         if (cancelCfg.contains(CancelBehavior.REMOVE_INVALID)) {
-          getWidget().removeFromParent();
+          asWidget().removeFromParent();
         }
         break;
       case CANCELING:

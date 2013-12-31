@@ -395,7 +395,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
       serverRawResponse = event.getResults();
       if (serverRawResponse != null) {
         serverRawResponse = serverRawResponse.replaceFirst(".*" + TAG_MSG_START + "([\\s\\S]*?)" + TAG_MSG_END + ".*", "$1");
-        serverRawResponse = serverRawResponse.replace(TAG_MSG_LT, "<").replace(TAG_MSG_GT, ">").replace("&lt;", "<").replaceAll("&gt;", ">");
+        serverRawResponse = serverRawResponse.replace(TAG_MSG_LT, "<").replace(TAG_MSG_GT, ">").replace("&lt;", "<").replaceAll("&gt;", ">").replaceAll("&nbsp;", " ");
       }
       log("onSubmitComplete: " + serverRawResponse, null);
       try {
