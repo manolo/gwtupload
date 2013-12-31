@@ -560,6 +560,7 @@ public class MultiUploader extends Composite implements IUploader {
 
     // Create a new uploader
     currentUploader = getUploaderInstance();
+    statusWidget.setCancelConfiguration(IUploadStatus.DEFAULT_MULTI_CFG);
     uploaders.add(currentUploader);
     currentUploader.setStatusWidget(statusWidget);
     if (lastUploader != null) {

@@ -473,7 +473,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
         return;
       }
       
-      if (!validateAll(basenames)) {
+      if (getFileName().isEmpty() || !validateAll(basenames)) {
         event.cancel();
         return;
       }
@@ -765,6 +765,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
       statusWidget.setStatus(IUploadStatus.Status.CANCELING);
     } else {
       uploadFinished();
+      reuse();
     }
   }
 
@@ -1281,8 +1282,8 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     boolean valid = Utils.validateExtension(validExtensions, filename);
     if (!valid) {
       finished = true;
-      statusWidget.setStatus(Status.INVALID);
       statusWidget.setError(i18nStrs.uploaderInvalidExtension() + validExtensionsMsg);
+      statusWidget.setStatus(Status.INVALID);
     }
     return valid;
   }

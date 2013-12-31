@@ -261,7 +261,9 @@ public class BaseUploadStatus implements IUploadStatus {
         }
         break;
       case INVALID:
-        getWidget().removeFromParent();
+        if (cancelCfg.contains(CancelBehavior.REMOVE_INVALID)) {
+          getWidget().removeFromParent();
+        }
         break;
       case CANCELING:
         updateStatusPanel(false, i18nStrs.uploadStatusCanceling());
@@ -269,7 +271,7 @@ public class BaseUploadStatus implements IUploadStatus {
       case CANCELED:
         updateStatusPanel(false, i18nStrs.uploadStatusCanceled());
         if (cancelCfg.contains(CancelBehavior.REMOVE_CANCELLED_FROM_LIST)) {
-          getWidget().removeFromParent();
+          asWidget().removeFromParent();
         }
         break;
       case ERROR:
@@ -277,7 +279,7 @@ public class BaseUploadStatus implements IUploadStatus {
         break;
       case DELETED:
         updateStatusPanel(false, i18nStrs.uploadStatusDeleted());
-        getWidget().removeFromParent();
+        asWidget().removeFromParent();
         break;
     }
     if (status != stat && onUploadStatusChangedHandler != null) {

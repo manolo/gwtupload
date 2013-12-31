@@ -40,7 +40,7 @@ public interface IUploadStatus extends HasProgress, IsWidget {
    * Enumeration of possible cancel options
    */
   public static enum CancelBehavior {
-    DISABLED, REMOVE_CANCELLED_FROM_LIST, REMOVE_REMOTE, STOP_CURRENT
+    DISABLED, REMOVE_CANCELLED_FROM_LIST, REMOVE_REMOTE, STOP_CURRENT, REMOVE_INVALID
   }    
   
   /**
@@ -90,7 +90,8 @@ public interface IUploadStatus extends HasProgress, IsWidget {
   }
 
   Set<CancelBehavior> DEFAULT_CANCEL_CFG = EnumSet.of(CancelBehavior.REMOVE_REMOTE, CancelBehavior.STOP_CURRENT);
-  Set<CancelBehavior> GMAIL_CANCEL_CFG = EnumSet.of(CancelBehavior.STOP_CURRENT, CancelBehavior.REMOVE_REMOTE, CancelBehavior.REMOVE_CANCELLED_FROM_LIST);
+  Set<CancelBehavior> DEFAULT_MULTI_CFG = EnumSet.of(CancelBehavior.STOP_CURRENT, CancelBehavior.REMOVE_REMOTE, CancelBehavior.REMOVE_INVALID, CancelBehavior.REMOVE_CANCELLED_FROM_LIST);
+  Set<CancelBehavior> GMAIL_MULTI_CFG = EnumSet.of(CancelBehavior.STOP_CURRENT, CancelBehavior.REMOVE_REMOTE, CancelBehavior.REMOVE_INVALID, CancelBehavior.REMOVE_CANCELLED_FROM_LIST);
 
   /**
    * Add a new  handler which will be fired when the user clicks on the cancel button.

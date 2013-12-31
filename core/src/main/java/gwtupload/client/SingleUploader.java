@@ -129,7 +129,6 @@ public class SingleUploader extends Uploader {
 
     if (status == null) {
       status = new BaseUploadStatus();
-      super.add(status.asWidget());
     }
     super.setStatusWidget(status);
     
