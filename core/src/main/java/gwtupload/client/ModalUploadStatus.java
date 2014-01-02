@@ -39,6 +39,7 @@ public class ModalUploadStatus extends BaseUploadStatus {
     box.add(super.asWidget());
     box.setGlassEnabled(true);
     box.setStyleName("upld-modal");
+    box.setGlassStyleName("upld-modal-glass");
     ((Element) box.getElement().getFirstChild()).setClassName("GWTUpld");
   }
   

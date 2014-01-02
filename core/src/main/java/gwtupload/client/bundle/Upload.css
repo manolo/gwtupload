@@ -127,6 +127,17 @@
   -moz-border-radius-topright: 6px;
 }
 
+.upld-modal-glass {
+  background-color: #d4e4ff;
+  opacity: 0.3;
+}
+
+@if user.agent ie6 ie8 ie9 {
+  .upld-modal-glass {
+    filter: literal('alpha(opacity=30)');
+  }
+}
+
 .GWTUpld .DecoratedFileUpload {
   margin-right: 5px;
   display: inline-block;
@@ -156,12 +167,6 @@
 
 .GWTUpld .DecoratedFileUpload-disabled {
   color: grey;
-}
-
-.gwt-PopupPanelGlass {
-  background-color: #d4e4ff;
-  opacity: 0.3;
-  filter: literal('alpha(opacity=30)');
 }
 
 .GWTUpld input[type="file"] {
