@@ -73,15 +73,17 @@
 .GWTUpld .upld-status .status-canceled {
   color: red;
 }
-
+.GWTUpld .prgbar {
+  height: 12px;
+  float: left;
+  width: 100px;
+  margin-left: 2px;
+}
 .GWTUpld .prgbar-back {
   background: #ffffff none repeat scroll 0 0;
   border: 1px solid #999999;
-  height: 10px;
   overflow: hidden;
   padding: 1px;
-  width: 100px;
-  float: left;
 }
 
 @if user.agent ie6 ie8 ie9 {
@@ -146,6 +148,7 @@
 .GWTUpld .DecoratedFileUpload-button {
   white-space: nowrap;
   font-size: 10px;
+  cursor: pointer;
 }
 
 .GWTUpld .gwt-Button, .GWTUpld .gwt-FileUpload {

@@ -60,5 +60,11 @@ public class IncubatorUploadProgress extends BaseUploadStatus {
     super.setPercent(percent);
     prg.setProgress(percent);
   }
+  
+  @Override
+  protected void updateStatusPanel(boolean showProgress, String statusMessage) {
+    super.updateStatusPanel(showProgress, statusMessage);
+    fileNameLabel.setVisible(false);
+  }
 
 }

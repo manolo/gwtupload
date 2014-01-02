@@ -139,11 +139,4 @@ public class ChismesUploadProgress extends BaseUploadStatus {
       super.setVisible(v);
     }
   }
-  
-  @Override
-  protected void updateStatusPanel(boolean showProgress, String message) {
-    super.updateStatusPanel(showProgress, message);
-    fileNameLabel.setVisible(true);
-  }
-
 }

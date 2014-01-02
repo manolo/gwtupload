@@ -26,6 +26,7 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
@@ -47,7 +48,7 @@ public class BaseUploadStatus implements IUploadStatus {
   /**
    * A basic progress bar implementation used when the user doesn't provide any.
    */
-  public class BasicProgressBar extends FlowPanel implements HasProgress {
+  public static class BasicProgressBar extends FlowPanel implements HasProgress {
 
     SimplePanel statusBar = new SimplePanel();
     Label statusMsg = new Label();
@@ -192,7 +193,6 @@ public class BaseUploadStatus implements IUploadStatus {
     Window.alert(msg.replaceAll("\\\\n", "\\n"));
   }
 
-
   /*
    * (non-Javadoc)
    * 
@@ -201,6 +201,9 @@ public class BaseUploadStatus implements IUploadStatus {
   public void setFileNames(List<String> names) {
     fileNames = names;
     fileNameLabel.setHTML(Utils.convertCollectionToString(names, "<br/>"));
+    if (prg instanceof HasText) {
+      ((HasText) prg).setText(Utils.convertCollectionToString(names, ","));
+    }
   }
 
   /* (non-Javadoc)
@@ -213,24 +216,21 @@ public class BaseUploadStatus implements IUploadStatus {
 
   /**
    * Set the percent of the upload process.
-   * Override this method to update your customized progress widget. 
+   * Override this method if your customized progress widget needs percent computed value. 
    * 
    * @param percent
    */
   public void setPercent(int percent) {
-    setStatus(status);
   }
 
   /* (non-Javadoc)
    * @see gwtupload.client.IUploadStatus#setProgress(int, int)
    */
   public void setProgress(long done, long total) {
-    int percent =(int) (total > 0 ? done * 100 / total : 0);
+    int percent = Utils.getPercent(done, total);
     setPercent(percent);
-    if (prg != null) {
-      if (prg instanceof HasProgress) {
-        ((HasProgress) prg).setProgress(done, total);
-      }
+    if (prg != null && prg instanceof HasProgress) {
+      ((HasProgress) prg).setProgress(done, total);
     }
   }
 
@@ -315,15 +315,16 @@ public class BaseUploadStatus implements IUploadStatus {
     prg = progress;
     panel.add(prg);
     prg.setVisible(false);
+    prg.addStyleName("prgbar");
   }
 
   /**
    * Thought to be overridable by the user when extending this.
    * 
    * @param showProgress
-   * @param message
+   * @param statusMessage
    */
-  protected void updateStatusPanel(boolean showProgress, String message) {
+  protected void updateStatusPanel(boolean showProgress, String statusMessage) {
     if (showProgress && prg == null) {
       setProgressWidget(new BasicProgressBar());
     }
@@ -331,10 +332,9 @@ public class BaseUploadStatus implements IUploadStatus {
       prg.setVisible(showProgress);
     }
 
-    fileNameLabel.setVisible(prg instanceof BasicProgressBar || !showProgress);
     statusLabel.setVisible(!showProgress);
 
-    statusLabel.setText(message);
+    statusLabel.setText(statusMessage);
     cancelLabel.setVisible(hasCancelActions && !cancelCfg.contains(CancelBehavior.DISABLED));
   }
 
