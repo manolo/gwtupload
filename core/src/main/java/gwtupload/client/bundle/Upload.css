@@ -57,6 +57,8 @@
   margin-right: 11px;
   height: 100%;
   font-size: 12px;
+  max-width: 200px;
+  text-overflow: ellipsis;
 }
 .GWTUpld .upld-status .status {
   padding-left: 8px;
