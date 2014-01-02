@@ -21,6 +21,7 @@ import com.google.gwt.event.logical.shared.HasInitializeHandlers;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
+import org.apache.commons.fileupload.FileItemHeaders;
 
 import java.io.File;
 import java.io.IOException;
@@ -140,6 +141,13 @@ public class BlobstoreFileItemFactory implements FileItemFactory, Serializable {
 
     private byte[] getData() {
       return new byte[] {};
+    }
+
+    public FileItemHeaders getHeaders() {
+      return null;
+    }
+
+    public void setHeaders(FileItemHeaders headers) {
     }
   }
 

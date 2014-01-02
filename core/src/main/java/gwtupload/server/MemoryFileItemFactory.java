@@ -18,6 +18,7 @@ package gwtupload.server;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
+import org.apache.commons.fileupload.FileItemHeaders;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -159,6 +160,13 @@ public class MemoryFileItemFactory implements FileItemFactory, Serializable {
 
       public void write(File arg0) throws Exception {
         throw new UnsupportedOperationException("Writing to file is not allowed");
+      }
+
+      public FileItemHeaders getHeaders() {
+        return null;
+      }
+
+      public void setHeaders(FileItemHeaders headers) {
       }
 
     };

@@ -26,6 +26,7 @@ import java.nio.channels.Channels;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
+import org.apache.commons.fileupload.FileItemHeaders;
 
 import com.google.appengine.api.blobstore.BlobInfo;
 import com.google.appengine.api.blobstore.BlobInfoFactory;
@@ -188,6 +189,13 @@ public class FilesApiFileItemFactory implements FileItemFactory, Serializable {
     public String getKeyString() {
       BlobKey k = getKey();
       return k == null ? null : k.getKeyString();
+    }
+
+    public FileItemHeaders getHeaders() {
+      return null;
+    }
+
+    public void setHeaders(FileItemHeaders headers) {
     }
   }
 

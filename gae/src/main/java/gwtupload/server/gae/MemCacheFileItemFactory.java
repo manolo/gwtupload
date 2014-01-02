@@ -31,6 +31,7 @@ import javax.cache.CacheManager;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
+import org.apache.commons.fileupload.FileItemHeaders;
 
 import com.google.appengine.api.memcache.stdimpl.GCacheFactory;
 
@@ -243,6 +244,13 @@ public class MemCacheFileItemFactory implements FileItemFactory, Serializable {
       } else {
         return data.get();
       }
+    }
+
+    public FileItemHeaders getHeaders() {
+      return null;
+    }
+
+    public void setHeaders(FileItemHeaders headers) {
     }
   }
   
