@@ -16,31 +16,7 @@
  */
 package gwtupload.client;
 
-import static gwtupload.shared.UConsts.MULTI_SUFFIX;
-import static gwtupload.shared.UConsts.PARAM_BLOBKEY;
-import static gwtupload.shared.UConsts.PARAM_BLOBSTORE;
-import static gwtupload.shared.UConsts.PARAM_CANCEL;
-import static gwtupload.shared.UConsts.PARAM_REMOVE;
-import static gwtupload.shared.UConsts.PARAM_SHOW;
-import static gwtupload.shared.UConsts.TAG_BLOBSTORE;
-import static gwtupload.shared.UConsts.TAG_BLOBSTORE_PATH;
-import static gwtupload.shared.UConsts.TAG_CANCELED;
-import static gwtupload.shared.UConsts.TAG_CTYPE;
-import static gwtupload.shared.UConsts.TAG_CURRENT_BYTES;
-import static gwtupload.shared.UConsts.TAG_FIELD;
-import static gwtupload.shared.UConsts.TAG_FILE;
-import static gwtupload.shared.UConsts.TAG_FINISHED;
-import static gwtupload.shared.UConsts.TAG_KEY;
-import static gwtupload.shared.UConsts.TAG_MESSAGE;
-import static gwtupload.shared.UConsts.TAG_MSG_END;
-import static gwtupload.shared.UConsts.TAG_MSG_GT;
-import static gwtupload.shared.UConsts.TAG_MSG_LT;
-import static gwtupload.shared.UConsts.TAG_MSG_START;
-import static gwtupload.shared.UConsts.TAG_NAME;
-import static gwtupload.shared.UConsts.TAG_PERCENT;
-import static gwtupload.shared.UConsts.TAG_SIZE;
-import static gwtupload.shared.UConsts.TAG_TOTAL_BYTES;
-import static gwtupload.shared.UConsts.TAG_WAIT;
+import static gwtupload.shared.UConsts.*;
 import gwtupload.client.IFileInput.FileInputType;
 import gwtupload.client.ISession.Session;
 import gwtupload.client.IUploadStatus.Status;
@@ -61,7 +37,9 @@ import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.http.client.Request;
+import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.RequestCallback;
+import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.RequestTimeoutException;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.user.client.Timer;
@@ -80,6 +58,7 @@ import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.xml.client.Document;
+import com.google.gwt.xml.client.Node;
 import com.google.gwt.xml.client.NodeList;
 import com.google.gwt.xml.client.XMLParser;
 import com.google.gwt.xml.client.impl.DOMParseException;
@@ -247,6 +226,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
   private boolean multiple = true;
   private IFileInput fileInput;
   protected String fileInputPrefix = "GWTU";
+  private String fileInputName = null;
   private FileInputType fileInputType;
   private boolean finished = false;
   private long lastData = now();
@@ -258,8 +238,10 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     public void onResponseReceived(Request request, Response response) {
       String text = response.getText();
       String url = null;
+      Document document = null;
       try {
-        url = Utils.getXmlNodeValue(XMLParser.parse(text), TAG_BLOBSTORE_PATH);
+        document = XMLParser.parse(text);
+        url = Utils.getXmlNodeValue(document, TAG_BLOBSTORE_PATH);
       } catch (DOMParseException e) {
         String bpath = "<" + TAG_BLOBSTORE_PATH + ">";
         String sbpath = "</" + TAG_BLOBSTORE_PATH + ">";
@@ -274,6 +256,27 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
         uploadForm.setAction(url);
       } else {
         uploadForm.setAction(session.getServletPath());
+      }
+      removeHiddens();
+      if (document != null) {
+        String name = Utils.getXmlNodeValue(document, TAG_BLOBSTORE_NAME);
+        if (name != null) {
+          fileInput.setName(name);
+        }
+        NodeList list = document.getElementsByTagName(TAG_BLOBSTORE_PARAM);
+        for (int i = 0; i < list.getLength(); i++) {
+          Node node = list.item(i);
+          String value = Utils.getXmlNodeValue(node);
+          if (value != null) {
+            Node attribute = node.getAttributes().getNamedItem(ATTR_BLOBSTORE_PARAM_NAME);
+            if (attribute != null) {
+              String paramName = attribute.getNodeValue();
+              if (paramName != null) {
+                addHidden(paramName, value);
+              }
+            }
+          }
+        }
       }
       receivedBlobPath = true;
       uploadForm.submit();
@@ -538,6 +541,8 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
   private final UpdateTimer updateStatusTimer = new UpdateTimer(this, statusInterval);
 
   private FormPanel uploadForm;
+
+  private List<Hidden> hiddens = null;
 
   private boolean uploading = false;
   
@@ -1231,6 +1236,14 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
   }
   
   /**
+   * Sends a request to the server in order to get the blobstore path.
+   * When the response with the session comes, it submits the form.
+   */
+  private void sendAjaxRequestToGetBlobstorePath() throws RequestException {
+    session.sendRequest("blobstore", onBlobstoreReceivedCallback, PARAM_BLOBSTORE + "=true&" + PARAM_NAME + "=" + getInputName() + "&" + PARAM_FILENAME + "=" + fileInput.getFilename());
+  }
+
+  /**
    * Called when the uploader detects that the upload process has finished:
    * - in the case of submit complete.
    * - in the case of error talking with the server.
@@ -1288,7 +1301,30 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     }
     return valid;
   }
-  
+
+  private void removeHiddens() {
+    if (hiddens != null) {
+      for (Hidden hidden : hiddens) {
+        hidden.removeFromParent();
+      }
+      hiddens = null;
+    }
+  }
+
+  private Hidden addHidden(String name, String value) {
+    Hidden hidden = new Hidden(name, value);
+    uploadForm.add(hidden);
+    if (hiddens == null) {
+      hiddens = new ArrayList<Hidden>();
+    }
+    hiddens.add(hidden);
+    return hidden;
+  }
+
+  public List<String> getFileInputNames() {
+    return fileInput.getFilenames();
+  }
+
   public boolean anyFileIsRepeated(boolean checkOnlyUploadedFiles) {
     if (!multiple && avoidRepeatedFiles) {
       for (String s: fileInput.getFilenames()) {
