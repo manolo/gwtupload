@@ -55,22 +55,23 @@ public class MultipleFileUpload extends FileUpload {
 
 }
 
-class FileList extends JavaScriptObject {
-  protected FileList() {}
-
-  public final native File item(int index) /*-{
-		return this.item(index);
-	}-*/;
-
-  public final native int getLength() /*-{
-		return this.length;
-	}-*/;
-}
-
-class File extends JavaScriptObject {
-  protected File() {}
-
-  public final native String getName() /*-{
-		return this.name;
-	}-*/;
-}
+// ST: moved this to public level
+//class FileList extends JavaScriptObject {
+//  protected FileList() {}
+//
+//  public final native File item(int index) /*-{
+//		return this.item(index);
+//	}-*/;
+//
+//  public final native int getLength() /*-{
+//		return this.length;
+//	}-*/;
+//}
+//
+//class File extends JavaScriptObject {
+//  protected File() {}
+//
+//  public final native String getName() /*-{
+//		return this.name;
+//	}-*/;
+//}

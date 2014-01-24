@@ -138,7 +138,10 @@ public interface IFileInput extends HasChangeHandlers, IsWidget {
       }
       public FileInputType with(IFileInput i) {
         return this;
-      }      
+      }
+      public FileInputType with(IDropZone dropZone) {
+        return this;
+      }
     },
     BROWSER_INPUT {
       public IFileInput getInstance() {
@@ -153,6 +156,9 @@ public interface IFileInput extends HasChangeHandlers, IsWidget {
       public FileInputType with(IFileInput i) {
         return this;
       }      
+      public FileInputType with(IDropZone dropZone) {
+        return this;
+      }
     },
     BUTTON {
       public IFileInput getInstance() {
@@ -167,6 +173,9 @@ public interface IFileInput extends HasChangeHandlers, IsWidget {
       public FileInputType with(IFileInput i) {
         return this;
       }      
+      public FileInputType with(IDropZone dropZone) {
+        return this;
+      }
     },
     LABEL {
       public IFileInput getInstance() {
@@ -181,18 +190,31 @@ public interface IFileInput extends HasChangeHandlers, IsWidget {
       public FileInputType with(IFileInput i) {
         return this;
       }      
+      public FileInputType with(IDropZone dropZone) {
+        return this;
+      }
     },
     CUSTOM {
       Widget widget;
       boolean hasText = false;
       IFileInput i = null;
+      private IDropZone dropZone;
+      private boolean withDropZone;
 
       public IFileInput getInstance() {
         if (i == null) {
-          if (widget == null) {
-            i = GWT.create(ButtonFileInput.class);
+          if (withDropZone) {
+            if (widget == null) {
+              i = GWT.create(DropZoneButtonFileInput.class);
+            } else {
+              i = new DropZoneButtonFileInput(widget, hasText, dropZone);
+            }              
           } else {
-            i = new ButtonFileInput(widget, hasText);
+            if (widget == null) {
+              i = GWT.create(ButtonFileInput.class);
+            } else {
+              i = new ButtonFileInput(widget, hasText);
+            }
           }
         }
         return i.newInstance();
@@ -202,6 +224,8 @@ public interface IFileInput extends HasChangeHandlers, IsWidget {
         i = null;
         this.widget = widget;
         this.hasText = hasText;
+        this.withDropZone = false;
+        this.dropZone = null;
         return this;
       }
       public FileInputType with(Widget w) {
@@ -209,6 +233,31 @@ public interface IFileInput extends HasChangeHandlers, IsWidget {
       }
       public FileInputType with(IFileInput i) {
         this.i = i;
+        return this;
+      }
+      public FileInputType with(IDropZone dropZone) {
+        this.withDropZone = true; // dropZone can be null
+        this.dropZone = dropZone;
+        return this;
+      }
+    },
+    DROPZONE {
+      private IDropZone dropZone;
+      
+      public IFileInput getInstance() {
+        return new DropZoneFileInput(dropZone);
+      }
+      public FileInputType with(Widget widget, boolean hasText) {
+        return this;
+      }
+      public FileInputType with(Widget w) {
+        return with(w, false);
+      }
+      public FileInputType with(IFileInput i) {
+        return this;
+      }  
+      public FileInputType with(IDropZone dropZone) {
+        this.dropZone = dropZone;
         return this;
       }
     }
@@ -222,6 +271,7 @@ public interface IFileInput extends HasChangeHandlers, IsWidget {
     FileInputType with(Widget w, boolean hasText);
     FileInputType with(Widget w);
     FileInputType with(IFileInput w);
+    FileInputType with(IDropZone dropZone);
   }
 
   /**
@@ -238,7 +288,7 @@ public interface IFileInput extends HasChangeHandlers, IsWidget {
       });
     }
   }
-
+  
   /**
    * Gets the filename selected by the user. This property has no mutator, as
    * browser security restrictions preclude setting it.

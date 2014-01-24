@@ -26,9 +26,13 @@ import jsupload.client.ChismesUploadProgress;
 import jsupload.client.IncubatorUploadProgress;
 
 import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.dom.client.Style;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Hidden;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
+import gwtupload.client.IDropZone;
 
 /**
  * <p>
@@ -94,6 +98,38 @@ public class MultipleUploadSample implements EntryPoint {
     
     MUpld m = new MUpld();
     RootPanel.get("uibinder").add(m);
+
+    MultiUploader dragDropUploader = new MultiUploader(FileInputType.DROPZONE);
+    dragDropUploader.addOnFinishUploadHandler(onFinishUploaderHandler);
+    RootPanel.get("dropzone").add(dragDropUploader);
+
+    class IDropZoneLabel extends Label implements IDropZone {}
+
+    IDropZoneLabel externalDropZone = new IDropZoneLabel();
+    externalDropZone.setText("Drop files here");
+    externalDropZone.setSize("160px", "30px");
+    externalDropZone.getElement().getStyle().setBorderStyle(Style.BorderStyle.DASHED);
+    externalDropZone.getElement().getStyle().setBorderWidth(1, Style.Unit.PX);
+    MultiUploader externalDragDropUploader = new MultiUploader(FileInputType.DROPZONE.with((IDropZone) externalDropZone));
+    externalDragDropUploader.addOnFinishUploadHandler(onFinishUploaderHandler);
+    RootPanel.get("external_dropzone").add(externalDragDropUploader);
+    RootPanel.get("external_dropzone").add(externalDropZone);
+
+    MultiUploader customDragDropUploader = new MultiUploader(
+            FileInputType.CUSTOM.with(new Label("Click me or drag and drop files on me")).with((IDropZone) null));
+    customDragDropUploader.addOnFinishUploadHandler(onFinishUploaderHandler);
+    RootPanel.get("custom_dropzone").add(customDragDropUploader);
+    
+    IDropZoneLabel customExternalDropZone = new IDropZoneLabel();
+    customExternalDropZone.setText("Drop files here");
+    customExternalDropZone.setSize("160px", "30px");
+    customExternalDropZone.getElement().getStyle().setBorderStyle(Style.BorderStyle.DASHED);
+    customExternalDropZone.getElement().getStyle().setBorderWidth(1, Style.Unit.PX);
+    MultiUploader customExternalDragDropUploader = new MultiUploader(
+            FileInputType.CUSTOM.with(new Button("Click me or drag and drop files below")).with((IDropZone) customExternalDropZone));
+    customExternalDragDropUploader.addOnFinishUploadHandler(onFinishUploaderHandler);
+    RootPanel.get("custom_external_dropzone").add(customExternalDragDropUploader);
+    RootPanel.get("custom_external_dropzone").add(customExternalDropZone);
   }
 
 }
