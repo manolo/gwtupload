@@ -2,5 +2,5 @@
   <inherits name="gwtuploadsample.Sample"/>
   <entry-point class="gwtuploadsample.client.MultipleUploadSample"/>
   <set-property name="compiler.stackMode" value="strip"/>
-  <collapse-property name="user.agent" values="opera,ie*" />
+  <collapse-property name="user.agent" values="ie*" />
 </module>
