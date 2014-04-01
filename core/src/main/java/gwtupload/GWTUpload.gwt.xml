@@ -23,6 +23,7 @@
     <when-type-is class="gwtupload.client.DecoratedFileUpload.DecoratedFileUploadImpl"/>
     <any>
       <when-property-is name="user.agent" value="ie9" />
+      <when-property-is name="user.agent" value="ie10" />
       <when-property-is name="user.agent" value="safari"/>
       <when-property-is name="user.agent" value="gecko1_8" />
       <when-property-is name="user.agent" value="opera"/>
