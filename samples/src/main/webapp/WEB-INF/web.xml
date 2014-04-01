@@ -7,7 +7,6 @@
 
   <servlet>
     <servlet-name>uploadServlet</servlet-name>
-<<<<<<< HEAD
     <servlet-class>gwtuploadsample.server.SampleUploadServlet</servlet-class>
     <init-param>
 	    <param-name>maxSize</param-name>
@@ -21,9 +20,9 @@
 	    <param-name>corsDomainsRegex</param-name>
 	    <param-value>.*</param-value>
     </init-param>
-=======
-    <servlet-class>gwtuploadsample.server.S3UploadServlet</servlet-class>
-
+  </servlet>
+<!--
+   <servlet-class>gwtuploadsample.server.S3UploadServlet</servlet-class>
     <init-param>
       <param-name>awsBucketName</param-name>
       <param-value>PUT_HERE_AWS_BUCKET_NAME</param-value>
@@ -38,13 +37,8 @@
       <param-name>awsSecretKey</param-name>
       <param-value>PUT_HERE_AWS_SECRET_KEY</param-value>
     </init-param>
-
-<!--    <servlet-class>gwtuploadsample.server.SampleUploadServlet</servlet-class>-->
-<!--     <servlet-class>gwtupload.server.UploadServlet</servlet-class> -->
-<!--    <servlet-class>gwtupload.server.appeng.AppEngineUploadServlet</servlet-class>-->
->>>>>>> 6b0579801f0cd65d7c919c09f767da0183cadc69
-  </servlet>
-  
+   </servlet>
+-->
   <servlet-mapping>
     <servlet-name>uploadServlet</servlet-name>
     <url-pattern>*.gupld</url-pattern>
