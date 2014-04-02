@@ -7,7 +7,7 @@
   <source path="client"/>
   <source path="shared"/>
 
-  <replace-with class="gwtupload.client.DecoratedFileUpload.DecoratedFileUploadImplNoClick">
+  <replace-with class="gwtupload.client.DecoratedFileUpload.DecoratedFileUploadImplClick">
     <when-type-is class="gwtupload.client.DecoratedFileUpload.DecoratedFileUploadImpl"/>
   </replace-with>
 
@@ -19,18 +19,6 @@
     </any>
   </replace-with>
 
-  <replace-with class="gwtupload.client.DecoratedFileUpload.DecoratedFileUploadImplClick">
-    <when-type-is class="gwtupload.client.DecoratedFileUpload.DecoratedFileUploadImpl"/>
-    <any>
-      <when-property-is name="user.agent" value="ie9" />
-      <when-property-is name="user.agent" value="ie10" />
-      <when-property-is name="user.agent" value="safari"/>
-      <when-property-is name="user.agent" value="gecko1_8" />
-      <when-property-is name="user.agent" value="opera"/>
-    </any>
-  </replace-with>
-
-  
   <!-- 
       FileUploadImplOpera has a hack to avoid firing onChange each time
       the user push a key, this makes gwt-upload behaves bad because
