@@ -27,7 +27,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <gwtVersion>2.6.0</gwtVersion>
     <gwtMaven>2.6.0</gwtMaven>
-    <commonsFileuploadVersion>1.3</commonsFileuploadVersion>
+    <commonsFileuploadVersion>1.3.1</commonsFileuploadVersion>
     <commonsIoVersion>2.3</commonsIoVersion>
     <gwtChismesVersion>0.9.7</gwtChismesVersion>
     <gwtExporterVersion>2.4.0-M1</gwtExporterVersion>
