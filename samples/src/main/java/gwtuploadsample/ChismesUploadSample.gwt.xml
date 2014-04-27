@@ -6,6 +6,4 @@
   <stylesheet src="GWTCButton.css"/>
   <stylesheet src="GWTCTabPanel.css"/>
   <set-property name="compiler.stackMode" value="strip"/>
-  <collapse-property name="user.agent" values="ie*" />
-  <collapse-property name="locale" values="*" />
 </module>

@@ -4,5 +4,5 @@
   <set-property name="export" value="yes" />
   <set-property name="compiler.stackMode" value="strip"/>
   <add-linker name="xsiframe"/>
-  <collapse-property name="user.agent" values="*" />
+  <collapse-all-properties />
 </module>

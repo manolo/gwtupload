@@ -79,7 +79,7 @@
        <properties>
         <sonatypeRepoId>sonatype-nexus-staging</sonatypeRepoId>
         <sonatypeUrl>http://oss.sonatype.org/service/local/staging/deploy/maven2</sonatypeUrl>
-        <wikiSvnExec>svn</wikiSvnExec>
+        <wikiSvnExec>git</wikiSvnExec>
        </properties>
      </profile>
   </profiles>
@@ -252,22 +252,6 @@
 
   <build>
     <plugins>
-      <plugin>
-        <groupId>org.riedelcastro</groupId>
-        <artifactId>gcupload-maven-plugin</artifactId>
-        <version>0.9</version>
-        <configuration>
-          <allowSnapshots>true</allowSnapshots>
-          <projectName>gwtupload</projectName>
-          <uploads>
-            <upload>
-              <extensions>zip</extensions>
-              <labels>${downloadLabel}</labels>
-            </upload>
-          </uploads>
-        </configuration>
-      </plugin>
-
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
