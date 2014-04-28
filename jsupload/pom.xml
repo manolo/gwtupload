@@ -165,6 +165,9 @@
                 <exec dir="target/gwtupload.wiki" executable="${wikiSvnExec}">
                   <arg line="commit -m updated_wiki_pages -a" />
                 </exec>
+                <exec dir="target/gwtupload.wiki" executable="${wikiSvnExec}">
+                  <arg line="push origin master" />
+                </exec>
               </tasks>
             </configuration>
             <phase>prepare-package</phase>

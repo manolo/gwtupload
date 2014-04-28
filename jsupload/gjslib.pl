@@ -23,11 +23,11 @@ my $cgifile = "src/main/java/jsupload/public/jsupload.cgi.pl";
 # Php script
 my $phpfile = "src/main/java/jsupload/public/jsupload.php";
 # Location of the sample aplication
-my $sample_location = "http://gwtupload.alcala.org/gupld/jsupload.JsUpload/JsUpload.html";
+my $sample_location = "http://gwtupload.alcala.org/gupld/jsupload/JsUpload.html";
 # Wiki template with library description
 my $wikitpl = "src/main/java/jsupload/public/JsUpload.wiki.txt";
 # Output wiki page
-my $wikiout = "target/wiki/JsUpload_Documentation.wiki";
+my $wikiout = "target/gwtupload.wiki/JsUpload_Documentation.wiki";
 
 ######## MAIN
 
@@ -290,7 +290,7 @@ sub docsample {
       $on = 1 if (/<script\s+id='jsexample'>/);
    }
    close(F);
-   $ret = "= Sample Code =\nYou can view this example  [$sample_location here]\n{{{\n$ret\n}}}\n";
+   $ret = "= Sample Code =\nYou can view this in action in the example  [$sample_location here]\n{{{\n$ret\n}}}\n";
    return $ret;
 }
 
