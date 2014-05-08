@@ -99,6 +99,7 @@ public class MultiUploader extends Composite implements IUploader {
   private boolean enabled = true;
   private String fileInputPrefix = "GWTMU";
   private int fileInputSize = Uploader.DEFAULT_FILEINPUT_SIZE;
+  private boolean addNewUploaderInstancesAtTop;
 
   protected FileInputType fileInputType;
   private UploaderConstants i18nStrs = Uploader.I18N_CONSTANTS;
@@ -590,7 +591,11 @@ public class MultiUploader extends Composite implements IUploader {
     currentUploader.setFileInputSize(fileInputSize);
     currentUploader.setEnabled(enabled);
     // add the new uploader to the panel
-    multiUploaderPanel.add((Widget) currentUploader);
+    if (addNewUploaderInstancesAtTop) {
+        multiUploaderPanel.insert((Widget) currentUploader, 0);
+    } else {
+        multiUploaderPanel.add((Widget) currentUploader);
+    }
 
     if (lastUploader == null) {
       lastUploader = currentUploader;
@@ -640,4 +645,7 @@ public class MultiUploader extends Composite implements IUploader {
     return currentUploader.getServerMessage();
   }
 
+  public void setAddNewUploaderInstancesAtTop(boolean addNewUploaderInstancesAtTop) {
+    this.addNewUploaderInstancesAtTop = addNewUploaderInstancesAtTop;
+  }
 }
