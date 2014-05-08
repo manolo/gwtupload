@@ -27,11 +27,13 @@ import jsupload.client.IncubatorUploadProgress;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.dom.client.Style;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Hidden;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
+
 import gwtupload.client.IDropZone;
 
 /**
@@ -92,7 +94,7 @@ public class MultipleUploadSample implements EntryPoint {
     RootPanel.get("incubator").add(incubatorUploader);
 
 
-    MultiUploader chismesUploader = new MultiUploader(FileInputType.BUTTON, new ChismesUploadProgress(false));//, new DecoratedFileInput(new GWTCButton()));
+    MultiUploader chismesUploader = new MultiUploader(FileInputType.BUTTON, new ChismesUploadProgress(false));
     chismesUploader.addOnFinishUploadHandler(onFinishUploaderHandler);
     RootPanel.get("chismes").add(chismesUploader);
     
@@ -103,13 +105,16 @@ public class MultipleUploadSample implements EntryPoint {
     dragDropUploader.addOnFinishUploadHandler(onFinishUploaderHandler);
     RootPanel.get("dropzone").add(dragDropUploader);
 
-    class IDropZoneLabel extends Label implements IDropZone {}
+    class DropZoneLabel extends Label implements IDropZone {
+    }
 
-    IDropZoneLabel externalDropZone = new IDropZoneLabel();
-    externalDropZone.setText("Drop files here");
-    externalDropZone.setSize("160px", "30px");
+    DropZoneLabel externalDropZone = new DropZoneLabel();
+    externalDropZone.setText("");
+    externalDropZone.setSize("180px", "40px");
     externalDropZone.getElement().getStyle().setBorderStyle(Style.BorderStyle.DASHED);
     externalDropZone.getElement().getStyle().setBorderWidth(1, Style.Unit.PX);
+    externalDropZone.getElement().getStyle().setPadding(10, Unit.PX);
+
     MultiUploader externalDragDropUploader = new MultiUploader(FileInputType.DROPZONE.with((IDropZone) externalDropZone));
     externalDragDropUploader.addOnFinishUploadHandler(onFinishUploaderHandler);
     RootPanel.get("external_dropzone").add(externalDragDropUploader);
@@ -120,11 +125,12 @@ public class MultipleUploadSample implements EntryPoint {
     customDragDropUploader.addOnFinishUploadHandler(onFinishUploaderHandler);
     RootPanel.get("custom_dropzone").add(customDragDropUploader);
     
-    IDropZoneLabel customExternalDropZone = new IDropZoneLabel();
+    DropZoneLabel customExternalDropZone = new DropZoneLabel();
     customExternalDropZone.setText("Drop files here");
-    customExternalDropZone.setSize("160px", "30px");
+    customExternalDropZone.setSize("180px", "40px");
     customExternalDropZone.getElement().getStyle().setBorderStyle(Style.BorderStyle.DASHED);
     customExternalDropZone.getElement().getStyle().setBorderWidth(1, Style.Unit.PX);
+    customExternalDropZone.getElement().getStyle().setPadding(10, Unit.PX);
     MultiUploader customExternalDragDropUploader = new MultiUploader(
             FileInputType.CUSTOM.with(new Button("Click me or drag and drop files below")).with((IDropZone) customExternalDropZone));
     customExternalDragDropUploader.addOnFinishUploadHandler(onFinishUploaderHandler);
