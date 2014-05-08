@@ -118,12 +118,21 @@
           containerId: "uploader5",
           onFinish: loadImage,
           chooser: "label",    
-          uploadBrowse: "",
           validExtensions: ".jpg, .gif, .png",
           regional: {
         	uploaderSend: "Upload it.",
         	uploadBrowse: "Select an image from your computer..."    
           }
+        });
+        
+        new jsu.Upload({
+          containerId: "uploader6",
+          onFinish: loadImage,
+          multiple: true, 
+          multiSelection: true,
+          auto: true,          
+          chooser: "drop",    
+          validExtensions: ".jpg, .gif, .png",
         });
         
         // Method to show a picture using the class PreloadImage
@@ -168,6 +177,7 @@
    <div id="uploader3" class="jsubox"><br><br></div>
    <div id="uploader4" class="jsubox"><br><br></div>
    <div id="uploader5" class="jsubox"><br><br></div>
+   <div id="uploader6" class="jsubox"><br><br></div>
    <div id="photos" class="jsubox"> <br></div>
    <script>
        // Hack to insert each example in a div

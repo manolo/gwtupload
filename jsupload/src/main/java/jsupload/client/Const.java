@@ -78,6 +78,7 @@ public class Const implements Exportable {
     protected static final String TXT_SUCCESS = "uploadStatusSuccess"; // (Upload)["Done"]
     protected static final String TXT_DELETED = "uploadStatusDeleted"; // (Upload)["Deleted"]
     protected static final String TXT_BROWSE = "uploadBrowse"; // (Upload)["Select a file ..."]
+    protected static final String TXT_DROP = "uploadDrop"; // (Upload)["Drop files here"]
     protected static final String TXT_SUBMIT_ERROR = "submitError"; // (Upload)[Unable to auto submit the form, it seems your browser has security issues with this feature.\n Developer Info: If you are using jsupload and you do not need cross-domain, try a version compiled with the standard linker?]
     protected static final String TXT_INVALID_PATH = "invalidPathError"; // (Upload)[Error you have typed an invalid file name, please select a valid one.]
     

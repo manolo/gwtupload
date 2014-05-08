@@ -76,12 +76,13 @@ public class Upload implements Exportable {
       type = FileInputType.LABEL;
     } else if ("anchor".equals(choose)) {
       type = FileInputType.ANCHOR;
+    } else if ("drop".equals(choose)) {
+      type = FileInputType.DROPZONE;
     }
     
     if ("incubator".equals(jsProp.get(Const.TYPE))) {
       if (multipleUploader) {
         uploader = new MultiUploader(type, new IncubatorUploadProgress());
-        
       } else {
         uploader = new SingleUploader(type);
       }
