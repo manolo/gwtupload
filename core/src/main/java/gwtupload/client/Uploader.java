@@ -16,7 +16,36 @@
  */
 package gwtupload.client;
 
-import static gwtupload.shared.UConsts.*;
+import static gwtupload.shared.UConsts.ATTR_BLOBSTORE_PARAM_NAME;
+import static gwtupload.shared.UConsts.MULTI_SUFFIX;
+import static gwtupload.shared.UConsts.PARAM_BLOBKEY;
+import static gwtupload.shared.UConsts.PARAM_BLOBSTORE;
+import static gwtupload.shared.UConsts.PARAM_CANCEL;
+import static gwtupload.shared.UConsts.PARAM_FILENAME;
+import static gwtupload.shared.UConsts.PARAM_NAME;
+import static gwtupload.shared.UConsts.PARAM_REMOVE;
+import static gwtupload.shared.UConsts.PARAM_SHOW;
+import static gwtupload.shared.UConsts.TAG_BLOBSTORE;
+import static gwtupload.shared.UConsts.TAG_BLOBSTORE_NAME;
+import static gwtupload.shared.UConsts.TAG_BLOBSTORE_PARAM;
+import static gwtupload.shared.UConsts.TAG_BLOBSTORE_PATH;
+import static gwtupload.shared.UConsts.TAG_CANCELED;
+import static gwtupload.shared.UConsts.TAG_CTYPE;
+import static gwtupload.shared.UConsts.TAG_CURRENT_BYTES;
+import static gwtupload.shared.UConsts.TAG_FIELD;
+import static gwtupload.shared.UConsts.TAG_FILE;
+import static gwtupload.shared.UConsts.TAG_FINISHED;
+import static gwtupload.shared.UConsts.TAG_KEY;
+import static gwtupload.shared.UConsts.TAG_MESSAGE;
+import static gwtupload.shared.UConsts.TAG_MSG_END;
+import static gwtupload.shared.UConsts.TAG_MSG_GT;
+import static gwtupload.shared.UConsts.TAG_MSG_LT;
+import static gwtupload.shared.UConsts.TAG_MSG_START;
+import static gwtupload.shared.UConsts.TAG_NAME;
+import static gwtupload.shared.UConsts.TAG_PERCENT;
+import static gwtupload.shared.UConsts.TAG_SIZE;
+import static gwtupload.shared.UConsts.TAG_TOTAL_BYTES;
+import static gwtupload.shared.UConsts.TAG_WAIT;
 import gwtupload.client.IFileInput.FileInputType;
 import gwtupload.client.ISession.Session;
 import gwtupload.client.IUploadStatus.Status;
@@ -37,7 +66,6 @@ import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.http.client.Request;
-import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.RequestTimeoutException;
@@ -937,7 +965,8 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     }
     fileInput = input;
     fileInput.addChangeHandler(onFileInputChanged);
-    fileInput.setText(i18nStrs.uploaderBrowse());
+    fileInput.setText(fileInput instanceof IDropZone ?
+        i18nStrs.uploaderDrop() : i18nStrs.uploaderBrowse());
     fileInput.setEnabled(enabled);
     setFileInputSize(DEFAULT_FILEINPUT_SIZE);
     assignNewNameToFileInput();
@@ -964,7 +993,8 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
    */
   public void setI18Constants(UploaderConstants strs) {
     this.i18nStrs = strs;
-    fileInput.setText(strs.uploaderBrowse());
+    fileInput.setText(fileInput instanceof IDropZone ?
+        i18nStrs.uploaderDrop() : i18nStrs.uploaderBrowse());
     statusWidget.setI18Constants(strs);
   }
 

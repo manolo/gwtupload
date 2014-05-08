@@ -16,7 +16,6 @@
  */
 package gwtupload.client;
 
-import com.google.gwt.user.client.ui.*;
 import gwtupload.client.IFileInput.FileInputType;
 import gwtupload.client.IUploadStatus.Status;
 
@@ -30,6 +29,13 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiChild;
 import com.google.gwt.uibinder.client.UiConstructor;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HasWidgets;
+import com.google.gwt.user.client.ui.Hidden;
+import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.Widget;
+
 
 /**
  * 
@@ -142,7 +148,6 @@ public class AbstractMultiUploader<T extends IsWidget & HasWidgets.ForIsWidget> 
    * @param type
    *   file input to use
    */
-  @UiConstructor
   public AbstractMultiUploader(T multiUploaderPanel, FileInputType type) {
     this(multiUploaderPanel, type, new BaseUploadStatus());
   }
@@ -589,10 +594,9 @@ public class AbstractMultiUploader<T extends IsWidget & HasWidgets.ForIsWidget> 
     currentUploader.setFileInputSize(fileInputSize);
     currentUploader.setEnabled(enabled);
     // add the new uploader to the panel
-    multiUploaderPanel.add((Widget) currentUploader);
-    multiUploaderPanel.add((Widget) currentUploader);
-    if (addNewUploaderInstancesAtTop) {
-        multiUploaderPanel.insert((Widget) currentUploader, 0);
+    // TODO: report to gwt that insert should be in some interface
+    if (addNewUploaderInstancesAtTop && multiUploaderPanel instanceof FlowPanel) {
+        ((FlowPanel)multiUploaderPanel).insert((Widget) currentUploader, 0);
     } else {
         multiUploaderPanel.add((Widget) currentUploader);
     }

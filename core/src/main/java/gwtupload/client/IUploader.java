@@ -226,8 +226,11 @@ public interface IUploader extends HasJsData, HasWidgets, IsWidget {
     @DefaultStringValue("It seems the application is configured to use GAE blobstore.\nThe server has raised an error while creating an Upload-Url\nBe sure thar you have enabled billing for this application in order to use blobstore.")
     String uploaderBlobstoreError();
 
-    @DefaultStringValue("Choose a file to upload ...")
+    @DefaultStringValue("Choose a file to upload...")
     String uploaderBrowse();
+    
+    @DefaultStringValue("Drop files here.")
+    String uploaderDrop();
 
     @DefaultStringValue("Invalid file.\nOnly these types are allowed:\n")
     String uploaderInvalidExtension();

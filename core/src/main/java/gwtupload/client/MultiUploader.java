@@ -16,6 +16,7 @@
  */
 package gwtupload.client;
 
+import com.google.gwt.uibinder.client.UiConstructor;
 import com.google.gwt.user.client.ui.FlowPanel;
 
 public class MultiUploader extends AbstractMultiUploader<FlowPanel> {
@@ -23,6 +24,7 @@ public class MultiUploader extends AbstractMultiUploader<FlowPanel> {
     super(getPanel());
   }
 
+  @UiConstructor
   public MultiUploader(IFileInput.FileInputType type) {
     super(getPanel(), type);
   }
