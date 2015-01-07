@@ -244,8 +244,8 @@ sub writeResponse {
     my $xml = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>"
             . "\n<response>\n  $msg\n</response>\n";
     if ($post) {
-      $xml =~ s/</@@@/g;
-      $xml =~ s/>/___/g;
+      $xml =~ s/</@@^^^/g;
+      $xml =~ s/>/^^^@@/g;
       $xml = '%%%INI%%%' . $xml . '%%%END%%%';
     }
     
