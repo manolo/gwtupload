@@ -62,6 +62,7 @@ import java.util.logging.Logger;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
+import com.google.gwt.dom.client.FormElement;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -643,6 +644,8 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     uploadForm.setMethod(FormPanel.METHOD_POST);
     uploadForm.addSubmitHandler(onSubmitFormHandler);
     uploadForm.addSubmitCompleteHandler(onSubmitCompleteHandler);
+    // Issue #206
+    FormElement.as(uploadForm.getElement()).setAcceptCharset("UTF-8");
 
     uploaderPanel = getUploaderPanel();
     uploaderPanel.add(uploadForm);
