@@ -1053,6 +1053,8 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
         continue;
       }
       if (!ext.startsWith(".")) ext = "." + ext;
+      accept += (accept.isEmpty() ? "" : ",") + ext;
+
       validExtensionsMsg += (validExtensionsMsg.isEmpty() ? "" : ",") + ext;
       ext = ext.replaceAll("\\.", "\\\\.");
       ext = ".+" + ext;
