@@ -145,6 +145,8 @@
           <enableClosureCompiler>${gwt.enableClosureCompiler}</enableClosureCompiler>
           <disableClassMetadata>${gwt.disableClassMetadata}</disableClassMetadata>
           <disableCastChecking>${gwt.disableCastChecking}</disableCastChecking>
+          <enableAssertions>false</enableAssertions>
+          <optimizationLevel>9</optimizationLevel>
         </configuration>
       </plugin>
       <plugin>
