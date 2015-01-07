@@ -218,10 +218,11 @@ public class SingleUploader extends Uploader {
   }
 
   public void clear() {
+    for (Widget w : formWidgets) {
+      w.removeFromParent();
+    }
     formWidgets.clear();
-    super.clear();
   }
-
 
   /* (non-Javadoc)
    * @see gwtupload.client.Uploader#onFinishUpload()
