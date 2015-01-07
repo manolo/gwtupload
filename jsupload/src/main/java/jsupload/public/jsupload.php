@@ -81,7 +81,7 @@ function writeResponse($msg, $post) {
     # and will restore '<' and '>' symbols.
     $xml = str_replace("<", "@@@", $xml);
     $xml = str_replace(">", "___", $xml);
-    $xml = '%%%INI%%%' + $xml + '%%%END%%%';
+    $xml = '%%%INI%%%' . $xml . '%%%END%%%';
   }
   die($xml);
 }
