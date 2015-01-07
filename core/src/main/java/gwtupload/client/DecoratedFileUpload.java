@@ -547,7 +547,8 @@ public class DecoratedFileUpload extends FlowPanel implements HasName, HasChange
   
   @Override
   public void add(Widget widget) {
-    if (widget instanceof HasClickHandlers) {
+    // Be compatible with UIBinder (#179), but avoid adding our own FileInput (#205)
+    if (widget instanceof HasClickHandlers && !(widget instanceof FileUploadWithMouseEvents)) {
       setButton(widget);
     } else {
       super.add(widget);
