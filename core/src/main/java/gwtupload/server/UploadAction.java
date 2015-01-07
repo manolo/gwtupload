@@ -201,6 +201,7 @@ public class UploadAction extends UploadServlet {
         listener.setException(new RuntimeException(error));
       }
       UploadServlet.removeSessionFileItems(request);
+      request.getSession().removeAttribute(getSessionLastFilesKey(request));
     } else {
     	Map<String, String> stat = new HashMap<String, String>();
     	getFileItemsSummary(request, stat);

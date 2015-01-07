@@ -301,8 +301,8 @@ public class UploadServlet extends HttpServlet implements Servlet {
    * Removes all FileItems stored in session under the default key and the temporary data.
    */
   public static void removeSessionFileItems(HttpServletRequest request) {
-      removeSessionFileItems(request, SESSION_FILES, true);
-    }
+    removeSessionFileItems(request, SESSION_FILES, true);
+  }
 
   /**
    * Removes all FileItems stored in session under the session key, but in this case 
