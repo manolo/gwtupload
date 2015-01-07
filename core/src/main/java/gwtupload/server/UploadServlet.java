@@ -999,7 +999,6 @@ public class UploadServlet extends HttpServlet implements Servlet {
    * multiple instances of uploaders in an application with the same session but
    * who do not wish to share the uploaded files.
    * Example:
-   * @Override
    * protected String getSessionFilesKey(HttpServletRequest request) {
    *  return getSessionFilesKey(request.getParameter("randomNumber"));
    * }

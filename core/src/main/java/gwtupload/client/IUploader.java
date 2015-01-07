@@ -484,7 +484,6 @@ public interface IUploader extends HasJsData, HasWidgets, IsWidget {
 
   /**
    * Sets the uploader in uploaded state with given file info
-   * @param info
    */
   void setServerMessage(ServerMessage msg);
 

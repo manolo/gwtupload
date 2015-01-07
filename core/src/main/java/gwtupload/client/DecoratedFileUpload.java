@@ -54,9 +54,9 @@ import com.google.gwt.user.client.ui.Widget;
  *
  * <pre>
 
-     <up:DecoratedFileUpload>
-        <g:Button>Select a file ...</g:Button>
-     </up:DecoratedFileUpload>
+     &lt;up:DecoratedFileUpload&gt;
+        &lt;g:Button&gt;Select a file ...&lt;/g:Button&gt;
+     &lt;/up:DecoratedFileUpload&gt;
 
  * </pre>
  *

@@ -95,14 +95,11 @@ public interface IUploadStatus extends HasProgress, IsWidget {
 
   /**
    * Add a new  handler which will be fired when the user clicks on the cancel button.
-   * @param handler
    */
   HandlerRegistration addCancelHandler(UploadCancelHandler handler);
 
   /**
    * Return the status of the upload process.
-   *
-   * @return Status
    */
   Status getStatus();
 
@@ -115,8 +112,6 @@ public interface IUploadStatus extends HasProgress, IsWidget {
 
   /**
    * Creates a new instance of the current object type.
-   *
-   * @return a new instance
    */
   IUploadStatus newInstance();
 
@@ -126,45 +121,36 @@ public interface IUploadStatus extends HasProgress, IsWidget {
    * @param config
    *   Set of configuration parameters.
    *   TIP: Use EnumSet.of() to fill them.
-   *
    */
   void setCancelConfiguration(Set<IUploadStatus.CancelBehavior> config);
 
   /**
    * Called when an error is detected.
-   * @param error
    */
   void setError(String error);
 
   /**
    * Called when the uploader knows the filenames selected by the user.
-   * @param of the selected files' names
    */
   void setFileNames(List<String> names);
 
   /**
    * Internationalize the UploadStatus widget.
-   *
-   * @param strs
    */
   void setI18Constants(UploadStatusConstants strs);
 
   /**
    * Set the process status.
-   *
-   * @param status
    */
   void setStatus(IUploadStatus.Status status);
 
   /**
    * Set the handler which will be fired when the status changes.
-   * @param handler
    */
   void setStatusChangedHandler(UploadStatusChangedHandler handler);
 
   /**
    * show/hide the widget.
-   * @param b
    */
   void setVisible(boolean b);
 }

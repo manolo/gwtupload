@@ -69,7 +69,6 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory;
  *   <li>After of blobstoring, our doPost receives a request size = -1.</li>
  *   <li>If the upload fails, our doPost is never called.</li>
  * </ul>
- * </p>
  *
  * @author Manolo Carrasco Moñino
  *

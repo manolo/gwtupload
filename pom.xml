@@ -225,11 +225,10 @@
     <system>Google Code</system>
     <url>http://code.google.com/p/gwtupload/issues/list</url>
   </issueManagement>
-
   <scm>
-    <connection>scm:git:https://code.google.com/p/gwtupload/</connection>
+    <connection>scm:git:git@github.com:manolo/gwtupload.git</connection>
     <developerConnection>scm:git:git@github.com:manolo/gwtupload.git</developerConnection>
-    <url>http://code.google.com/p/gwtupload/source/browse/</url>
+    <url>https://github.com/manolo/gwtupload</url>
   </scm>
 <!--
   <distributionManagement>

@@ -42,23 +42,23 @@ import com.google.appengine.api.blobstore.BlobKey;
  * Add these lines to your web.xml
  *
  * <pre>
-  &lt;servlet>
-    &lt;servlet-class>gwtupload.server.gae.FilesApiUploadAction&lt;/servlet-class>
-  &lt;/servlet>
-  &lt;servlet-mapping>
-    &lt;servlet-name>uploadServlet&lt;/servlet-name>
-    &lt;url-pattern>*.gupld&lt;/url-pattern>
-  &lt;/servlet-mapping>
-  &lt;servlet-mapping>
-    &lt;servlet-name>uploadServlet&lt;/servlet-name>
-    &lt;url-pattern>/upload&lt;/url-pattern>
-  &lt;/servlet-mapping>
+  &lt;servlet&gt;
+    &lt;servlet-class&gt;gwtupload.server.gae.FilesApiUploadAction&lt;/servlet-class&gt;
+  &lt;/servlet&gt;
+  &lt;servlet-mapping&gt;
+    &lt;servlet-name&gt;uploadServlet&lt;/servlet-name&gt;
+    &lt;url-pattern&gt;gupld&lt;/url-pattern&gt;
+  &lt;/servlet-mapping&gt;
+  &lt;servlet-mapping&gt;
+    &lt;servlet-name&gt;uploadServlet&lt;/servlet-name&gt;
+    &lt;url-pattern&gt;upload&lt;/url-pattern&gt;
+  &lt;/servlet-mapping&gt;
  </pre>
  *
  * Enable Session in your appengine-web.xml
  *
  * <pre>
-  &lt;sessions-enabled>true&lt;/sessions-enabled>
+  &lt;sessions-enabled&gt;true&lt;/sessions-enabled&gt;
 </pre>
  *
  * You can get the blob key in server client side using this code

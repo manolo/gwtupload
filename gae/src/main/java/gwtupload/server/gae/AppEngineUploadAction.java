@@ -30,7 +30,7 @@ import org.apache.commons.fileupload.FileItemFactory;
  * Upload servlet for the GwtUpload library's deployed in Google App-engine.
  * </p>
  *
- * <h4>Limitations in Google Application Engine:</h4>
+ * <b>Limitations in Google Application Engine:</b>
  * <ul>
  * <li>It doesn't support writing to file-system, so this servlet stores
  * fileItems in memcache using CacheableFileItem</li>
