@@ -1,13 +1,13 @@
 /*
- * Copyright 2010 Manuel Carrasco Moñino. (manolo at apache/org) 
+ * Copyright 2010 Manuel Carrasco Moñino. (manolo at apache/org)
  * http://code.google.com/p/gwtupload
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -58,71 +58,71 @@ import org.apache.commons.io.IOUtils;
  * <p>
  * Upload servlet for the GwtUpload library.
  * </p>
- * 
+ *
  * <ul>
  * <li>For customizable application actions, it's better to extend the UloadAction
  * class instead of this.</li>
- * 
+ *
  * <li>
  * This servlet supports to be deployed in google application engine. It is able to
  * detect this environment and in this case it does:
  * <ul>
  * <li>Set the request size to 512 KB which is the maximal size allowed</li>
  * <li>Store received data in memory and cache instead of file system</li>
- * <li>Uses memcache for session tracking instead of normal session objects, 
+ * <li>Uses memcache for session tracking instead of normal session objects,
  * because objects stored in session seem not to be available until the thread finishes</li>
  * </ul>
  * </li>
  * </ul>
- * 
- * 
+ *
+ *
  * <p>
  * <b>Example of web.xml</b>
  * </p>
- * 
+ *
  * <pre>
  * &lt;context-param&gt;
  *     &lt;!-- max size of the upload request --&gt;
  *     &lt;param-name&gt;maxSize&lt;/param-name&gt;
  *     &lt;param-value&gt;3145728&lt;/param-value&gt;
  *   &lt;/context-param&gt;
- *   
+ *
  *   &lt;context-param&gt;
  *     &lt;!-- useful in development mode to see the upload progress bar in fast networks. (sleep time in milliseconds) --&gt;
  *     &lt;param-name&gt;slowUploads&lt;/param-name&gt;
  *     &lt;param-value&gt;200&lt;/param-value&gt;
  *   &lt;/context-param&gt;
- * 
+ *
  *   &lt;servlet&gt;
  *     &lt;servlet-name&gt;uploadServlet&lt;/servlet-name&gt;
  *     &lt;servlet-class&gt;gwtupload.server.UploadServlet&lt;/servlet-class&gt;
  *   &lt;/servlet&gt;
- *   
+ *
  *   &lt;servlet-mapping&gt;
  *     &lt;servlet-name&gt;uploadServlet&lt;/servlet-name&gt;
  *     &lt;url-pattern&gt;*.gupld&lt;/url-pattern&gt;
  *   &lt;/servlet-mapping&gt;
- * 
- * 
+ *
+ *
  * </pre>
- * 
+ *
  * @author Manolo Carrasco Moñino
- * 
+ *
  */
 public class UploadServlet extends HttpServlet implements Servlet {
 
   private static final String SESSION_FILES = "FILES";
   private static final String SESSION_LAST_FILES = "LAST_FILES";
-  
+
   protected static final int DEFAULT_REQUEST_LIMIT_KB = 5 * 1024 * 1024;
   protected static final int DEFAULT_SLOW_DELAY_MILLIS = 300;
-  
+
   protected static final String XML_CANCELED_TRUE = "<" + TAG_CANCELED + ">true</" + TAG_CANCELED + ">";
   protected static final String XML_DELETED_TRUE = "<" + TAG_DELETED + ">true</" + TAG_DELETED + ">";
   protected static final String XML_ERROR_ITEM_NOT_FOUND = "<" + TAG_ERROR + ">item not found</" + TAG_ERROR + ">";
   protected static final String XML_ERROR_TIMEOUT = "<" + TAG_ERROR + ">timeout receiving file</" + TAG_ERROR + ">";
   protected static final String XML_FINISHED_OK = "<" + TAG_FINISHED + ">OK</" + TAG_FINISHED + ">";
-  
+
   protected static UploadLogger logger = UploadLogger.getLogger(UploadServlet.class);
 
   protected static final ThreadLocal<HttpServletRequest> perThreadRequest = new ThreadLocal<HttpServletRequest>();
@@ -132,12 +132,12 @@ public class UploadServlet extends HttpServlet implements Servlet {
   private static final long serialVersionUID = 2740693677625051632L;
 
   private static String XML_TPL = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<response>%%MESSAGE%%</response>\n";
-  
+
   private String corsDomainsRegex = "^$";
-  
+
   /**
    * Copy the content of an input stream to an output one.
-   * 
+   *
    * @param in
    * @param out
    * @throws IOException
@@ -147,11 +147,11 @@ public class UploadServlet extends HttpServlet implements Servlet {
   }
 
   /**
-   * Utility method to get a fileItem of type file from a vector using either 
+   * Utility method to get a fileItem of type file from a vector using either
    * the file name or the attribute name.
-   * 
+   *
    * @param sessionFiles
-   * @param parameter 
+   * @param parameter
    * @return fileItem of the file found or null
    */
   public static FileItem findFileItem(List<FileItem> sessionFiles, String parameter) {
@@ -169,10 +169,10 @@ public class UploadServlet extends HttpServlet implements Servlet {
 
     return null;
   }
-  
+
   /**
    * Utility method to get a fileItem from a vector using the attribute name.
-   * 
+   *
    * @param sessionFiles
    * @param attrName
    * @return fileItem found or null
@@ -191,7 +191,7 @@ public class UploadServlet extends HttpServlet implements Servlet {
   /**
    * Utility method to get a fileItem from a vector using the file name It
    * only returns items of type file.
-   * 
+   *
    * @param sessionFiles
    * @param fileName
    * @return fileItem of the file found or null
@@ -221,14 +221,14 @@ public class UploadServlet extends HttpServlet implements Servlet {
   public static List<FileItem> getSessionFileItems(HttpServletRequest request) {
     return getSessionFileItems(request, SESSION_FILES);
   }
-  
+
   /**
-   * Return the list of FileItems stored in session under the session key. 
+   * Return the list of FileItems stored in session under the session key.
    */
   public List<FileItem> getMySessionFileItems(HttpServletRequest request) {
     return getSessionFileItems(request, getSessionFilesKey(request));
   }
-  
+
   /**
    * Return the most recent list of FileItems received
    */
@@ -243,7 +243,7 @@ public class UploadServlet extends HttpServlet implements Servlet {
   public static List<FileItem> getLastReceivedFileItems(HttpServletRequest request) {
     return getLastReceivedFileItems(request, SESSION_LAST_FILES);
   }
-  
+
   /**
    * Return the most recent list of FileItems received under the session key
    */
@@ -257,19 +257,19 @@ public class UploadServlet extends HttpServlet implements Servlet {
   public static List<FileItem> getSessionItems(HttpServletRequest request) {
     return getSessionFileItems(request);
   }
-  
+
   /**
    * Returns the localized text of a key.
    */
   public static String getMessage(String key, Object... pars) {
-    Locale loc = 
-      getThreadLocalRequest() == null || getThreadLocalRequest().getLocale() == null 
+    Locale loc =
+      getThreadLocalRequest() == null || getThreadLocalRequest().getLocale() == null
        ? new Locale("en")
        : getThreadLocalRequest().getLocale();
-    
-    ResourceBundle res = 
+
+    ResourceBundle res =
       ResourceBundle.getBundle(UploadServlet.class.getName(), loc);
-    
+
     String msg = res.getString(key);
     return new MessageFormat(msg, loc).format(pars);
   }
@@ -281,7 +281,7 @@ public class UploadServlet extends HttpServlet implements Servlet {
   /**
    * Just a method to detect whether the web container is running with appengine
    * restrictions.
-   *  
+   *
    * @return true if the case of the application is running in appengine
    */
   public boolean isAppEngine() {
@@ -290,13 +290,13 @@ public class UploadServlet extends HttpServlet implements Servlet {
 
   /**
    * Removes all FileItems stored in session under the session key and the temporary data.
-   * 
+   *
    * @param request
    */
   public static void removeSessionFileItems(HttpServletRequest request, String sessionFilesKey) {
     removeSessionFileItems(request, sessionFilesKey, true);
   }
-  
+
   /**
    * Removes all FileItems stored in session under the default key and the temporary data.
    */
@@ -305,13 +305,13 @@ public class UploadServlet extends HttpServlet implements Servlet {
   }
 
   /**
-   * Removes all FileItems stored in session under the session key, but in this case 
+   * Removes all FileItems stored in session under the session key, but in this case
    * the user can specify whether the temporary data is removed from disk.
-   * 
+   *
    * @param request
-   * @param removeData 
+   * @param removeData
    *                    true: the file data is deleted.
-   *                    false: use it when you are referencing file items 
+   *                    false: use it when you are referencing file items
    *                    instead of copying them.
    */
   public static void removeSessionFileItems(HttpServletRequest request, String sessionFilesKey, boolean removeData) {
@@ -328,15 +328,15 @@ public class UploadServlet extends HttpServlet implements Servlet {
   }
 
   /**
-   * Removes all FileItems stored in session under the default key, but in this case 
+   * Removes all FileItems stored in session under the default key, but in this case
    * the user can specify whether the temporary data is removed from disk.
    */
   public static void removeSessionFileItems(HttpServletRequest request, boolean removeData) {
     removeSessionFileItems(request, SESSION_FILES, removeData);
   }
-  
+
   /**
-   * 
+   *
    * @deprecated use removeSessionFileItems
    */
   public static void removeSessionFiles(HttpServletRequest request) {
@@ -345,7 +345,7 @@ public class UploadServlet extends HttpServlet implements Servlet {
 
   /**
    * Delete an uploaded file.
-   * 
+   *
    * @param request
    * @param response
    * @return FileItem
@@ -378,7 +378,7 @@ public class UploadServlet extends HttpServlet implements Servlet {
     out.flush();
     out.close();
   }
-  
+
   @Override
   protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     if (checkCORS(request, response) && request.getMethod().equals("OPTIONS")) {
@@ -395,7 +395,7 @@ public class UploadServlet extends HttpServlet implements Servlet {
     }
     super.service(request, response);
   }
-  
+
   private boolean checkCORS(HttpServletRequest request, HttpServletResponse response) {
     String origin = request.getHeader("Origin");
     if (origin != null && origin.matches(corsDomainsRegex)) {
@@ -417,21 +417,21 @@ public class UploadServlet extends HttpServlet implements Servlet {
   protected void renderHtmlMessage(HttpServletResponse response, String message) throws IOException {
     renderMessage(response, message, "text/html");
   }
-  
+
   /**
-   * Writes a XML response to the client. 
+   * Writes a XML response to the client.
    * The message must be a text which will be wrapped in an XML structure.
-   * 
-   * Note: if the request is a POST, the response should set the content type 
+   *
+   * Note: if the request is a POST, the response should set the content type
    *  to text/html or text/plain in order to be able in the client side to
    *  read the iframe body (submitCompletEvent.getResults()), otherwise the
-   *  method returns null 
-   * 
+   *  method returns null
+   *
    * @param request
    * @param response
    * @param message
    * @param post
-   *        specify whether the request is post or not.   
+   *        specify whether the request is post or not.
    * @throws IOException
    */
   protected static void renderXmlResponse(HttpServletRequest request, HttpServletResponse response, String message, boolean post) throws IOException {
@@ -441,21 +441,21 @@ public class UploadServlet extends HttpServlet implements Servlet {
     if (post) {
       xml = TAG_MSG_START + xml.replaceAll("<", TAG_MSG_LT).replaceAll(">", TAG_MSG_GT) + TAG_MSG_END;
     }
-    
+
     renderMessage(response, xml, contentType);
   }
 
   protected static void renderXmlResponse(HttpServletRequest request, HttpServletResponse response, String message) throws IOException {
     renderXmlResponse(request, response, message, false);
   }
-  
+
   protected static void setThreadLocalRequest(HttpServletRequest request) {
     perThreadRequest.set(request);
   }
 
   /**
    * Simple method to get a string from the exception stack.
-   * 
+   *
    * @param e
    * @return string
    */
@@ -466,14 +466,14 @@ public class UploadServlet extends HttpServlet implements Servlet {
   }
 
   protected long maxSize = DEFAULT_REQUEST_LIMIT_KB;
-  
+
   protected int uploadDelay = 0;
-  
+
   protected boolean useBlobstore = false;
-  
+
   /**
    * Mark the current upload process to be canceled.
-   * 
+   *
    * @param request
    */
   public void cancelUpload(HttpServletRequest request) {
@@ -485,9 +485,9 @@ public class UploadServlet extends HttpServlet implements Servlet {
   }
 
   /**
-   * Override this method if you want to check the request before it is passed 
+   * Override this method if you want to check the request before it is passed
    * to commons-fileupload parser.
-   * 
+   *
    * @param request
    * @throws RuntimeException
    */
@@ -500,7 +500,7 @@ public class UploadServlet extends HttpServlet implements Servlet {
 
   /**
    * Get an uploaded file item.
-   * 
+   *
    * @param request
    * @param response
    * @throws IOException
@@ -518,7 +518,7 @@ public class UploadServlet extends HttpServlet implements Servlet {
       renderXmlResponse(request, response, XML_ERROR_ITEM_NOT_FOUND);
     }
   }
-  
+
   @Override
   public String getInitParameter(String name) {
     String value = getServletContext().getInitParameter(name);
@@ -553,7 +553,7 @@ public class UploadServlet extends HttpServlet implements Servlet {
         }
       }
     }
-    
+
     String timeout = getInitParameter("noDataTimeout");
     if (timeout != null){
       try {
@@ -561,14 +561,14 @@ public class UploadServlet extends HttpServlet implements Servlet {
       } catch (NumberFormatException e) {
       }
     }
-    
+
     String appe = getInitParameter("appEngine");
     if (appe != null) {
       appEngine = "true".equalsIgnoreCase(appe);
     } else {
       appEngine = isAppEngine();
     }
-    
+
     String cors = getInitParameter("corsDomainsRegex");
     if (cors != null) {
       corsDomainsRegex = cors;
@@ -579,18 +579,19 @@ public class UploadServlet extends HttpServlet implements Servlet {
 
   /**
    * Create a new listener for this session.
-   * 
+   *
    * @param request
-   * @return the appropriate listener 
+   * @return the appropriate listener
    */
   protected AbstractUploadListener createNewListener(HttpServletRequest request) {
+    int delay = request.getParameter("nodelay") != null ? 0 : uploadDelay;
     if (isAppEngine()) {
-      return new MemoryUploadListener(uploadDelay, getContentLength(request));
+      return new MemoryUploadListener(delay, getContentLength(request));
     } else {
-      return new UploadListener(uploadDelay, getContentLength(request));
+      return new UploadListener(delay, getContentLength(request));
     }
   }
-  
+
   private long getContentLength(HttpServletRequest request) {
     long size = -1;
     try {
@@ -600,7 +601,7 @@ public class UploadServlet extends HttpServlet implements Servlet {
     return size;
   }
 
-  
+
   /**
    * The get method is used to monitor the uploading process or to get the
    * content of the uploaded files.
@@ -611,7 +612,7 @@ public class UploadServlet extends HttpServlet implements Servlet {
       if (request.getParameter(UConsts.PARAM_SESSION) != null) {
         logger.debug("UPLOAD-SERVLET (" + request.getSession().getId() + ") new session, blobstore=" + (isAppEngine() && useBlobstore));
         String sessionId = request.getSession().getId();
-        renderXmlResponse(request, response, 
+        renderXmlResponse(request, response,
             "<" + TAG_BLOBSTORE + ">" + (isAppEngine() && useBlobstore) + "</" + TAG_BLOBSTORE + ">" +
             "<" + TAG_SESSION_ID + ">" + sessionId + "</" + TAG_SESSION_ID + ">");
       } else if (isAppEngine() && (request.getParameter(UConsts.PARAM_BLOBSTORE) != null || request.getParameterMap().size() == 0)) {
@@ -633,14 +634,14 @@ public class UploadServlet extends HttpServlet implements Servlet {
         }
         renderXmlResponse(request, response, XML_FINISHED_OK);
       } else {
-        String message = statusToString(getUploadStatus(request, request.getParameter(UConsts.PARAM_FILENAME), null)); 
+        String message = statusToString(getUploadStatus(request, request.getParameter(UConsts.PARAM_FILENAME), null));
         renderXmlResponse(request, response, message);
       }
     } finally {
       perThreadRequest.set(null);
     }
   }
-  
+
   protected String statusToString(Map<String, String> stat) {
     String message = "";
     for (Entry<String, String> e : stat.entrySet()) {
@@ -657,10 +658,10 @@ public class UploadServlet extends HttpServlet implements Servlet {
    * The post method is used to receive the file and save it in the user
    * session. It returns a very XML page that the client receives in an
    * iframe.
-   * 
+   *
    * The content of this xml document has a tag error in the case of error in
    * the upload process or the string OK in the case of success.
-   * 
+   *
    */
   protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
     perThreadRequest.set(request);
@@ -689,7 +690,7 @@ public class UploadServlet extends HttpServlet implements Servlet {
       perThreadRequest.set(null);
     }
   }
-  
+
   protected Map<String, String> getFileItemsSummary(HttpServletRequest request, Map<String, String> stat) {
     if (stat == null) {
       stat = new HashMap<String, String>();
@@ -711,7 +712,7 @@ public class UploadServlet extends HttpServlet implements Servlet {
     }
     return stat;
   }
-  
+
   private String formFieldToXml(FileItem i) {
     Map<String, String> item = new HashMap<String, String>();
     item.put(TAG_VALUE, "" + i.getString());
@@ -721,7 +722,7 @@ public class UploadServlet extends HttpServlet implements Servlet {
     param.put(TAG_PARAM, statusToString(item));
     return statusToString(param);
   }
-  
+
   private String fileFieldToXml(FileItem i) {
     Map<String, String> item = new HashMap<String, String>();
     item.put(TAG_CTYPE, i.getContentType() !=null ? i.getContentType() : "unknown");
@@ -732,7 +733,7 @@ public class UploadServlet extends HttpServlet implements Servlet {
       String k = ((HasKey)i).getKeyString();
       item.put(TAG_KEY, k);
     }
-    
+
     Map<String, String> file = new HashMap<String, String>();
     file.put(TAG_FILE, statusToString(item));
     return statusToString(file);
@@ -740,7 +741,7 @@ public class UploadServlet extends HttpServlet implements Servlet {
 
 /**
    * Notify to the listener that the upload has finished.
-   * 
+   *
    * @param request
    */
   protected void finish(HttpServletRequest request) {
@@ -756,7 +757,7 @@ public class UploadServlet extends HttpServlet implements Servlet {
 
   /**
    * Get the listener active in this session.
-   * 
+   *
    * @param request
    * @return the listener active
    */
@@ -770,7 +771,7 @@ public class UploadServlet extends HttpServlet implements Servlet {
 
   /**
    * Override this method if you want to implement a different ItemFactory.
-   * 
+   *
    * @return FileItemFactory
    */
   protected FileItemFactory getFileItemFactory(long requestSize) {
@@ -780,10 +781,10 @@ public class UploadServlet extends HttpServlet implements Servlet {
   /**
    * Method executed each time the client asks the server for the progress status.
    * It uses the listener to generate the adequate response
-   * 
+   *
    * @param request
    * @param fieldname
-   * @return a map of tag/values to be rendered 
+   * @return a map of tag/values to be rendered
    */
   protected Map<String, String> getUploadStatus(HttpServletRequest request, String fieldname, Map<String, String> ret) {
 
@@ -794,7 +795,7 @@ public class UploadServlet extends HttpServlet implements Servlet {
     if (ret == null) {
       ret = new HashMap<String, String>();
     }
-    
+
     long currentBytes = 0;
     long totalBytes = 0;
     long percent = 0;
@@ -855,9 +856,9 @@ public class UploadServlet extends HttpServlet implements Servlet {
    * This method parses the submit action, puts in session a listener where the
    * progress status is updated, and eventually stores the received data in
    * the user session.
-   * 
+   *
    * returns null in the case of success or a string with the error
-   * 
+   *
    */
   @SuppressWarnings("unchecked")
   protected String parsePostRequest(HttpServletRequest request, HttpServletResponse response) {
@@ -912,7 +913,7 @@ public class UploadServlet extends HttpServlet implements Servlet {
       String error = "";
 
       if (uploadedItems.size() > 0) {
-        
+
         // We append to the field name the sequence of the uploaded file
         int cnt = 0;
         for (FileItem i : uploadedItems) {
@@ -920,7 +921,7 @@ public class UploadServlet extends HttpServlet implements Servlet {
             i.setFieldName(i.getFieldName().replace(UConsts.MULTI_SUFFIX, "") + "-" + cnt++);
           }
         }
-        
+
         sessionFiles.addAll(uploadedItems);
         String msg = "";
         for (FileItem i : sessionFiles) {
@@ -935,8 +936,8 @@ public class UploadServlet extends HttpServlet implements Servlet {
       }
 
       return error.length() > 0 ? error : null;
-      
-    // So much silly questions in the list about this issue.  
+
+    // So much silly questions in the list about this issue.
     } catch(LinkageError e) {
       logger.error("UPLOAD-SERVLET (" + request.getSession().getId() + ") Exception: " + e.getMessage() + "\n" + stackTraceToString(e));
       RuntimeException ex = new UploadActionException(getMessage("restricted", e.getMessage()), e);
@@ -963,10 +964,10 @@ public class UploadServlet extends HttpServlet implements Servlet {
       throw ex;
     }
   }
-  
+
   /**
    * Remove the listener active in this session.
-   * 
+   *
    * @param request
    */
   protected void removeCurrentListener(HttpServletRequest request) {
@@ -989,7 +990,7 @@ public class UploadServlet extends HttpServlet implements Servlet {
    * public static String getSessionFilesKey(String parameter) {
    *  return "SESSION_FILES_" + parameter;
    * }
-   * 
+   *
    */
   protected String getSessionFilesKey(HttpServletRequest request) {
     return SESSION_FILES;
@@ -1004,5 +1005,4 @@ public class UploadServlet extends HttpServlet implements Servlet {
   protected String getSessionLastFilesKey(HttpServletRequest request) {
     return SESSION_LAST_FILES;
   }
-
 }

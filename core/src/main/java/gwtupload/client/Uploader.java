@@ -1,13 +1,13 @@
 /*
- * Copyright 2010 Manuel Carrasco Moñino. (manolo at apache/org) 
+ * Copyright 2010 Manuel Carrasco Moñino. (manolo at apache/org)
  * http://code.google.com/p/gwtupload
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -15,6 +15,48 @@
  * the License.
  */
 package gwtupload.client;
+
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.core.client.JsArray;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.FormElement;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.http.client.Request;
+import com.google.gwt.http.client.RequestCallback;
+import com.google.gwt.http.client.RequestException;
+import com.google.gwt.http.client.RequestTimeoutException;
+import com.google.gwt.http.client.Response;
+import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.FormPanel;
+import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
+import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
+import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
+import com.google.gwt.user.client.ui.FormPanel.SubmitHandler;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.Hidden;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.xml.client.Document;
+import com.google.gwt.xml.client.Node;
+import com.google.gwt.xml.client.NodeList;
+import com.google.gwt.xml.client.XMLParser;
+import com.google.gwt.xml.client.impl.DOMParseException;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Logger;
 
 import static gwtupload.shared.UConsts.ATTR_BLOBSTORE_PARAM_NAME;
 import static gwtupload.shared.UConsts.MULTI_SUFFIX;
@@ -46,62 +88,22 @@ import static gwtupload.shared.UConsts.TAG_PERCENT;
 import static gwtupload.shared.UConsts.TAG_SIZE;
 import static gwtupload.shared.UConsts.TAG_TOTAL_BYTES;
 import static gwtupload.shared.UConsts.TAG_WAIT;
+
 import gwtupload.client.IFileInput.FileInputType;
 import gwtupload.client.ISession.Session;
 import gwtupload.client.IUploadStatus.Status;
 import gwtupload.client.bundle.UploadCss;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.logging.Logger;
-
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.JavaScriptObject;
-import com.google.gwt.core.client.JsArray;
-import com.google.gwt.dom.client.FormElement;
-import com.google.gwt.event.dom.client.ChangeEvent;
-import com.google.gwt.event.dom.client.ChangeHandler;
-import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.http.client.Request;
-import com.google.gwt.http.client.RequestCallback;
-import com.google.gwt.http.client.RequestException;
-import com.google.gwt.http.client.RequestTimeoutException;
-import com.google.gwt.http.client.Response;
-import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.FormPanel;
-import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
-import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
-import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
-import com.google.gwt.user.client.ui.FormPanel.SubmitHandler;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.Hidden;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Panel;
-import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.xml.client.Document;
-import com.google.gwt.xml.client.Node;
-import com.google.gwt.xml.client.NodeList;
-import com.google.gwt.xml.client.XMLParser;
-import com.google.gwt.xml.client.impl.DOMParseException;
-
 /**
  * <p>
  * Uploader panel.
  * </p>
- *         
+ *
  * @author Manolo Carrasco Moñino
- * 
+ *
  *         <h3>Features</h3>
  *         <ul>
- *         <li>Renders a form with an input file for sending the file, and a hidden iframe where is received the server response</li>  
+ *         <li>Renders a form with an input file for sending the file, and a hidden iframe where is received the server response</li>
  *         <li>The user can add more elements to the form</li>
  *         <li>It asks the server for the upload progress continuously until the submit process has finished.</li>
  *         <li>It expects xml responses instead of gwt-rpc, so the server part can be implemented in any language</li>
@@ -110,7 +112,7 @@ import com.google.gwt.xml.client.impl.DOMParseException;
  *         <li>It can be configured to automatic submit after the user has selected the file</li>
  *         <li>It uses a queue that avoid submit more than a file at the same time</li>
  *         </ul>
- * 
+ *
  *         <h3>CSS Style Rules</h3>
  *         <ul>
  *         <li>.GWTUpld { Uploader container }</li>
@@ -120,13 +122,13 @@ import com.google.gwt.xml.client.impl.DOMParseException;
  *         </ul>
  */
 public class Uploader extends Composite implements IsUpdateable, IUploader, HasJsData {
-  
-  
+
+
   static {
     UploadCss.INSTANCE.css().ensureInjected();
   }
-  
-  
+
+
   public Widget getWidget(){
     return this;
   }
@@ -145,9 +147,9 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     }
     public void add(Widget w) {
       if (w instanceof Hidden) {
-        formElements.insert(w, 0);     
+        formElements.insert(w, 0);
       } else {
-        formElements.add(w);        
+        formElements.add(w);
       }
     }
     public void add(Widget w, int index) {
@@ -157,11 +159,11 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
       formElements.clear();
     }
   }
-  
+
   public static final int DEFAULT_FILEINPUT_SIZE = 40;
-  
+
   public static final UploaderConstants I18N_CONSTANTS = GWT.create(UploaderConstants.class);
-  
+
   protected static final String STYLE_BUTTON = "upld-button";
   protected static final String STYLE_INPUT = "upld-input";
   protected static final String STYLE_MAIN = "GWTUpld";
@@ -169,16 +171,16 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
   static HTML mlog;
   static Logger logger;
   private static final int DEFAULT_AUTOUPLOAD_DELAY = 600;
-  
+
   private static final int DEFAULT_TIME_MAX_WITHOUT_RESPONSE = 60000;
   private static final int DEFAULT_UPDATE_INTERVAL = 500;
-  
+
   private static HashSet<String> fileDone = new HashSet<String>();
   private static HashSet<String> fileUploading = new HashSet<String>();
   private static List<String> fileQueue = new ArrayList<String>();
 
   private static int statusInterval = DEFAULT_UPDATE_INTERVAL;
-  
+
   private static int uploadTimeout = DEFAULT_TIME_MAX_WITHOUT_RESPONSE;
   public static void log(String msg, Throwable e) {
     if (mlog == null) {
@@ -198,14 +200,14 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
       mlog.setHTML(mlog.getHTML() + html);
     }
   }
-  
+
   /**
    * Configure the frequency to send status requests to the server.
    */
   public static void setStatusInterval(int statusInterval) {
     Uploader.statusInterval = statusInterval;
   }
-  
+
   /**
    * Configure the maximal time without a valid response from the server.
    * When this period is reached, the upload process is canceled.
@@ -213,7 +215,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
   public static void setUploadTimeout(int uploadTimeout) {
     Uploader.uploadTimeout = uploadTimeout;
   }
-  
+
   private static long now() {
     return (new Date()).getTime();
   }
@@ -232,15 +234,15 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
         } catch (Exception e) {
           cancel();
           cancelUpload(i18nStrs.uploaderInvalidPathError());
-        }        
+        }
       } else if (firstTime) {
         addToQueue();
         firstTime = false;
       }
     }
   };
-  
-  protected boolean autoSubmit = false;  
+
+  protected boolean autoSubmit = false;
   private boolean avoidRepeatedFiles = false;
   private boolean avoidEmptyFile = true;
   private List<String> basenames = new ArrayList<String>();
@@ -311,7 +313,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
       uploadForm.submit();
     }
   };
-  
+
   private final RequestCallback onCancelReceivedCallback = new RequestCallback() {
     public void onError(Request request, Throwable exception) {
       log("onCancelReceivedCallback onError: " , exception);
@@ -356,9 +358,9 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
       onChangeInput();
     }
   };
-  
+
   private List<IUploader.OnFinishUploaderHandler> onFinishHandlers = new ArrayList<IUploader.OnFinishUploaderHandler>();
-  
+
   private final RequestCallback onSessionReceivedCallback = new RequestCallback() {
     public void onError(Request request, Throwable exception) {
       String message = removeHtmlTags(exception.getMessage());
@@ -375,21 +377,21 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
         uploadForm.setAction(session.getServletPath());
         uploadForm.submit();
       } catch (Exception e) {
-        String message = e.getMessage().contains("error:") 
+        String message = e.getMessage().contains("error:")
             ? i18nStrs.uploaderServerUnavailable() + " (3) " + getServletPath() + "\n\n" + i18nStrs.uploaderServerError() + "\nAction: " + getServletPath() + "\nException: " + e.getMessage() + response.getText()
             : i18nStrs.submitError();
         cancelUpload( message);
       }
     }
   };
-  
+
   private List<IUploader.OnStartUploaderHandler> onStartHandlers = new ArrayList<IUploader.OnStartUploaderHandler>();
-  
+
   private List<IUploader.OnStatusChangedHandler> onStatusChangeHandlers = new ArrayList<IUploader.OnStatusChangedHandler>();
 
   /**
    * Handler called when the status request response comes back.
-   * 
+   *
    * In case of success it parses the xml document received and updates the progress widget
    * In case of a non timeout error, it stops the status repeater and notifies the user with the exception.
    */
@@ -438,26 +440,26 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
         String msg = Utils.getXmlNodeValue(doc, TAG_MESSAGE);
         serverMessage.setMessage(msg);
         String fld = Utils.getXmlNodeValue(doc, TAG_FIELD);
-        
+
         NodeList list = doc.getElementsByTagName(TAG_FILE);
         for (int i = 0, l = list.getLength(); i < l; i++) {
           UploadedInfo info = new UploadedInfo();
           info.setField(getInputName() + "-" + i);
           info.setName(Utils.getXmlNodeValue(doc, TAG_NAME, i));
           info.setCtype(Utils.getXmlNodeValue(doc, TAG_CTYPE, i));
-          
+
           // TODO: test
           info.setKey (Utils.getXmlNodeValue(doc, TAG_KEY, i));
-          
+
           // TODO: remove
           info.message = msg;
-          
+
           String url = session.composeURL(PARAM_SHOW + "=" + info.getField());
           if (info.getKey() != null) {
             url += "&" + PARAM_BLOBKEY + "=" + info.getKey();
           }
           info.setFileUrl(url);
-          
+
           String size = Utils.getXmlNodeValue(doc, TAG_SIZE, i);
           if (size != null) {
             info.setSize(Integer.parseInt(size));
@@ -474,18 +476,18 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
       }
     }
   };
-  
+
   /**
    *  Handler called when the file form is submitted
-   *  
+   *
    *  If any validation fails, the upload process is canceled.
-   *  
-   *  If the client hasn't got the session, it asks for a new one 
+   *
+   *  If the client hasn't got the session, it asks for a new one
    *  and the submit process is delayed until the client has got it
    */
   private SubmitHandler onSubmitFormHandler = new SubmitHandler() {
     public void onSubmit(SubmitEvent event) {
-      
+
       if (!finished && uploading) {
         uploading = false;
         statusWidget.setStatus(IUploadStatus.Status.CANCELED);
@@ -497,7 +499,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
         event.cancel();
         return;
       }
-      
+
       if (anyFileIsRepeated(true)) {
         statusWidget.setStatus(IUploadStatus.Status.REPEATED);
         successful = true;
@@ -505,7 +507,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
         uploadFinished();
         return;
       }
-      
+
       if (getFileName().isEmpty() || !validateAll(basenames)) {
         event.cancel();
         return;
@@ -518,7 +520,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
         session = Session.createSession(servletPath, onSessionReceivedCallback);
         return;
       }
-      
+
       if (blobstore && !receivedBlobPath) {
         event.cancel();
         // Sends a request to the server in order to get the blobstore path.
@@ -540,14 +542,14 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
       lastData = now();
     }
   };
-  
+
   private boolean receivedBlobPath = false;
 
   private int requestsCounter = 0;
 
   private String serverRawResponse = null;
   private ServerMessage serverMessage = new ServerMessage();
-  
+
   private String servletPath = "servlet.gupld";
   private ISession session = null;
 
@@ -558,15 +560,15 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
       }
     }
   };
-  
+
   private IUploadStatus statusWidget = new BaseUploadStatus();
-  
+
   protected UploaderConstants i18nStrs = I18N_CONSTANTS;
 
   private boolean successful = false;
 
   private Uploader thisInstance;
-  
+
   private final UpdateTimer updateStatusTimer = new UpdateTimer(this, statusInterval);
 
   private FormPanel uploadForm;
@@ -574,59 +576,59 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
   private List<Hidden> hiddens = null;
 
   private boolean uploading = false;
-  
+
   private List<String> validExtensions;
-  
+
   private String validExtensionsMsg = "";
 
   private boolean waitingForResponse = false;
 
   /**
    * Default constructor.
-   * Initialize widget components and layout elements using the 
-   * standard file input. 
+   * Initialize widget components and layout elements using the
+   * standard file input.
    */
   public Uploader() {
     this(FileInputType.BROWSER_INPUT);
   }
 
   /**
-   * Initialize widget components and layout elements using the 
-   * standard file input. 
-   * 
-   * @param automaticUpload 
-   *    when true the upload starts as soon as the user selects a file 
+   * Initialize widget components and layout elements using the
+   * standard file input.
+   *
+   * @param automaticUpload
+   *    when true the upload starts as soon as the user selects a file
    */
   public Uploader(boolean automaticUpload) {
     this(FileInputType.BROWSER_INPUT, automaticUpload);
   }
-  
+
   /**
-   * Initialize widget components and layout elements. 
-   * 
+   * Initialize widget components and layout elements.
+   *
    * @param type
    *   file input to use
    */
   public Uploader(FileInputType type) {
     this(type, null);
   }
-  
+
   /**
-   * Initialize widget components and layout elements. 
-   * 
+   * Initialize widget components and layout elements.
+   *
    * @param type
    *   file input to use
    * @param automaticUpload
-   *   when true the upload starts as soon as the user selects a file 
+   *   when true the upload starts as soon as the user selects a file
    */
   public Uploader(FileInputType type, boolean automaticUpload) {
     this(type);
     setAutoSubmit(automaticUpload);
   }
-  
+
   /**
-   * Initialize widget components and layout elements. 
-   * 
+   * Initialize widget components and layout elements.
+   *
    * @param type
    *   file input to use
    * @param form
@@ -635,7 +637,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
   public Uploader(FileInputType type, FormPanel form) {
     thisInstance = this;
     this.fileInputType = type;
-    
+
     if (form == null) {
       form = new FormFlowPanel();
     }
@@ -652,16 +654,16 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     uploaderPanel.setStyleName(STYLE_MAIN);
 
     setFileInput(fileInputType.getInstance());
-    
+
     setStatusWidget(statusWidget);
 
     super.initWidget(uploaderPanel);
   }
-  
+
   protected Panel getUploaderPanel() {
     return new HorizontalPanel();
   }
-  
+
   /**
    * Adds a widget to formPanel.
    */
@@ -717,7 +719,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
       }
     };
   }
-  
+
   /* (non-Javadoc)
    * @see gwtupload.client.IUploader#addOnStartUploadHandler(gwtupload.client.IUploader.OnStartUploaderHandler)
    */
@@ -755,16 +757,16 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
 
   /**
    * Don't submit the form if the user has not selected any file.
-   * 
+   *
    * It is useful in forms where the developer whats the user to submit
    * information but the attachment is optional.
-   * 
+   *
    * By default avoidEmptyFile is true.
    */
   public void avoidEmptyFiles(boolean b) {
     this.avoidEmptyFile = b;
   }
-  
+
   /**
    * Cancel the current upload process.
    */
@@ -772,7 +774,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     if (getStatus() == Status.UNINITIALIZED) {
       return;
     }
-    
+
     if (finished && !uploading) {
       if (successful) {
         try {
@@ -784,11 +786,11 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
       }
       return;
     }
-      
+
     if (canceled || getStatus() == Status.CANCELING) {
       return;
     }
-    
+
     canceled = true;
     automaticUploadTimer.cancel();
     log("cancelling " +  uploading, null);
@@ -824,7 +826,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
 
   /**
    * Returns a JavaScriptObject object with info of the uploaded files.
-   * It's useful in the exported version of the library. 
+   * It's useful in the exported version of the library.
    */
   public JavaScriptObject getData() {
     if (multiple) {
@@ -848,18 +850,18 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
   public String getFileName() {
     return fileInput.getFilename();
   }
-  
+
   /* (non-Javadoc)
    * @see gwtupload.client.IUploader#getFileNames()
    */
   public List<String> getFileNames() {
     return fileInput.getFilenames();
   }
-  
+
   public FormPanel getForm() {
     return uploadForm;
   }
-  
+
   public UploaderConstants getI18NConstants(){
     return i18nStrs;
   }
@@ -872,11 +874,11 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
   public String getServerResponse() {
     return getServerRawResponse();
   }
-  
+
   public String getServerRawResponse() {
     return serverRawResponse;
   }
-  
+
   public UploadedInfo getServerInfo() {
     return serverMessage.getUploadedInfos().size() > 0 ? serverMessage.getUploadedInfos().get(0) : null;
   }
@@ -908,7 +910,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
   public boolean isEnabled() {
     return enabled;
   }
-  
+
   public boolean isFinished() {
     return finished;
   }
@@ -935,7 +937,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     fileDone = new HashSet<String>();
     fileUploading = new HashSet<String>();
   }
-  
+
   /**
    * Prepare the uploader for a new upload.
    */
@@ -1003,8 +1005,8 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
   }
 
   /**
-   * set the url of the server service that receives the files and informs 
-   * about the progress.  
+   * set the url of the server service that receives the files and informs
+   * about the progress.
    */
   public void setServletPath(String path) {
     if (path != null) {
@@ -1058,11 +1060,11 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     }
     fileInput.setAccept(accept);
   }
-  
+
   public void setValidExtensions(String ext) {
     setValidExtensions(ext.split("[, ]+"));
   }
-  
+
   /* (non-Javadoc)
    * @see gwtupload.client.IUploader#submit()
    */
@@ -1080,11 +1082,11 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     waitingForResponse = true;
     session.sendRequest("get_status", onStatusReceivedCallback, "filename=" + fileInput.getName() , "c=" + requestsCounter++);
   }
-  
+
   /**
-   * Method called when the file input has changed. This happens when the 
+   * Method called when the file input has changed. This happens when the
    * user selects a file.
-   * 
+   *
    * Override this method if you want to add a customized behavior,
    * but remember to call this in your function
    */
@@ -1094,9 +1096,9 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
       handler.onChange(this);
     }
   }
-  
+
   /**
-   * Method called when the file upload process has finished,  
+   * Method called when the file upload process has finished,
    * or the file has been canceled or removed from the queue.
    * Override this method if you want to add a customized behavior,
    * but remember to call this in your function.
@@ -1106,7 +1108,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
       handler.onFinish(this);
     }
   }
-  
+
   /**
    * Method called when the file is added to the upload queue.
    * Override this if you want to add a customized behavior,
@@ -1132,7 +1134,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
       }
     }
   }
-  
+
   /**
    * Change the fileInput name, because the server uses it as an uniq identifier.
    */
@@ -1153,12 +1155,12 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     statusWidget.setStatus(IUploadStatus.Status.ERROR);
     statusWidget.setError(msg);
   }
-  
+
   private JavaScriptObject getDataInfo(UploadedInfo info) {
-    return info == null ? JavaScriptObject.createObject() : 
+    return info == null ? JavaScriptObject.createObject() :
        getDataImpl(info.fileUrl, info.field, info.name, Utils.basename(info.name), serverRawResponse, info.message, getStatus().toString(), info.size);
   }
-  
+
   private native JavaScriptObject getDataImpl(String url, String inputName, String fileName, String baseName, String serverResponse, String serverMessage, String status, int size) /*-{
     return {
        url: url,
@@ -1180,7 +1182,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     if (responseTxt == null) {
       return;
     }
-    
+
     String error = null;
     Document doc = null;
     try {
@@ -1191,7 +1193,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
         error = i18nStrs.uploaderServerError() + "\nAction: " + getServletPath() + "\nException: " + e.getMessage() + responseTxt;
       }
     }
-    
+
     if (error != null) {
       successful = false;
       cancelUpload(error);
@@ -1236,7 +1238,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     } else {
       log("incorrect response: " + getFileNames() + " " + responseTxt, null);
     }
-    
+
     if (uploadTimeout > 0 && now() - lastData >  uploadTimeout) {
       successful = false;
       cancelUpload(i18nStrs.uploaderTimeout());
@@ -1264,11 +1266,11 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
   }
 
   private void sendAjaxRequestToDeleteUploadedFile() {
-    for (String field: serverMessage.getUploadedFieldNames()) { 
+    for (String field: serverMessage.getUploadedFieldNames()) {
       session.sendRequest("remove_file", onDeleteFileCallback, PARAM_REMOVE + "=" + field);
     }
   }
-  
+
   /**
    * Sends a request to the server in order to get the blobstore path.
    * When the response with the session comes, it submits the form.
@@ -1288,7 +1290,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     uploading = false;
     updateStatusTimer.cancel();
     statusWidget.setVisible(false);
-    
+
     if (successful) {
       if (avoidRepeatedFiles) {
         fileDone.addAll(fileInput.getFilenames());
@@ -1301,10 +1303,20 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     } else {
       statusWidget.setStatus(IUploadStatus.Status.ERROR);
     }
-    
     onFinishUpload();
+    reatachIframe(uploadForm.getElement());
   }
-  
+
+  // Fix for issue http://stackoverflow.com/questions/27711821
+  private native static void reatachIframe(Element e) /*-{
+    var t = e.getAttribute('target');
+    if (t) {
+      var i = $doc.querySelector('iframe[name="' + t + '"]');
+      if (i)
+        i.action='javascript:void';
+    }
+  }-*/;
+
   private boolean fileSelected() {
     for (String s: basenames) {
       if (s.length() > 0) {
@@ -1313,7 +1325,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     }
     return false;
   }
-  
+
   private boolean validateAll(Collection<String> coll) {
     for (String s: coll) {
       if (!validateExtension(s)) {
@@ -1374,7 +1386,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     fileInput.enableMultiple(b);
   }
 
-  
+
   public void setServerMessage(ServerMessage msg) {
     serverMessage = msg;
     successful = true;
