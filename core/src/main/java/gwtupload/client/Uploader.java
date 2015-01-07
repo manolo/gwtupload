@@ -943,6 +943,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     this.uploadForm.reset();
     updateStatusTimer.cancel();
     onSubmitComplete = uploading = canceled = finished = successful = false;
+    statusWidget.setStatus(Status.UNINITIALIZED);
   }
 
   /* (non-Javadoc)
