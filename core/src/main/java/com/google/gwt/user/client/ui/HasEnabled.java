@@ -15,7 +15,7 @@
  */
 package com.google.gwt.user.client.ui;
 
-// HasEnabled is an interface new in gwt-2.1.x. 
+// HasEnabled is an interface new in gwt-2.1.x.
 // The only reason to be distributed with gwtupload is to allow people
 // using gwt-2.0.x to use the library.
 /**

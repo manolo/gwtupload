@@ -146,7 +146,7 @@
           <disableClassMetadata>${gwt.disableClassMetadata}</disableClassMetadata>
           <disableCastChecking>${gwt.disableCastChecking}</disableCastChecking>
         </configuration>
-      </plugin>      
+      </plugin>
       <plugin>
         <artifactId>maven-antrun-plugin</artifactId>
         <executions>
@@ -203,13 +203,13 @@
             </goals>
             <configuration>
               <outputDirectory>${project.build.directory}/${project.build.finalName}</outputDirectory>
-              <resources>          
+              <resources>
                 <resource>
                   <directory>src/main/webapp</directory>
                   <filtering>true</filtering>
                 </resource>
-              </resources>              
-            </configuration>            
+              </resources>
+            </configuration>
           </execution>
         </executions>
       </plugin>

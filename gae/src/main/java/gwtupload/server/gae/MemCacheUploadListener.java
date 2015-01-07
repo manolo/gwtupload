@@ -1,13 +1,13 @@
 /*
- * Copyright 2010 Manuel Carrasco Moñino. (manolo at apache/org) 
+ * Copyright 2010 Manuel Carrasco Moñino. (manolo at apache/org)
  * http://code.google.com/p/gwtupload
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -29,33 +29,33 @@ import com.google.appengine.api.memcache.stdimpl.GCacheFactory;
 /**
  * This is a File Upload Listener that can be used by Apache Commons File Upload to
  * monitor the progress of the uploaded file.
- * 
- * This listener is thought to be used in App-Engine because in this platform session's objects 
- * are not updated until the request has finished. 
- * 
+ *
+ * This listener is thought to be used in App-Engine because in this platform session's objects
+ * are not updated until the request has finished.
+ *
  * This Listener saves itself in google's appengine-memcache.
- * 
+ *
  * Notes:
  * Although objects must be saved instantly in cache, sometimes the insertion of a new object
- * is done fast, but the modification of it is delayed. So in this implementation, we 
+ * is done fast, but the modification of it is delayed. So in this implementation, we
  * store a new object for each save action.
- * 
- * The cache instance is configured to store objects for a very short time. 
- * 
+ *
+ * The cache instance is configured to store objects for a very short time.
+ *
  * @author Manolo Carrasco Moñino
- * 
+ *
  */
 public class MemCacheUploadListener extends AbstractUploadListener {
 
   private static final long serialVersionUID = -6431275569719042836L;
 
   public static final String KEY_LISTENER = "LISTENER-";
-  
+
   private static Cache cache = null;
 
   public static MemCacheUploadListener current(String sessionId) {
     MemCacheUploadListener listener = null;
-    for (int i = 0; i < 11; i++) { 
+    for (int i = 0; i < 11; i++) {
       Object o = getCacheInstance().get(KEY_LISTENER + sessionId + i);
       if (o != null) {
         listener = (MemCacheUploadListener) o;
@@ -64,13 +64,13 @@ public class MemCacheUploadListener extends AbstractUploadListener {
     logger.debug(className + " " + sessionId + " get " +  listener);
     return listener;
   }
-  
+
   @SuppressWarnings({ "serial", "unchecked" })
   public static Cache getCacheInstance() {
     if (cache == null) {
       try {
         cache = CacheManager.getInstance().getCacheFactory().createCache(new HashMap() {{
-          put(GCacheFactory.EXPIRATION_DELTA, 60); 
+          put(GCacheFactory.EXPIRATION_DELTA, 60);
         }});
       } catch (Exception e) {
         logger.error(className + " Unable to create Cache instance: " + e.getMessage());
@@ -81,7 +81,7 @@ public class MemCacheUploadListener extends AbstractUploadListener {
   }
 
   private int counter = 0;
-  
+
   public MemCacheUploadListener(int sleepMilliseconds, long requestSize) {
     super(sleepMilliseconds, requestSize);
   }
@@ -109,7 +109,7 @@ public class MemCacheUploadListener extends AbstractUploadListener {
       }
 
       getCacheInstance().put(KEY_LISTENER + sessionId + counter, this);
-      
+
       saved = new Date();
       logger.debug(className + " " + sessionId + " Saved " + this.toString());
       counter++;
@@ -120,9 +120,9 @@ public class MemCacheUploadListener extends AbstractUploadListener {
     counter = 0;
     super.setFinished(finished);
   }
-  
+
   public String toString() {
     return "counter=" + counter + " " + super.toString();
   }
-  
+
 }

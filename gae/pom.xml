@@ -37,7 +37,7 @@
       <artifactId>appengine-tools-sdk</artifactId>
       <version>${gae.version}</version>
     </dependency>
-    
+
  <!-- Google App Engine Runtime Dependencies -->
     <dependency>
       <groupId>org.apache.geronimo.specs</groupId>
@@ -82,7 +82,7 @@
     </dependency>
 
 
-        
+
   </dependencies>
 
   <build>

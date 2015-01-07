@@ -1,13 +1,13 @@
 /*
- * Copyright 2010 Manuel Carrasco Moñino. (manolo at apache/org) 
+ * Copyright 2010 Manuel Carrasco Moñino. (manolo at apache/org)
  * http://code.google.com/p/gwtupload
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -54,9 +54,9 @@ import java.util.HashMap;
  * <p>
  * A complete upload application example.
  * </p>
- * 
+ *
  * @author Manolo Carrasco Moñino
- * 
+ *
  * <p>
  * This is the most sofisticated example in the library.
  * </p>
@@ -64,7 +64,7 @@ import java.util.HashMap;
  * <li>It uses GWTChismes progress bar and other widgets.</li>
  * <li>It combines the usage of MultiUploader and SubmitUploader implementations.</li>
  * <li>It only allows to upload image files.</li>
- * 
+ *
  * <li>Once the files are uploaded, they are shown in a panel of thumbnails</li>
  * <li>Click on the thumbnails to view the images in a centered box using
  * PreloadedImage.</li>
@@ -74,7 +74,7 @@ import java.util.HashMap;
 public class ChismesUploadSample implements EntryPoint {
 
   SampleI18nConstants i18nStrs = GWT.create(SampleI18nConstants.class);
-  
+
   String[] validExtensions = new String[] { "jpg", "jpeg", "png", "gif" };
 
   private OnLoadPreloadedImageHandler addToThumbPanelHandler = new OnLoadPreloadedImageHandler() {
@@ -103,10 +103,10 @@ public class ChismesUploadSample implements EntryPoint {
       if (uploader.getStatus() == Status.SUCCESS) {
         if (uploader.getStatus() == Status.SUCCESS) {
           for (UploadedInfo info : uploader.getServerMessage().getUploadedInfos()) {
-            new PreloadedImage(info.getFileUrl(), info.getField(),  
+            new PreloadedImage(info.getFileUrl(), info.getField(),
                 info.getFileName(), addToThumbPanelHandler);
           }
-        }        
+        }
       }
     }
   };
@@ -122,7 +122,7 @@ public class ChismesUploadSample implements EntryPoint {
       }
     }
   };
-  
+
   private Label panelCloseHandler = new Label(i18nStrs.close()) {
     {
       addClickHandler(new ClickHandler() {
@@ -133,7 +133,7 @@ public class ChismesUploadSample implements EntryPoint {
       DOM.setStyleAttribute(getElement(), "cursor", "pointer");
     }
   };
-  
+
   private GWTCModalBox popupPanel = new GWTCModalBox(GWTCPopupBox.OPTION_ANIMATION | GWTCPopupBox.OPTION_ROUNDED_BLUE);
 
   private OnLoadPreloadedImageHandler showLargeImageHandler = new OnLoadPreloadedImageHandler() {
@@ -153,19 +153,19 @@ public class ChismesUploadSample implements EntryPoint {
       popupPanel.center();
     }
   };
-  
+
   private GWTCBox simpleUploadBox = new GWTCBox();
-  
+
   private GWTCTabPanel tabPanel = new GWTCTabPanel();
-  
+
   private GWTCBox thumbnailsBox = new GWTCBox(GWTCBox.STYLE_GREY);
 
   private FlowPanel thumbPanel = new FlowPanel();
-  
+
   public void onModuleLoad() {
 
     setupLanguageLinks();
-    
+
     thumbnailsBox.addStyleName("thumbnailsBox");
     thumbPanel.setStyleName("thumbPanel");
     thumbnailsBox.setText(i18nStrs.thumbNailsBoxText());
@@ -208,7 +208,7 @@ public class ChismesUploadSample implements EntryPoint {
 
     tabPanel.add(simpleUploadBox, i18nStrs.singleUploadTabText());
     tabPanel.add(multiUploadBox, i18nStrs.multiUploadTabText());
-    
+
     tabPanel.addSelectionHandler(new SelectionHandler<Integer>() {
       public void onSelection(SelectionEvent<Integer> event) {
         multiUploader.getFileInput().updateSize();
@@ -218,7 +218,7 @@ public class ChismesUploadSample implements EntryPoint {
 
     tabPanel.selectTab(0);
   }
-  
+
   void setupLanguageLinks() {
     final Label english = new Label("English");
     final Label spanish = new Label("Spanish");
@@ -252,8 +252,8 @@ public class ChismesUploadSample implements EntryPoint {
     english.addClickHandler(changeLocale);
     spanish.addClickHandler(changeLocale);
     german.addClickHandler(changeLocale);
-    
+
     RootPanel.get().add(langPanel);
   }
-  
+
 }

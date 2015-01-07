@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <parent>
@@ -12,7 +12,7 @@
   <artifactId>compat</artifactId>
   <packaging>war</packaging>
   <name>gwtupload.Compat</name>
-  
+
   <properties>
       <!-- Convenience property to set the GWT version -->
       <gwtVersion>1.6.4</gwtVersion>
@@ -63,19 +63,19 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-  
+
   <build>
-    <!-- Generate compiled stuff in the folder used for developing mode --> 
+    <!-- Generate compiled stuff in the folder used for developing mode -->
     <outputDirectory>target/www/WEB-INF/classes</outputDirectory>
-    
+
     <plugins>
-      
+
       <!-- GWT Maven Plugin-->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>gwt-maven-plugin</artifactId>
         <version>${gwtMavenVersion}</version>
-        <!-- JS is only needed in the package phase, this speeds up testing --> 
+        <!-- JS is only needed in the package phase, this speeds up testing -->
         <executions>
           <execution>
             <phase>prepare-package</phase>
@@ -84,8 +84,8 @@
             </goals>
           </execution>
         </executions>
-        <!-- Plugin configuration. There are many available options, 
-             see gwt-maven-plugin documentation at codehaus.org --> 
+        <!-- Plugin configuration. There are many available options,
+             see gwt-maven-plugin documentation at codehaus.org -->
         <configuration>
           <!-- URL that should be automatically opened in the GWT shell (gwt:run). -->
           <runTarget>Compat.html</runTarget>
@@ -107,7 +107,7 @@
           <useManifestOnlyJar>false</useManifestOnlyJar>
           <forkMode>always</forkMode>
 
-          <!-- Folder for generated testing stuff --> 
+          <!-- Folder for generated testing stuff -->
           <systemProperties>
             <property>
               <name>gwt.args</name>
@@ -116,7 +116,7 @@
           </systemProperties>
         </configuration>
       </plugin>
-      
+
       <!-- Copy static web files before executing gwt:run -->
       <plugin>
         <artifactId>maven-resources-plugin</artifactId>
@@ -151,7 +151,7 @@
           </filesets>
         </configuration>
       </plugin>
-      
+
     </plugins>
   </build>
 </project>

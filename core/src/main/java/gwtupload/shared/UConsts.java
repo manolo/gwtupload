@@ -27,12 +27,12 @@ public class UConsts {
   public static final String TAG_PARAM = "parameter";
   public static final String TAG_PARAMS = "parameters";
   public static final String TAG_SESSION_ID = "sessionid";
-  
+
   public static final String TAG_MSG_START = "%%%INI%%%";
   public static final String TAG_MSG_END = "%%%END%%%";
   public static final String TAG_MSG_GT = "^^^@@";
   public static final String TAG_MSG_LT = "@@^^^";
-  
+
   public static final String PARAM_BLOBSTORE = TAG_BLOBSTORE;
   public static final String PARAM_BLOBKEY = "blob-key";
   public static final String PARAM_CANCEL = "cancel";
@@ -47,8 +47,8 @@ public class UConsts {
   public static final String PARAM_MESSAGE = TAG_MESSAGE;
   public static final String PARAM_ERROR = TAG_ERROR;
   public static final String PARAM_REDIRECT = "redirect";
-  
+
   public static final String MULTI_SUFFIX = "[]";
-  
+
   public static final String RESP_OK = "ok";
 }

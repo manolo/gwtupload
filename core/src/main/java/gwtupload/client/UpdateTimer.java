@@ -1,13 +1,13 @@
 /*
- * Copyright 2010 Manuel Carrasco Moñino. (manolo at apache/org) 
+ * Copyright 2010 Manuel Carrasco Moñino. (manolo at apache/org)
  * http://code.google.com/p/gwtupload
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -22,9 +22,9 @@ import com.google.gwt.user.client.Timer;
  * <p>
  * A timer that notifies periodically to IUpdateable classes.
  * </p>
- * 
+ *
  * @author Manolo Carrasco Moñino
- * 
+ *
  */
 public class UpdateTimer extends Timer {
 
@@ -59,7 +59,7 @@ public class UpdateTimer extends Timer {
   }
 
   /**
-   * @return 
+   * @return
    *     interval
    */
   public int getInterval() {
@@ -105,7 +105,7 @@ public class UpdateTimer extends Timer {
 
   /**
    * Schedules the timer's start to elapse in the future.
-   * 
+   *
    * @param delayMillis time in milliseconds to wait before start the timer
    */
   public void squeduleStart(int delayMillis) {

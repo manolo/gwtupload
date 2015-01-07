@@ -15,7 +15,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.xml.client.XMLParser;
 
 public interface ISession {
-  
+
   public static class CORSSession extends Session {
     @Override
     protected void setSessionId(String s) {
@@ -25,26 +25,26 @@ public interface ISession {
       System.err.println("CORS Session: " + servletPath);
     }
   }
-  
+
   public static class Session implements ISession {
     String sessionId;
     String servletPath = "servlet.gupld";
-    
+
     public static ISession createSession(String path, RequestCallback callback) {
       Session ret = path.startsWith("http") ? new CORSSession() : new Session();
       ret.servletPath = path;
       ret.getSession(callback);
       return ret;
     }
-    
+
     /**
      * Sends a request to the server in order to get the session cookie,
      * when the response with the session comes, it submits the form.
-     * 
-     * This is needed because this client application usually is part of 
+     *
+     * This is needed because this client application usually is part of
      * static files, and the server doesn't set the session until dynamic pages
      * are requested.
-     * 
+     *
      * If we submit the form without a session, the server creates a new
      * one and send a cookie in the response, but the response with the
      * cookie comes to the client at the end of the request, and in the
@@ -67,11 +67,11 @@ public interface ISession {
         }
       }, PARAM_SESSION + "=true");
     }
-    
+
     protected void setSessionId(String s) {
       sessionId = s;
     }
-    
+
     public String getServletPath() {
       return servletPath;
     }
@@ -86,12 +86,12 @@ public interface ISession {
         callback.onError(null, e);
       }
     }
-    
+
     public String composeURL(String... params) {
       String ret = servletPath;
       ret = ret.replaceAll("[\\?&]+$", "");
       String sep = ret.contains("?") ? "&" : "?";
-      for (String par : params) { 
+      for (String par : params) {
         ret += sep + par;
         sep = "&";
       }
@@ -104,12 +104,12 @@ public interface ISession {
   }
 
   static final int DEFAULT_AJAX_TIMEOUT = 10000;
-  
+
   public void getSession(RequestCallback callback);
 
   public String composeURL(String... params);
-  
+
   public void sendRequest(String name, RequestCallback callback, String... params);
-  
+
   public String getServletPath();
 }

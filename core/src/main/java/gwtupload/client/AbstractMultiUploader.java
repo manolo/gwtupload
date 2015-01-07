@@ -1,13 +1,13 @@
 /*
- * Copyright 2010 Manuel Carrasco Moñino. (manolo at apache/org) 
+ * Copyright 2010 Manuel Carrasco Moñino. (manolo at apache/org)
  * http://code.google.com/p/gwtupload
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -38,11 +38,11 @@ import com.google.gwt.user.client.ui.Widget;
 
 
 /**
- * 
+ *
  * <p>
  * Implementation of an uploader panel that is able to handle several uploads.
  * </p>
- * 
+ *
  * @author Manolo Carrasco Moñino
  * <p>
  * Each time the user selects a file, this is queued and a new upload form is created,
@@ -50,11 +50,11 @@ import com.google.gwt.user.client.ui.Widget;
  * </p>
  */
 public class AbstractMultiUploader<T extends IsWidget & HasWidgets.ForIsWidget> extends Composite implements IUploader {
-  
+
   public Widget getWidget() {
     return this;
   }
-  
+
   IUploader.OnStatusChangedHandler statusChangeHandler = new IUploader.OnStatusChangedHandler() {
     public void onStatusChanged(IUploader uploader) {
       Uploader u = (Uploader) uploader;
@@ -69,8 +69,8 @@ public class AbstractMultiUploader<T extends IsWidget & HasWidgets.ForIsWidget> 
         DOM.setStyleAttribute(w.getElement(), "position", "absolute");
         DOM.setStyleAttribute(w.getElement(), "left", "-4000px");
         u.getFileInput().setVisible(true);
-        
-        // Add the hidden input fields to the form being to submit 
+
+        // Add the hidden input fields to the form being to submit
         for (Widget i : formWidgets) {
           if (! (i instanceof IFileInput)) {
             if (i instanceof Hidden) {
@@ -86,7 +86,7 @@ public class AbstractMultiUploader<T extends IsWidget & HasWidgets.ForIsWidget> 
         u.getFileInput().setVisible(true);
         u.getStatusWidget().setVisible(false);
       } else if (u.getStatus() == Status.INPROGRESS) {
-        u.getFileInput().setVisible(false); 
+        u.getFileInput().setVisible(false);
       } else {
         // We don't need any more all the stuff related with the FormPanel when the upload has finished
         if (u.isFinished() && u.getForm().isAttached()) {
@@ -110,22 +110,22 @@ public class AbstractMultiUploader<T extends IsWidget & HasWidgets.ForIsWidget> 
   private int maximumFiles = 0;
   private T multiUploaderPanel;
   private IUploader.OnCancelUploaderHandler onCancelHandler = null;
-  
+
   private IUploader.OnChangeUploaderHandler onChangeHandler = null;
   private IUploader.OnFinishUploaderHandler onFinishHandler = null;
 
   private IUploader.OnStartUploaderHandler onStartHandler = null;
-  
+
   private IUploader.OnStatusChangedHandler onStatusChangedHandler = null;
 
   private String servletPath = null;
 
   private boolean autoSubmit = true;
-  
+
   private IUploadStatus statusWidget = null;
-  
+
   private List<IUploader> uploaders = new ArrayList<IUploader>();
-  
+
   public List<IUploader> getUploaders() {
     return uploaders;
   }
@@ -135,26 +135,26 @@ public class AbstractMultiUploader<T extends IsWidget & HasWidgets.ForIsWidget> 
   /**
    * Initialize widget components and layout elements.
    * Uses the default status widget and the standard input file.
-   * 
+   *
    */
   public AbstractMultiUploader(T multiUploaderPanel) {
     this(multiUploaderPanel, FileInputType.BROWSER_INPUT, new BaseUploadStatus());
   }
-  
+
   /**
    * Initialize widget components and layout elements.
-   * Uses the default status widget. 
-   *  
+   * Uses the default status widget.
+   *
    * @param type
    *   file input to use
    */
   public AbstractMultiUploader(T multiUploaderPanel, FileInputType type) {
     this(multiUploaderPanel, type, new BaseUploadStatus());
   }
-  
+
   /**
    * Initialize widget components and layout elements.
-   * 
+   *
    * @param type
    *   file input to use
    * @param status
@@ -171,7 +171,7 @@ public class AbstractMultiUploader<T extends IsWidget & HasWidgets.ForIsWidget> 
 
   /**
    * Initialize widget components and layout elements.
-   * 
+   *
    * @param status
    *   Customized status widget to use
    */
@@ -181,7 +181,7 @@ public class AbstractMultiUploader<T extends IsWidget & HasWidgets.ForIsWidget> 
 
   /**
    * This is the constructor for customized multiuploaders.
-   * 
+   *
    * @param status
    *   Customized status widget to use
    * @param fileInput
@@ -191,7 +191,7 @@ public class AbstractMultiUploader<T extends IsWidget & HasWidgets.ForIsWidget> 
     this(multiUploaderPanel, status);
     setFileInput(fileInput);
   }
-  
+
   ArrayList<Widget> formWidgets = new ArrayList<Widget>();
 
   /* (non-Javadoc)
@@ -200,7 +200,7 @@ public class AbstractMultiUploader<T extends IsWidget & HasWidgets.ForIsWidget> 
   public void add(Widget w) {
     add(w, formWidgets.size());
   }
-  
+
   /* (non-Javadoc)
    * @see gwtupload.client.IUploader#add(com.google.gwt.user.client.ui.Widget, int)
    */
@@ -312,7 +312,7 @@ public class AbstractMultiUploader<T extends IsWidget & HasWidgets.ForIsWidget> 
 
   /**
    * Return the maximum files that can be uploaded to the server.
-   * 
+   *
    */
   public int getMaximumFiles() {
     return maximumFiles;
@@ -320,8 +320,8 @@ public class AbstractMultiUploader<T extends IsWidget & HasWidgets.ForIsWidget> 
 
   /**
    * Return the number of uploads that have a non erroneous status.
-   * It includes files which are queued or uploading. 
-   * 
+   * It includes files which are queued or uploading.
+   *
    */
   public int getNonErroneousUploads() {
     int ret = 0;
@@ -337,7 +337,7 @@ public class AbstractMultiUploader<T extends IsWidget & HasWidgets.ForIsWidget> 
   public String getServerResponse() {
     return getServerRawResponse();
   }
-  
+
   public String getServerRawResponse() {
     return lastUploader.getServerResponse();
   }
@@ -352,7 +352,7 @@ public class AbstractMultiUploader<T extends IsWidget & HasWidgets.ForIsWidget> 
 
   /**
    *  Return the status of the multiuploader.
-   *  
+   *
    *   @return
    *             Status.INPROGRESS    if there are items being sent or queued.
    *             Status.UNINITIALIZED if the user has not selected any file
@@ -373,13 +373,13 @@ public class AbstractMultiUploader<T extends IsWidget & HasWidgets.ForIsWidget> 
   }
 
   /**
-   * Return the status of the uploader whose fieldName or fileName is equal to 
+   * Return the status of the uploader whose fieldName or fileName is equal to
    * the name passed as argument.
-   * 
+   *
    * @param name
-   * @return the status of the uploader in the case of found or UNINITIALIZED 
+   * @return the status of the uploader in the case of found or UNINITIALIZED
    */
-  public Status getStatus(String name) { 
+  public Status getStatus(String name) {
     for (IUploader u : uploaders) {
       if (u.getInputName().equals(name) || u.getServerMessage().getUploadedFileNames().contains(name)) {
         return u.getStatus();
@@ -397,7 +397,7 @@ public class AbstractMultiUploader<T extends IsWidget & HasWidgets.ForIsWidget> 
 
   /**
    * Return the number of finished uploads with status success.
-   * 
+   *
    */
   public int getSuccessUploads() {
     int ret = 0;
@@ -422,7 +422,7 @@ public class AbstractMultiUploader<T extends IsWidget & HasWidgets.ForIsWidget> 
   public Iterator<Widget> iterator() {
     return currentUploader.iterator();
   }
-  
+
   /* (non-Javadoc)
    * @see com.google.gwt.user.client.ui.HasWidgets#remove(com.google.gwt.user.client.ui.Widget)
    */
@@ -440,7 +440,7 @@ public class AbstractMultiUploader<T extends IsWidget & HasWidgets.ForIsWidget> 
     multiUploaderPanel.clear();
     newUploaderInstance();
   }
-  
+
   public void setAvoidRepeatFiles(boolean b){
     this.avoidRepeatFiles(b);
   }
@@ -487,13 +487,13 @@ public class AbstractMultiUploader<T extends IsWidget & HasWidgets.ForIsWidget> 
   /**
    * Set the maximum number of files that can be uploaded to the server.
    * Only success uploads are counted.
-   * 
+   *
    * If you decrease this parameter, files already uploaded or in queue are
    * not removed.
-   * 
+   *
    * Setting this parameter, multi-selection is disabled because we can not
    * compute uploaded files until they go to server.
-   * 
+   *
    * @param max
    */
   public void setMaximumFiles(int max) {
@@ -515,7 +515,7 @@ public class AbstractMultiUploader<T extends IsWidget & HasWidgets.ForIsWidget> 
   public void setStatusWidget(IUploadStatus status) {
     currentUploader.setStatusWidget(status);
   }
-  
+
   /* (non-Javadoc)
   * @see gwtupload.client.IUploader#setValidExtensions(java.lang.String[])
   */
@@ -534,7 +534,7 @@ public class AbstractMultiUploader<T extends IsWidget & HasWidgets.ForIsWidget> 
   public void submit() {
     currentUploader.submit();
   }
-  
+
   protected IUploader getUploaderInstance() {
     return new Uploader(fileInputType, autoSubmit);
   }
@@ -568,7 +568,7 @@ public class AbstractMultiUploader<T extends IsWidget & HasWidgets.ForIsWidget> 
     uploaders.add(currentUploader);
     currentUploader.setStatusWidget(statusWidget);
     if (lastUploader != null) {
-      currentUploader.setFileInput(lastUploader.getFileInput().newInstance()); 
+      currentUploader.setFileInput(lastUploader.getFileInput().newInstance());
     }
     currentUploader.setValidExtensions(validExtensions);
     currentUploader.setServletPath(servletPath);
@@ -576,7 +576,7 @@ public class AbstractMultiUploader<T extends IsWidget & HasWidgets.ForIsWidget> 
     currentUploader.setI18Constants(i18nStrs);
     // Set the handlers
     currentUploader.addOnStatusChangedHandler(statusChangeHandler);
-    
+
     if (onChangeHandler != null) {
       currentUploader.addOnChangeUploadHandler(onChangeHandler);
     }
@@ -589,7 +589,7 @@ public class AbstractMultiUploader<T extends IsWidget & HasWidgets.ForIsWidget> 
     if (onCancelHandler != null) {
       currentUploader.addOnCancelUploadHandler(onCancelHandler);
     }
-    
+
     currentUploader.setFileInputPrefix(fileInputPrefix);
     currentUploader.setFileInputSize(fileInputSize);
     currentUploader.setEnabled(enabled);
@@ -605,21 +605,21 @@ public class AbstractMultiUploader<T extends IsWidget & HasWidgets.ForIsWidget> 
       lastUploader = currentUploader;
     }
   }
-  
+
   /**
    * Return the current value of autoSubmit the new Uploader instances are created with
    */
   public boolean getAutoSubmit() {
     return autoSubmit;
   }
-  
+
   /* (non-Javadoc)
    * @see gwtupload.client.IUploader#setAutoSubmit(boolean)
    */
   public void setAutoSubmit(boolean autoSubmit) {
     this.autoSubmit = autoSubmit;
   }
-  
+
   /**
    * Add a customized Upload bar, used in Uibinder.
    */

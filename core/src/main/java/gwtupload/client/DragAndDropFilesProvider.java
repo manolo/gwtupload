@@ -180,7 +180,7 @@ public class DragAndDropFilesProvider implements HasValueChangeHandlers<FileList
     public static boolean thereAreDragAndDropedFiles(FileList fileList) {
         return fileList != null && fileList.getLength() > 0;
     }
-    
+
     public boolean thereAreDragAndDropedFiles() {
         return thereAreDragAndDropedFiles(files);
     }
@@ -192,7 +192,7 @@ public class DragAndDropFilesProvider implements HasValueChangeHandlers<FileList
             return null;
         }
     }
-    
+
     public String getFilename() {
         return getFilename(files);
     }
@@ -210,7 +210,7 @@ public class DragAndDropFilesProvider implements HasValueChangeHandlers<FileList
     public List<String> getFilenames() {
         return getFilenames(files);
     }
-    
+
     public String getName() {
         return fieldName;
     }

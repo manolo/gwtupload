@@ -1,13 +1,13 @@
 /*
- * Copyright 2010 Manuel Carrasco Moñino. (manolo at apache/org) 
+ * Copyright 2010 Manuel Carrasco Moñino. (manolo at apache/org)
  * http://code.google.com/p/gwtupload
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -37,31 +37,31 @@ import com.google.gwt.user.client.ui.Widget;
 /**
  * A widget which wraps a FileUpload (native input file), hidding it
  * and replacing it by any clickable, customizable and stylable Widget.
- * 
+ *
  * To use it, first attach any HasClickHandlers widget to your display,
  * then wrap it with the DecoratedFileUpload.
- * 
+ *
  * <pre>
- 
+
   Button myButton = new Button("Upload a file");
   RootPanel.get().add(myButton);
-  
+
   DecoratedFileUpload d = new DecoratedFileUpload(myButton);
- 
+
  * </pre>
- * 
+ *
  * To use it in UiBinder
- * 
+ *
  * <pre>
- 
+
      <up:DecoratedFileUpload>
         <g:Button>Select a file ...</g:Button>
      </up:DecoratedFileUpload>
- 
+
  * </pre>
- * 
+ *
  * CSS Rules:
- * 
+ *
  * <pre>
 .DecoratedFileUpload {
   margin-right: 5px;
@@ -93,7 +93,7 @@ import com.google.gwt.user.client.ui.Widget;
   color: grey;
 }
  * </pre>
- * 
+ *
  * @author Manuel Carrasco Moñino
  *
  */
@@ -101,7 +101,7 @@ public class DecoratedFileUpload extends FlowPanel implements HasName, HasChange
 
   /**
    * A FileUpload which implements onChange, onMouseOver and onMouseOut events.
-   * 
+   *
    * Note: although FileUpload implements HasChangeHandlers and setEnabled in version Gwt 2.0.x,
    * we put it here in order to be compatible with older Gwt versions.
    *
@@ -119,11 +119,11 @@ public class DecoratedFileUpload extends FlowPanel implements HasName, HasChange
     public HandlerRegistration addMouseOverHandler(final MouseOverHandler handler) {
       return addDomHandler(handler, MouseOverEvent.getType());
     }
-    
+
     public boolean isEnabled() {
       return !getElement().getPropertyBoolean("disabled");
     }
-    
+
     public void setEnabled(boolean enabled) {
       getElement().setPropertyBoolean("disabled", !enabled);
     }
@@ -173,12 +173,12 @@ public class DecoratedFileUpload extends FlowPanel implements HasName, HasChange
   /**
    * Implementation for browsers which support the click() method:
    * IE, Chrome, Safari
-   * 
+   *
    * The hack here is to put the customized button
-   * and the file fileUplad statically positioned in an absolute panel. 
-   * This panel has the size of the button, and the fileUplad is not shown 
+   * and the file fileUplad statically positioned in an absolute panel.
+   * This panel has the size of the button, and the fileUplad is not shown
    * because it is placed out of the width and height panel limits.
-   * 
+   *
    */
   private static class DecoratedFileUploadImplClick extends DecoratedFileUploadImpl {
 
@@ -230,20 +230,20 @@ public class DecoratedFileUpload extends FlowPanel implements HasName, HasChange
   /**
    * Implementation for browsers which do not support the click() method:
    * FF, Opera
-   * 
+   *
    * The hack here is to place the customized button and the file fileUplad positioned
-   * statically in an absolute panel which has size of the button. 
+   * statically in an absolute panel which has size of the button.
    * The file fileUplad is wrapped into a transparent panel, which also has the button
    * size and is placed covering the customizable button.
-   * 
-   * When the user puts his mouse over the button and clicks on it, what really 
+   *
+   * When the user puts his mouse over the button and clicks on it, what really
    * happens is that the user clicks on the transparent file fileUplad showing
    * the choose file dialog.
-   * 
-   */  
+   *
+   */
   @SuppressWarnings("unused")
   private static class DecoratedFileUploadImplNoClick extends DecoratedFileUploadImpl {
-    
+
     private static final int DEFAULT_HEIGHT = 15;
     private static final int DEFAULT_WIDTH = 100;
 
@@ -255,7 +255,7 @@ public class DecoratedFileUpload extends FlowPanel implements HasName, HasChange
       wrapper.add(input);
       container.add(wrapper);
       wrapper.setStyleName("wrapper");
-      
+
       // Not using the GWT 2.0.x way to set Style attributes in order to be
       // compatible with old GWT releases
       DOM.setStyleAttribute(container.getElement(), "position", "relative");
@@ -270,7 +270,7 @@ public class DecoratedFileUpload extends FlowPanel implements HasName, HasChange
       DOM.setStyleAttribute(input.getElement(), "opacity", "0");
       DOM.setElementAttribute(input.getElement(), "size", "1");
       DOM.setElementAttribute(input.getElement(), "cursor", "pointer");
-      
+
       // Trigger over and out handlers which already exist in the covered button.
       input.addMouseOverHandler(new MouseOverHandler() {
         public void onMouseOver(MouseOverEvent event) {
@@ -287,7 +287,7 @@ public class DecoratedFileUpload extends FlowPanel implements HasName, HasChange
         }
       });
     }
-    
+
     public void onAttach() {
       if (width != 0 && height != 0) {
         container.setSize(width + "px", height + "px");
@@ -296,9 +296,9 @@ public class DecoratedFileUpload extends FlowPanel implements HasName, HasChange
       }
       wrapper.setSize(width + "px", height + "px");
     }
-    
+
     protected int width = 0, height = 0;
-    
+
     // TODO: computed size
     public void resize() {
       if (button != null) {
@@ -341,7 +341,7 @@ public class DecoratedFileUpload extends FlowPanel implements HasName, HasChange
 
       wrapper.setSize(width + "px", height + "px");
     }
-    
+
     public void setSize(String width, String height) {
       button.setSize(width, height);
       container.setSize(width, height);
@@ -358,7 +358,7 @@ public class DecoratedFileUpload extends FlowPanel implements HasName, HasChange
   protected boolean reuseButton = false;
   private DecoratedFileUploadImpl impl;
   private String text = "";
-  
+
   /**
    * Default constructor.
    */
@@ -368,7 +368,7 @@ public class DecoratedFileUpload extends FlowPanel implements HasName, HasChange
 
 
   /**
-   * Set the text when the element is attached. 
+   * Set the text when the element is attached.
    */
   public DecoratedFileUpload(String text) {
     this((Widget)null);
@@ -383,7 +383,7 @@ public class DecoratedFileUpload extends FlowPanel implements HasName, HasChange
   public DecoratedFileUpload(Widget button) {
     this(button, null);
   }
-  
+
   public DecoratedFileUpload(Widget button, FileUploadWithMouseEvents in) {
     impl = GWT.create(DecoratedFileUploadImpl.class);
     this.addStyleName(STYLE_CONTAINER);
@@ -408,7 +408,7 @@ public class DecoratedFileUpload extends FlowPanel implements HasName, HasChange
   public String getFilename() {
     return input.getFilename();
   }
-  
+
   /**
    * Return the file names selected by the user.
    */
@@ -417,7 +417,7 @@ public class DecoratedFileUpload extends FlowPanel implements HasName, HasChange
   }
 
   /**
-   * Return the original FileUpload wrapped by this decorated widget. 
+   * Return the original FileUpload wrapped by this decorated widget.
    */
   public FileUpload getFileUpload() {
     return input;
@@ -438,7 +438,7 @@ public class DecoratedFileUpload extends FlowPanel implements HasName, HasChange
   }
 
   /**
-   * Return this widget instance. 
+   * Return this widget instance.
    */
   public Widget getWidget() {
     return this;
@@ -469,7 +469,7 @@ public class DecoratedFileUpload extends FlowPanel implements HasName, HasChange
   }
 
   /**
-   * Set the button the user has to click on to show the browse dialog. 
+   * Set the button the user has to click on to show the browse dialog.
    */
   public void setButton(Widget button) {
     if (button != null) {
@@ -494,7 +494,7 @@ public class DecoratedFileUpload extends FlowPanel implements HasName, HasChange
   }
 
   /**
-   * Enable or disable the FileInput. 
+   * Enable or disable the FileInput.
    */
   public void setEnabled(boolean b) {
     input.setEnabled(b);
@@ -504,14 +504,14 @@ public class DecoratedFileUpload extends FlowPanel implements HasName, HasChange
       this.addStyleDependentName(STYLE_DISABLED_SUFFIX);
     }
   }
-  
+
   /**
    * Set the widget name.
    */
   public void setName(String fieldName) {
     input.setName(fieldName);
   }
-  
+
   /* (non-Javadoc)
    * @see com.google.gwt.user.client.ui.UIObject#setSize(java.lang.String, java.lang.String)
    */
@@ -528,23 +528,23 @@ public class DecoratedFileUpload extends FlowPanel implements HasName, HasChange
       ((HasText) button).setText(text);
       updateSize();
     }
-  }  
-  
+  }
+
   /**
    * Resize the absolute container to match the button size.
    */
   public void updateSize() {
     impl.resize();
   }
-  
+
   public void enableMultiple(boolean b) {
     input.enableMultiple(b);
   }
-  
+
   public void setAccept(String s) {
     input.setAccept(s);
   }
-  
+
   @Override
   public void add(Widget widget) {
     // Be compatible with UIBinder (#179), but avoid adding our own FileInput (#205)
@@ -554,5 +554,5 @@ public class DecoratedFileUpload extends FlowPanel implements HasName, HasChange
       super.add(widget);
     }
   }
-  
+
 }

@@ -1,13 +1,13 @@
 /*
- * Copyright 2010 Manuel Carrasco Moñino. (manolo at apache/org) 
+ * Copyright 2010 Manuel Carrasco Moñino. (manolo at apache/org)
  * http://code.google.com/p/gwtupload
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -28,8 +28,8 @@ import com.google.gwt.user.client.ui.RootPanel;
 
 /**
  * @author Manolo Carrasco Moñino
- *  
- * <p> An Image widget that preloads the picture, and in the case of success executes a user action. 
+ *
+ * <p> An Image widget that preloads the picture, and in the case of success executes a user action.
  * It stores the original width and height of the image that can be used for calculations. </p>
  */
 public class PreloadedImage extends Image implements HasJsData {
@@ -40,14 +40,14 @@ public class PreloadedImage extends Image implements HasJsData {
   public interface OnErrorPreloadedImageHandler extends EventHandler {
     void onError(PreloadedImage image);
   }
-  
+
   /**
    * Handler called when the image is loaded successfully.
    */
   public interface OnLoadPreloadedImageHandler extends EventHandler {
     void onLoad(PreloadedImage image);
   }
-  
+
   private PreloadedImage thisInstance;
   private String containerId;
   private HandlerRegistration errHandler = null;
@@ -86,11 +86,11 @@ public class PreloadedImage extends Image implements HasJsData {
   private String name = null;
   private OnErrorPreloadedImageHandler onError = null;
   private OnLoadPreloadedImageHandler onLoad = null;
-  
+
   private int realWidth = 0, realHeight = 0;
-  
+
   private String uniqId = null;
-  
+
   /**
    * Constructor.
    */
@@ -99,13 +99,13 @@ public class PreloadedImage extends Image implements HasJsData {
     loadHandler = super.addLoadHandler(imgLoadListener);
     errHandler = super.addErrorHandler(imgErrorListener);
   }
-  
+
   /**
    * Constructor.
-   * 
+   *
    * @param url
    *               The image url
-   * @param onLoad 
+   * @param onLoad
    *               handler to be executed in the case of success loading
    */
   public PreloadedImage(String url, OnLoadPreloadedImageHandler onLoad) {
@@ -113,10 +113,10 @@ public class PreloadedImage extends Image implements HasJsData {
     setOnloadHandler(onLoad);
     setUrl(url);
   }
-  
+
   /**
    * Constructor.
-   * 
+   *
    * @param url
    *               The image url
    * @param uniqId
@@ -131,7 +131,7 @@ public class PreloadedImage extends Image implements HasJsData {
     this.uniqId = uniqId;
     this.name = name;
   }
-  
+
   /* (non-Javadoc)
    * @see gwtupload.client.HasJsData#getData()
    */
@@ -148,18 +148,18 @@ public class PreloadedImage extends Image implements HasJsData {
   }
 
   /**
-   * Get the real size of the image. 
+   * Get the real size of the image.
    * It is calculated when the image loads
-   * 
+   *
    */
   public int getRealHeight() {
     return realHeight;
   }
 
   /**
-   * Get the real size of the image. 
+   * Get the real size of the image.
    * It is calculated when the image loads
-   * 
+   *
    */
   public int getRealWidth() {
     return realWidth;
@@ -174,7 +174,7 @@ public class PreloadedImage extends Image implements HasJsData {
 
   /**
    * Set the element's id where the image will be attached.
-   * 
+   *
    * @param id of the DOM element
    */
   public void setContainerId(String id) {
@@ -184,10 +184,10 @@ public class PreloadedImage extends Image implements HasJsData {
   public void setName(String name) {
         this.name = name;
   }
-  
+
   /**
    * Set the handler to be called in the case of error.
-   * 
+   *
    * @param onError
    */
   public void setOnErrorHandler(OnErrorPreloadedImageHandler onError) {

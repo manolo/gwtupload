@@ -1,13 +1,13 @@
 /*
  * Copyright 2007 Manuel Carrasco Moñino. (manolo at apache/org)
  * http://code.google.com/p/gwtupload
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -33,21 +33,21 @@ import gwtupload.client.DecoratedFileUpload.FileUploadWithMouseEvents;
 
 /**
  * Interface used by Uploaders to use and configure a customized file fileUplad.
- * 
+ *
  * Widgets implementing this interface have to render a file fileUplad tag because
  * it will be added to the form which is sent to the server.
- * 
+ *
  * This interface has thought to let the user the option to create customizable
  * panels for file inputs.
- * 
+ *
  * @author Manolo Carrasco Moñino
- * 
+ *
  */
 public interface IFileInput extends HasChangeHandlers, IsWidget {
 
   /**
    * A HyperLinkFileInput implementing the IFileInput interface
-   * 
+   *
    */
   public class AnchorFileInput extends ButtonFileInput {
     public AnchorFileInput() {
@@ -86,11 +86,11 @@ public interface IFileInput extends HasChangeHandlers, IsWidget {
 
   /**
    * A DecoratedFileInput implementing the IFileInput interface
-   * 
+   *
    */
   public class ButtonFileInput extends DecoratedFileUpload implements IFileInput {
     boolean i18n = true;
-    
+
     public ButtonFileInput() {
       this(new Button());
     }
@@ -98,7 +98,7 @@ public interface IFileInput extends HasChangeHandlers, IsWidget {
     public ButtonFileInput(Widget w) {
       this(w, true);
     }
-    
+
     public ButtonFileInput(Widget w, boolean i18n) {
       super(w);
       this.i18n = i18n;
@@ -114,7 +114,7 @@ public interface IFileInput extends HasChangeHandlers, IsWidget {
 
     public void setLength(int length) {
     }
-    
+
     public void setText(String text) {
       if (i18n) {
         super.setText(text);
@@ -155,7 +155,7 @@ public interface IFileInput extends HasChangeHandlers, IsWidget {
       }
       public FileInputType with(IFileInput i) {
         return this;
-      }      
+      }
       public FileInputType with(IDropZone dropZone) {
         return this;
       }
@@ -172,7 +172,7 @@ public interface IFileInput extends HasChangeHandlers, IsWidget {
       }
       public FileInputType with(IFileInput i) {
         return this;
-      }      
+      }
       public FileInputType with(IDropZone dropZone) {
         return this;
       }
@@ -189,7 +189,7 @@ public interface IFileInput extends HasChangeHandlers, IsWidget {
       }
       public FileInputType with(IFileInput i) {
         return this;
-      }      
+      }
       public FileInputType with(IDropZone dropZone) {
         return this;
       }
@@ -208,7 +208,7 @@ public interface IFileInput extends HasChangeHandlers, IsWidget {
               i = GWT.create(DropZoneButtonFileInput.class);
             } else {
               i = new DropZoneButtonFileInput(widget, hasText, dropZone);
-            }              
+            }
           } else {
             if (widget == null) {
               i = GWT.create(ButtonFileInput.class);
@@ -243,7 +243,7 @@ public interface IFileInput extends HasChangeHandlers, IsWidget {
     },
     DROPZONE {
       private IDropZone dropZone;
-      
+
       public IFileInput getInstance() {
         return new DropZoneFileInput(dropZone);
       }
@@ -255,7 +255,7 @@ public interface IFileInput extends HasChangeHandlers, IsWidget {
       }
       public FileInputType with(IFileInput i) {
         return this;
-      }  
+      }
       public FileInputType with(IDropZone dropZone) {
         this.dropZone = dropZone;
         return this;
@@ -276,7 +276,7 @@ public interface IFileInput extends HasChangeHandlers, IsWidget {
 
   /**
    * A LabelFileInput implementing the IFileInput interface
-   * 
+   *
    */
   public class LabelFileInput extends ButtonFileInput {
     public LabelFileInput() {
@@ -288,15 +288,15 @@ public interface IFileInput extends HasChangeHandlers, IsWidget {
       });
     }
   }
-  
+
   /**
    * Gets the filename selected by the user. This property has no mutator, as
    * browser security restrictions preclude setting it.
-   * 
+   *
    * @return the widget's filename
    */
   String getFilename();
-  
+
   /**
    * Gets the filenames selected by the user.
    */
@@ -304,7 +304,7 @@ public interface IFileInput extends HasChangeHandlers, IsWidget {
 
   /**
    * Gets the name of this fileUplad element.
-   * 
+   *
    * @return fieldName
    */
   String getName();
@@ -323,7 +323,7 @@ public interface IFileInput extends HasChangeHandlers, IsWidget {
 
   /**
    * Creates a new instance of the current object type.
-   * 
+   *
    * @return a new instance
    */
   IFileInput newInstance();
@@ -335,7 +335,7 @@ public interface IFileInput extends HasChangeHandlers, IsWidget {
 
   /**
    * Set the length in characters of the fileinput which are shown.
-   * 
+   *
    * @param length
    */
   void setLength(int length);
@@ -343,14 +343,14 @@ public interface IFileInput extends HasChangeHandlers, IsWidget {
   /**
    * Sets the html name for this fileUplad element. It is the name of the form
    * parameter sent to the server.
-   * 
+   *
    * @param fieldName
    */
   void setName(String fieldName);
 
   /**
    * Set the size of the widget.
-   * 
+   *
    * @param width
    * @param height
    */
@@ -358,7 +358,7 @@ public interface IFileInput extends HasChangeHandlers, IsWidget {
 
   /**
    * Set the text for the link which opens the browse file dialog.
-   * 
+   *
    * @param text
    */
   void setText(String text);
@@ -368,7 +368,7 @@ public interface IFileInput extends HasChangeHandlers, IsWidget {
   void updateSize();
 
   void enableMultiple(boolean b);
-  
+
   void setAccept(String accept);
 
 }

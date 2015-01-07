@@ -1,13 +1,13 @@
 /*
  * Copyright 2010 Manuel Carrasco Moñino. (manuel_carrasco at
  * users.sourceforge.net) http://code.google.com/p/gwtupload
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -61,7 +61,7 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory;
  * <p>
  * Upload servlet for the GwtUpload library's deployed in Google App-engine using blobstore.
  * </p>
- * 
+ *
  * <p>
  * Constrains:
  * <ul>
@@ -70,21 +70,21 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory;
  *   <li>If the upload fails, our doPost is never called.</li>
  * </ul>
  * </p>
- * 
+ *
  * @author Manolo Carrasco Moñino
- * 
+ *
  */
 public class BlobstoreUploadAction extends UploadAction {
 
   protected static BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService();
   protected static DatastoreService datastoreService = DatastoreServiceFactory.getDatastoreService();
   protected static BlobInfoFactory  blobInfoFactory = new BlobInfoFactory(datastoreService);
-  
+
   private static final long serialVersionUID = -2569300604226532811L;
-  
+
   // See constrain 1
   private String servletPath = "/upload";
-  
+
   @Override
   public void checkRequest(HttpServletRequest request) {
     logger.debug("BLOB-STORE-SERVLET: (" + request.getSession().getId() + ") procesing a request with size: " + request.getContentLength() + " bytes.");
@@ -94,7 +94,7 @@ public class BlobstoreUploadAction extends UploadAction {
   public boolean isAppEngine() {
     return true;
   }
-  
+
   @Override
   public void init(ServletConfig config) throws ServletException {
     super.init(config);
@@ -102,9 +102,9 @@ public class BlobstoreUploadAction extends UploadAction {
     useBlobstore = true;
     logger.info("BLOB-STORE-SERVLET: init: maxSize=" + maxSize
         + ", slowUploads=" + uploadDelay + ", isAppEngine=" + isAppEngine()
-        + ", useBlobstore=" + useBlobstore); 
+        + ", useBlobstore=" + useBlobstore);
   }
-  
+
   @Override
   protected final AbstractUploadListener createNewListener(
       HttpServletRequest request) {
@@ -139,7 +139,7 @@ public class BlobstoreUploadAction extends UploadAction {
       super.doGet(request, response);
     }
   }
-  
+
   /**
    * BlobStore does not support progress, we return something different to 0%
    */
@@ -151,15 +151,15 @@ public class BlobstoreUploadAction extends UploadAction {
 	  }
     ret.put(TAG_PERCENT, "50");
     ret.put(TAG_CURRENT_BYTES, "1");
-    ret.put(TAG_TOTAL_BYTES, "2" );    
+    ret.put(TAG_TOTAL_BYTES, "2" );
     return ret;
   }
-  
+
   @Override
   protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
     String error = null;
     String message = null;
-    
+
     if (request.getContentLength() > 0) {
       perThreadRequest.set(request);
       try {
@@ -181,7 +181,7 @@ public class BlobstoreUploadAction extends UploadAction {
       removeCurrentListener(request);
       redirect(response, PARAM_ERROR + "=" + error);
       return;
-    } 
+    }
 
     @SuppressWarnings("deprecation")
     Map<String, BlobKey> blobs = blobstoreService.getUploadedBlobs(request);
@@ -193,33 +193,33 @@ public class BlobstoreUploadAction extends UploadAction {
         i.setKey(e.getValue());
         receivedFiles.add(i);
       }
-      
+
       logger.info("BLOB-STORE-SERVLET: putting in sesssion elements -> " + receivedFiles.size());
-      
+
       List<FileItem> sessionFiles = getMySessionFileItems(request);
       if (sessionFiles == null) {
         sessionFiles = new ArrayList<FileItem>();
       }
       sessionFiles.addAll(receivedFiles);
-      
+
       request.getSession().setAttribute(getSessionFilesKey(request), receivedFiles);
       request.getSession().setAttribute(getSessionLastFilesKey(request), sessionFiles);
     } else {
       error = getMessage("no_data");
     }
-      
+
     try {
       message = executeAction(request, getMySessionFileItems(request));
     } catch (UploadActionException e) {
       logger.info("ExecuteUploadActionException: " + e);
       error =  e.getMessage();
     }
-    
+
     removeCurrentListener(request);
-      
+
     redirect(response, message != null ? PARAM_MESSAGE + "=" + message : null);
   }
-  
+
   protected void redirect(HttpServletResponse response, String params) throws IOException {
     String url = servletPath + "?" + PARAM_REDIRECT + "=true" + (params != null ? "&" + params.replaceAll("[\n\r]+", " ") : "");
     logger.info("BLOB-STORE-SERVLET: redirecting to -> : " + url);

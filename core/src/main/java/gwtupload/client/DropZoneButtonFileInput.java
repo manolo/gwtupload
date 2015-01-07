@@ -79,7 +79,7 @@ public class DropZoneButtonFileInput extends ButtonFileInput
         this.dragAndDropedFiles = dragAndDropedFiles;
         fireChangeEvent();
     }
-    
+
     public boolean thereAreDragAndDropedFiles() {
         return DragAndDropFilesProvider.thereAreDragAndDropedFiles(dragAndDropedFiles);
     }
@@ -101,7 +101,7 @@ public class DropZoneButtonFileInput extends ButtonFileInput
     }
 
 //    public String getName() {
-//        
+//
 //    }
 //
 //    public Widget getWidget() {
@@ -109,7 +109,7 @@ public class DropZoneButtonFileInput extends ButtonFileInput
 //    }
 //
 //    public boolean isEnabled() {
-//        
+//
 //    }
     @Override
     public IFileInput newInstance() {

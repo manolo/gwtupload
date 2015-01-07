@@ -9,9 +9,9 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.FileUpload;
 
 /**
- * Extends GWT's Fileupload class as that one does not support the HTML5 feature of a 
+ * Extends GWT's Fileupload class as that one does not support the HTML5 feature of a
  * multiple-select uploader.
- * 
+ *
  * @author ebluemelhuber
  *
  */
@@ -38,7 +38,7 @@ public class MultipleFileUpload extends FileUpload {
 
     return result;
   }
-  
+
   public void enableMultiple(boolean b) {
     String attr = "multiple";
     if (b) {
@@ -47,7 +47,7 @@ public class MultipleFileUpload extends FileUpload {
       DOM.removeElementAttribute(getElement(), attr);
     }
   }
-  
+
   public void setAccept(String accept) {
     DOM.setElementAttribute(getElement(), "accept", accept);
   }

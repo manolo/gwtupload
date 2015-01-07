@@ -96,17 +96,17 @@
       <artifactId>log4j</artifactId>
       <version>${log4jVersion}</version>
       <scope>provided</scope>
-    </dependency>    
+    </dependency>
     <dependency>
       <groupId>commons-fileupload</groupId>
       <artifactId>commons-fileupload</artifactId>
       <version>${commonsFileuploadVersion}</version>
-    </dependency>    
+    </dependency>
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
       <version>${commonsIoVersion}</version>
-    </dependency>    
+    </dependency>
     <dependency>
       <groupId>gwtchismes</groupId>
       <artifactId>gwtchismes</artifactId>
@@ -118,7 +118,7 @@
       <artifactId>gwt-incubator</artifactId>
       <version>${gwtIncubatorVersion}</version>
       <scope>provided</scope>
-    </dependency>    
+    </dependency>
     <dependency>
       <groupId>org.timepedia.exporter</groupId>
       <artifactId>gwtexporter</artifactId>
@@ -134,16 +134,16 @@
   </dependencies>
 
   <description>
-   GWTUpload is a library for uploading files to web servers, 
-   showing a progress bar with real information about the process (file size, bytes transferred, etc). 
-   It uses ajax requests to ask the web server for the upload progress. 
-   It has two components written in java, the server side with servlet and utility classes, 
-   and the client side that is compiled into javascript using gwt. 
+   GWTUpload is a library for uploading files to web servers,
+   showing a progress bar with real information about the process (file size, bytes transferred, etc).
+   It uses ajax requests to ask the web server for the upload progress.
+   It has two components written in java, the server side with servlet and utility classes,
+   and the client side that is compiled into javascript using gwt.
 
    GWTUpload-gae is a library with aditional classes needed for using GwtUpload in Google Application Engine (GAE).
 
-   JSUpload is the client library but compiled and exported into javascript, 
-   so users without Gwt skills can use it directly in their web pages. 
+   JSUpload is the client library but compiled and exported into javascript,
+   so users without Gwt skills can use it directly in their web pages.
 
    It includes a bunch of useful examples to learn how to use the library and see its features.
   </description>

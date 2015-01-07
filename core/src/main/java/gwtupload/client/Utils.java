@@ -28,7 +28,7 @@ public final class Utils {
   public static String getXmlNodeValue(Document doc, String tag) {
     return getXmlNodeValue(doc, tag, 0);
   }
-  
+
   /**
    * return the text content of a tag in the position idx inside a xml document
    */
@@ -79,9 +79,9 @@ public final class Utils {
 	}
 
   /**
-   * Return true in the case of the filename has an extension included in the 
+   * Return true in the case of the filename has an extension included in the
    * validExtensions array. It isn't case sensitive.
-   * 
+   *
    * @param validExtensions an array with allowed extensions. ie: .jpg, .mpg ..
    * @param fileName
    * @return true in the case of valid filename
@@ -94,7 +94,7 @@ public final class Utils {
     boolean valid = validExtensions == null || validExtensions.isEmpty() ? true : false;
     if (!valid) for (String regx : validExtensions) {
       if (fileName.toLowerCase().matches(regx)) {
-        valid = true; 
+        valid = true;
         break;
       }
     }

@@ -1,13 +1,13 @@
 /*
  * Copyright 2010 Manuel Carrasco Moñino. (manuel_carrasco at
  * users.sourceforge.net) http://code.google.com/p/gwtupload
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -29,7 +29,7 @@ import org.apache.commons.fileupload.FileItemFactory;
  * <p>
  * Upload servlet for the GwtUpload library's deployed in Google App-engine.
  * </p>
- * 
+ *
  * <h4>Limitations in Google Application Engine:</h4>
  * <ul>
  * <li>It doesn't support writing to file-system, so this servlet stores
@@ -40,9 +40,9 @@ import org.apache.commons.fileupload.FileItemFactory;
  * <li>The time spent to process a request is limited, so this servlet limits
  * the sleep delay to a maximum of 50ms</li>
  * </ul>
- * 
+ *
  * @author Manolo Carrasco Moñino
- * 
+ *
  */
 public class AppEngineUploadAction extends UploadAction {
 
@@ -57,7 +57,7 @@ public class AppEngineUploadAction extends UploadAction {
               + MemCacheFileItemFactory.DEFAULT_REQUEST_SIZE + " Bytes");
     }
   }
-  
+
 
   @Override
   public boolean isAppEngine() {
@@ -78,7 +78,7 @@ public class AppEngineUploadAction extends UploadAction {
           + ", useBlobstore=" + useBlobstore);
     }
   }
-  
+
   @Override
   protected final AbstractUploadListener createNewListener(
       HttpServletRequest request) {

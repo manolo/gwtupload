@@ -160,6 +160,10 @@
           <style>OBF</style>
           <!-- Compress a bit more the js output -->
           <disableCastChecking>true</disableCastChecking>
+          <enableAssertions>false</enableAssertions>
+          <enableClosureCompiler>true</enableClosureCompiler>
+          <disableClassMetadata>true</disableClassMetadata>
+          <optimizationLevel>9</optimizationLevel>
           <!-- Modules to compile -->
           <modules>
             <module>gwtuploadsample.ChismesUploadSample</module>
@@ -243,7 +247,7 @@
                       <artifacts>
                           <artifact>
                               <file>${project.build.directory}/${project.artifactId}-${project.version}.jar</file>
-                              <type>jar</type>                           
+                              <type>jar</type>
                           </artifact>
                       </artifacts>
                   </configuration>
@@ -268,7 +272,7 @@
             </configuration>
           </execution>
         </executions>
-      </plugin> 
+      </plugin>
       <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-resources-plugin</artifactId>

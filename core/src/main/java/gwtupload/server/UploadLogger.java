@@ -134,7 +134,7 @@ public class UploadLogger {
   public static UploadLogger getLogger(Class<?> class1) {
     return new UploadLogger(class1.getName());
   }
-  
+
   public void debug(Object o) {
     logger.debug(o);
   }

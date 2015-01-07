@@ -1,13 +1,13 @@
 /*
- * Copyright 2010 Manuel Carrasco Moñino. (manolo at apache/org) 
+ * Copyright 2010 Manuel Carrasco Moñino. (manolo at apache/org)
  * http://code.google.com/p/gwtupload
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -30,19 +30,19 @@ import com.google.gwt.user.client.ui.Widget;
  * <p>
  * Interface used by uploaders to notify the progress status.
  * </p>
- * 
+ *
  * @author Manolo Carrasco Moñino
- * 
+ *
  */
-public interface IUploadStatus extends HasProgress, IsWidget {  
+public interface IUploadStatus extends HasProgress, IsWidget {
 
   /**
    * Enumeration of possible cancel options
    */
   public static enum CancelBehavior {
     DISABLED, REMOVE_CANCELLED_FROM_LIST, REMOVE_REMOTE, STOP_CURRENT, REMOVE_INVALID
-  }    
-  
+  }
+
   /**
    * Enumeration of possible status values
    */
@@ -68,7 +68,7 @@ public interface IUploadStatus extends HasProgress, IsWidget {
    * Interface for internationalizable elements.
    */
   public interface UploadStatusConstants extends Constants {
-    
+
     @DefaultStringValue(" ")
     String uploadLabelCancel();
     @DefaultStringValue("Canceled")
@@ -101,7 +101,7 @@ public interface IUploadStatus extends HasProgress, IsWidget {
 
   /**
    * Return the status of the upload process.
-   * 
+   *
    * @return Status
    */
   Status getStatus();
@@ -115,18 +115,18 @@ public interface IUploadStatus extends HasProgress, IsWidget {
 
   /**
    * Creates a new instance of the current object type.
-   * 
+   *
    * @return a new instance
    */
   IUploadStatus newInstance();
 
   /**
    * Set the configuration for the cancel action.
-   * 
+   *
    * @param config
-   *   Set of configuration parameters. 
+   *   Set of configuration parameters.
    *   TIP: Use EnumSet.of() to fill them.
-   * 
+   *
    */
   void setCancelConfiguration(Set<IUploadStatus.CancelBehavior> config);
 
@@ -135,33 +135,33 @@ public interface IUploadStatus extends HasProgress, IsWidget {
    * @param error
    */
   void setError(String error);
-  
+
   /**
    * Called when the uploader knows the filenames selected by the user.
    * @param of the selected files' names
    */
   void setFileNames(List<String> names);
-  
+
   /**
    * Internationalize the UploadStatus widget.
-   * 
+   *
    * @param strs
    */
   void setI18Constants(UploadStatusConstants strs);
-  
+
   /**
    * Set the process status.
-   * 
-   * @param status 
+   *
+   * @param status
    */
   void setStatus(IUploadStatus.Status status);
-  
+
   /**
    * Set the handler which will be fired when the status changes.
    * @param handler
    */
   void setStatusChangedHandler(UploadStatusChangedHandler handler);
-  
+
   /**
    * show/hide the widget.
    * @param b

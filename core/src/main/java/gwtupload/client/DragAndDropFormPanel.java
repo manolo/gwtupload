@@ -72,7 +72,7 @@ public class DragAndDropFormPanel extends FormPanel {
         if (childFileInputs == null || childFileInputs.isEmpty()) {
             return;
         }
-        final ArrayList<IDragAndDropFileInput> dndFileInputs = 
+        final ArrayList<IDragAndDropFileInput> dndFileInputs =
                 new ArrayList<IDragAndDropFileInput>();
         boolean thereAreNonDragAndDropFileInputs = false;
         for (IFileInput fileInput : childFileInputs) {
@@ -160,7 +160,7 @@ public class DragAndDropFormPanel extends FormPanel {
         request.open(method, action);
         request.send(formData);
     }-*/;
-    
+
     // This is invoked from jsSubmit():
     private void onSubmitComplete(String resultsHtml) {
         fireEvent(new SubmitCompleteEvent(resultsHtml) {

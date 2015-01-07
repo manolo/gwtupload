@@ -1,13 +1,13 @@
 /*
- * Copyright 2010 Manuel Carrasco Moñino. (manolo at apache/org) 
+ * Copyright 2010 Manuel Carrasco Moñino. (manolo at apache/org)
  * http://code.google.com/p/gwtupload
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -24,15 +24,15 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.fileupload.ProgressListener;
 
 /**
- * 
+ *
  * Abstract class for file upload listeners used by apache-commons-fileupload to monitor
  * the progress of uploaded files.
- *  
+ *
  * It is useful to implement UploadListeners that can be saved in different
  * ways.
- * 
+ *
  * @author Manolo Carrasco Moñino
- * 
+ *
  */
 public abstract class AbstractUploadListener implements ProgressListener, Serializable {
 
@@ -83,7 +83,7 @@ public abstract class AbstractUploadListener implements ProgressListener, Serial
 
   /**
    * Get the bytes transfered so far.
-   * 
+   *
    * @return bytes
    */
   public long getBytesRead() {
@@ -92,7 +92,7 @@ public abstract class AbstractUploadListener implements ProgressListener, Serial
 
   /**
    * Get the total bytes of the request.
-   * 
+   *
    * @return bytes
    */
   public long getContentLength() {
@@ -101,15 +101,15 @@ public abstract class AbstractUploadListener implements ProgressListener, Serial
 
   /**
    * Get the exception.
-   * 
+   *
    */
   public RuntimeException getException() {
     return exception;
   }
 
   /**
-   * Return the percent done of the current upload. 
-   * 
+   * Return the percent done of the current upload.
+   *
    * @return percent
    */
   public long getPercent() {
@@ -117,9 +117,9 @@ public abstract class AbstractUploadListener implements ProgressListener, Serial
   }
 
   /**
-   * Return true if the process has been canceled due to an error or 
+   * Return true if the process has been canceled due to an error or
    * by the user.
-   * 
+   *
    * @return boolean
    */
   public boolean isCanceled() {
@@ -131,9 +131,9 @@ public abstract class AbstractUploadListener implements ProgressListener, Serial
   }
 
   /**
-   * Return true if has lasted a long since the last data received. 
+   * Return true if has lasted a long since the last data received.
    * by the user.
-   * 
+   *
    * @return boolean
    */
   public boolean isFrozen() {
@@ -152,7 +152,7 @@ public abstract class AbstractUploadListener implements ProgressListener, Serial
 
   /**
    * Set the exception which cancels the upload.
-   * 
+   *
    */
   public void setException(RuntimeException e) {
     exception = e;
@@ -174,8 +174,8 @@ public abstract class AbstractUploadListener implements ProgressListener, Serial
   public void update(long done, long total, int item) {
     if (exceptionTrhown) { return; }
 
-    // To avoid cache overloading, this object is saved when the upload starts, 
-    // when it has finished, or when the interval from the last save is significant. 
+    // To avoid cache overloading, this object is saved when the upload starts,
+    // when it has finished, or when the interval from the last save is significant.
     boolean save = bytesRead == 0 && done > 0 || done >= total || (new Date()).getTime() - saved.getTime() > DEFAULT_SAVE_INTERVAL;
     bytesRead = done;
     contentLength = total;
@@ -183,7 +183,7 @@ public abstract class AbstractUploadListener implements ProgressListener, Serial
       save();
     }
 
-    // If other request has set an exception, it is thrown so the commons-fileupload's 
+    // If other request has set an exception, it is thrown so the commons-fileupload's
     // parser stops and the connection is closed.
     if (isCanceled()) {
       String eName = exception.getClass().getName().replaceAll("^.+\\.", "");

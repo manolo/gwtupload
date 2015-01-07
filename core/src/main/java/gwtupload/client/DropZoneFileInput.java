@@ -1,13 +1,13 @@
 /*
  * Copyright 2014 Manuel Carrasco Moñino. (manolo at apache/org)
  * http://code.google.com/p/gwtupload
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -42,7 +42,7 @@ public class DropZoneFileInput extends Label implements IDropZone, IFileInput,
   public DropZoneFileInput() {
     this(null, true);
   }
-  
+
   public DropZoneFileInput(IDropZone dropZoneWidget) {
     this(dropZoneWidget, true);
   }
@@ -115,7 +115,7 @@ public class DropZoneFileInput extends Label implements IDropZone, IFileInput,
   public void setName(String fieldName) {
     dragAndDropFilesProvider.setName(fieldName);
   }
-  
+
   public void setText(String text) {
     if (i18n) {
       super.setText(text);

@@ -1,13 +1,13 @@
 /*
- * Copyright 2010 Manuel Carrasco Moñino. (manolo at apache/org) 
+ * Copyright 2010 Manuel Carrasco Moñino. (manolo at apache/org)
  * http://code.google.com/p/gwtupload
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -27,9 +27,9 @@ import com.google.gwt.user.client.ui.Widget;
  * <p>
  * Implementation of a single uploader with a submit button and a modal status widget.
  * </p>
- * 
+ *
  * @author Manolo Carrasco Moñino
- * 
+ *
  * <p>
  * When the user selects a file, the button changes its style
  * so the she could realize that she has to push the button.
@@ -43,7 +43,7 @@ public class SingleUploaderModal extends SingleUploader {
    * Default constructor.
    * Uses the standard browser input, a basic status widget, and
    * creates a standard button to send the file
-   * 
+   *
    */
   public SingleUploaderModal() {
     this(FileInputType.BROWSER_INPUT);
@@ -56,7 +56,7 @@ public class SingleUploaderModal extends SingleUploader {
 
   /**
    * Creates a standard button to send the file
-   * 
+   *
    * @param type
    *        file input to use
    * @param status
@@ -68,7 +68,7 @@ public class SingleUploaderModal extends SingleUploader {
 
   /**
    * Constructor
-   * 
+   *
    * @param type
    *        file input to use
    * @param status
@@ -82,7 +82,7 @@ public class SingleUploaderModal extends SingleUploader {
 
   /**
    * This constructor allows to use an existing form panel.
-   * 
+   *
    * @param type
    *        file input to use
    * @param status
@@ -97,9 +97,9 @@ public class SingleUploaderModal extends SingleUploader {
   }
 
   /**
-   * Uses the standard browser input, customized status, and creates a 
+   * Uses the standard browser input, customized status, and creates a
    * standard button to send the file
-   * 
+   *
    * @param status
    *        Customized status widget to use
    */
@@ -108,7 +108,7 @@ public class SingleUploaderModal extends SingleUploader {
   }
 
   /**
-   * 
+   *
    * @param status
    *        Customized status widget to use
    * @param submitButton
@@ -130,5 +130,5 @@ public class SingleUploaderModal extends SingleUploader {
       button.setVisible(true);
     }
   }
-  
+
 }

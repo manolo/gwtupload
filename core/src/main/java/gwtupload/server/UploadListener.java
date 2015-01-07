@@ -1,13 +1,13 @@
 /*
- * Copyright 2010 Manuel Carrasco Moñino. (manolo at apache/org) 
+ * Copyright 2010 Manuel Carrasco Moñino. (manolo at apache/org)
  * http://code.google.com/p/gwtupload
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -28,12 +28,12 @@ import javax.servlet.http.HttpSession;
 /**
  * This is a File Upload Listener that is used by Apache Commons File Upload to
  * monitor the progress of the uploaded file.
- * 
+ *
  * This object and its attributes have to be serializable because
  * Google App-Engine uses dataStore and memCache to store session objects.
- * 
+ *
  * @author Manolo Carrasco Moñino
- * 
+ *
  */
 public class UploadListener extends AbstractUploadListener {
 
@@ -98,7 +98,7 @@ public class UploadListener extends AbstractUploadListener {
   private static final long serialVersionUID = -6431275569719042836L;
 
   private static final int WATCHER_INTERVAL = 5000;
-  
+
   public static void setNoDataTimeout(int i) {
     noDataTimeout = i;
   }
@@ -114,7 +114,7 @@ public class UploadListener extends AbstractUploadListener {
   /**
    *  Upload servlet saves the current request as a ThreadLocal,
    *  so it is accessible from any class.
-   *  
+   *
    *  @return request of the current thread
    */
   private static HttpServletRequest request() {
@@ -132,7 +132,7 @@ public class UploadListener extends AbstractUploadListener {
 
   /**
    * Default constructor.
-   * 
+   *
    */
   public UploadListener(int sleepMilliseconds, long requestSize) {
     super(sleepMilliseconds, requestSize);

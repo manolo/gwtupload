@@ -10,7 +10,7 @@ public interface UploadCss extends ClientBundle {
 
     @Source("Upload.css")
     public CssResource css();
-    
+
     @Source("cancel-upld.gif")
     ImageResource imgCancelUpload();
 

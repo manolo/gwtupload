@@ -1,13 +1,13 @@
 /*
- * Copyright 2010 Manuel Carrasco Moñino. (manolo at apache/org) 
+ * Copyright 2010 Manuel Carrasco Moñino. (manolo at apache/org)
  * http://code.google.com/p/gwtupload
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -37,26 +37,26 @@ import com.google.appengine.api.memcache.stdimpl.GCacheFactory;
 
 /**
  * <p>
- * This factory stores the data of FileItems in server's cache. 
+ * This factory stores the data of FileItems in server's cache.
  * </p>
- * 
+ *
  * This class in useful in App-engine where writing to file-system is not supported.
  * Cache has a limit of 1024KB per object, so this class stores long files in multiple
- * cache records. 
- * 
+ * cache records.
+ *
  * Some time ago GAE had the limitation a request size is limited to 512 KB.
  * It seems it has changed and now it is possible larger sizes.
- * 
+ *
  * @author Manolo Carrasco Moñino
- * 
+ *
  */
 public class MemCacheFileItemFactory implements FileItemFactory, Serializable {
-  
+
   /**
    * An OutputStream that saves received data in memory.
-   * 
+   *
    * When the close method is called, it invokes the save method of the object
-   * which is using this. 
+   * which is using this.
    *
    */
   public static class CacheableByteArrayOutputStream extends OutputStream implements Serializable {
@@ -98,13 +98,13 @@ public class MemCacheFileItemFactory implements FileItemFactory, Serializable {
     public int size() {
       return size;
     }
-    
+
     @Override
     public void write(int b) throws IOException {
       buff[size++] = (byte) b;
     }
   }
-  
+
   /**
    * FileItem class which stores file data in cache.
    */
@@ -193,9 +193,9 @@ public class MemCacheFileItemFactory implements FileItemFactory, Serializable {
       if (data != null) {
         try {
           Cache cache = CacheManager.getInstance().getCacheFactory().createCache(new HashMap() { {
-            put(GCacheFactory.EXPIRATION_DELTA, 3600); 
+            put(GCacheFactory.EXPIRATION_DELTA, 3600);
           }});
-          size = data.size();			
+          size = data.size();
           int storedBytes = 0;
           String sufix = "";
           while(storedBytes < size) {
@@ -253,15 +253,15 @@ public class MemCacheFileItemFactory implements FileItemFactory, Serializable {
     public void setHeaders(FileItemHeaders headers) {
     }
   }
-  
+
   /**
    */
   public class MemCacheInputStream extends InputStream {
-    
+
     ByteArrayInputStream is;
     String key;
     private Cache cache = null;
-    
+
     public MemCacheInputStream(String key) {
       this.key = key;
       try {
@@ -269,7 +269,7 @@ public class MemCacheFileItemFactory implements FileItemFactory, Serializable {
       } catch (Exception e) {
       }
     }
-    
+
     public int read() throws IOException {
       if (is == null || is.available() <= 0) {
         try {
@@ -286,7 +286,7 @@ public class MemCacheFileItemFactory implements FileItemFactory, Serializable {
       }
       return -1;
     }
-  }  
+  }
 
   /**
    * Interface for objects that has can be saved.
@@ -296,7 +296,7 @@ public class MemCacheFileItemFactory implements FileItemFactory, Serializable {
   public interface Saveable<T> {
     void save(T o);
   }
-  
+
   // Max request size in App-engine
   public static final int DEFAULT_REQUEST_SIZE = 3 * 1024 * 1024 - 1024;
 
@@ -305,7 +305,7 @@ public class MemCacheFileItemFactory implements FileItemFactory, Serializable {
   private static final long serialVersionUID = 1L;
 
   private int requestSize = 0;
-  
+
   public MemCacheFileItemFactory() {
     this(DEFAULT_REQUEST_SIZE);
   }

@@ -1,13 +1,13 @@
 /*
- * Copyright 2010 Manuel Carrasco Moñino. (manolo at apache/org) 
+ * Copyright 2010 Manuel Carrasco Moñino. (manolo at apache/org)
  * http://code.google.com/p/gwtupload
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -37,11 +37,11 @@ import com.google.gwt.user.client.ui.Widget;
  *<p>
  * Basic widget that implements the IUploadStatus interface.
  * It renders a simple progress bar.
- * This class that can be overwritten to create more complex widgets.  
+ * This class that can be overwritten to create more complex widgets.
  *</p>
  *
  * @author Manolo Carrasco Moñino
- * 
+ *
  */
 public class BaseUploadStatus implements IUploadStatus {
 
@@ -77,17 +77,17 @@ public class BaseUploadStatus implements IUploadStatus {
   }
 
   /**
-   * Cancel button. 
+   * Cancel button.
    */
   protected Label cancelLabel = getCancelLabel();
-  
+
   /**
    * Label with the original name of the uploaded file.
    */
   protected HTML fileNameLabel = getFileNameLabel();
-  
+
   protected List<String> fileNames;
-  
+
   /**
    * Main panel, attach it to the document using getWidget().
    */
@@ -115,25 +115,25 @@ public class BaseUploadStatus implements IUploadStatus {
     cancelLabel.setStyleName("cancel");
     cancelLabel.setVisible(true);
   }
-  
+
   protected void addElementsToPanel() {
     panel.add(cancelLabel);
     panel.add(fileNameLabel);
     panel.add(statusLabel);
   }
-  
+
   protected Panel getPanel() {
     return new HorizontalPanel();
   }
-  
+
   protected HTML getStatusLabel() {
     return new HTML();
   }
-  
+
   protected HTML getFileNameLabel() {
     return new HTML();
   }
-  
+
   protected HTML getCancelLabel() {
     return new HTML(" ");
   }
@@ -164,7 +164,7 @@ public class BaseUploadStatus implements IUploadStatus {
   final public Widget getWidget() {
     return asWidget();
   }
-  
+
   public Widget asWidget() {
     return panel;
   }
@@ -195,7 +195,7 @@ public class BaseUploadStatus implements IUploadStatus {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see gwtupload.client.IUploadStatus#setFileNames(List<java.lang.String>)
    */
   public void setFileNames(List<String> names) {
@@ -216,8 +216,8 @@ public class BaseUploadStatus implements IUploadStatus {
 
   /**
    * Set the percent of the upload process.
-   * Override this method if your customized progress widget needs percent computed value. 
-   * 
+   * Override this method if your customized progress widget needs percent computed value.
+   *
    * @param percent
    */
   public void setPercent(int percent) {
@@ -254,7 +254,7 @@ public class BaseUploadStatus implements IUploadStatus {
           cancelLabel.setVisible(false);
         }
         break;
-      case SUCCESS: case REPEATED: 
+      case SUCCESS: case REPEATED:
         updateStatusPanel(false, i18nStrs.uploadStatusSuccess());
         if (!cancelCfg.contains(CancelBehavior.REMOVE_REMOTE)) {
           cancelLabel.setVisible(false);
@@ -305,7 +305,7 @@ public class BaseUploadStatus implements IUploadStatus {
 
   /**
    * Override the default progress widget with a customizable one.
-   * 
+   *
    * @param progress
    */
   protected void setProgressWidget(Widget progress) {
@@ -320,7 +320,7 @@ public class BaseUploadStatus implements IUploadStatus {
 
   /**
    * Thought to be overridable by the user when extending this.
-   * 
+   *
    * @param showProgress
    * @param statusMessage
    */

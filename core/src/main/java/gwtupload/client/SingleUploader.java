@@ -1,13 +1,13 @@
 /*
- * Copyright 2010 Manuel Carrasco Moñino. (manolo at apache/org) 
+ * Copyright 2010 Manuel Carrasco Moñino. (manolo at apache/org)
  * http://code.google.com/p/gwtupload
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -38,9 +38,9 @@ import com.google.gwt.user.client.ui.Widget;
  * <p>
  * Implementation of a single uploader panel with a submit button.
  * </p>
- * 
+ *
  * @author Manolo Carrasco Moñino
- * 
+ *
  * <p>
  * When the user selects a file, the button changes its style
  * so the she could realize that she has to push the button.
@@ -50,7 +50,7 @@ import com.google.gwt.user.client.ui.Widget;
 public class SingleUploader extends Uploader {
 
   protected Widget button;
-  
+
   private void setEnabledButton(boolean b) {
     if (button != null) {
       // HasEnabled is only available after gwt-2.1.x
@@ -66,16 +66,16 @@ public class SingleUploader extends Uploader {
    * Default constructor.
    * Uses the standard browser input, a basic status widget, and
    * creates a standard button to send the file
-   * 
+   *
    */
   public SingleUploader() {
     this(FileInputType.BROWSER_INPUT);
   }
 
   /**
-   * Use a basic status widget, and creates 
+   * Use a basic status widget, and creates
    * a standard button to send the file
-   * 
+   *
    * @param type
    *        file input to use
    */
@@ -86,7 +86,7 @@ public class SingleUploader extends Uploader {
 
   /**
    * Creates a standard button to send the file
-   * 
+   *
    * @param type
    *        file input to use
    * @param status
@@ -98,7 +98,7 @@ public class SingleUploader extends Uploader {
 
   /**
    * Constructor
-   * 
+   *
    * @param type
    *        file input to use
    * @param status
@@ -112,7 +112,7 @@ public class SingleUploader extends Uploader {
 
   /**
    * This constructor allows to use an existing form panel.
-   * 
+   *
    * @param type
    *        file input to use
    * @param status
@@ -131,7 +131,7 @@ public class SingleUploader extends Uploader {
       status = new BaseUploadStatus();
     }
     super.setStatusWidget(status);
-    
+
     this.button = submitButton;
     if (submitButton != null) {
       submitButton.addStyleName("submit");
@@ -153,9 +153,9 @@ public class SingleUploader extends Uploader {
   }
 
   /**
-   * Uses the standard browser input, customized status, and creates a 
+   * Uses the standard browser input, customized status, and creates a
    * standard button to send the file
-   * 
+   *
    * @param status
    *        Customized status widget to use
    */
@@ -164,7 +164,7 @@ public class SingleUploader extends Uploader {
   }
 
   /**
-   * 
+   *
    * @param status
    *        Customized status widget to use
    * @param submitButton
@@ -204,19 +204,19 @@ public class SingleUploader extends Uploader {
       }
     }
   }
-  
+
   ArrayList<Widget> formWidgets = new ArrayList<Widget>();
 
   public void add(Widget w) {
     formWidgets.add(w);
     super.add(w);
   }
-  
+
   public void add(Widget w, int index) {
     formWidgets.add(w);
     super.add(w, index);
   }
-  
+
   public void clear() {
     formWidgets.clear();
     super.clear();
@@ -250,13 +250,13 @@ public class SingleUploader extends Uploader {
       button.removeStyleName("changed");
       if (!autoSubmit) {
         button.setVisible(true);
-      } 
+      }
     }
     if (autoSubmit) {
       getFileInput().setText(i18nStrs.uploaderBrowse());
     }
   }
-  
+
   /* (non-Javadoc)
    * @see gwtupload.client.Uploader#onStartUpload()
    */
@@ -270,11 +270,11 @@ public class SingleUploader extends Uploader {
     }
     getFileInput().asWidget().setVisible(false);
   }
-  
+
   public void setAvoidRepeatFiles(boolean b){
     this.avoidRepeatFiles(b);
   }
-  
+
   /* (non-Javadoc)
    * @see gwtupload.client.Uploader#setAutoSubmit(boolean)
    */
@@ -285,7 +285,7 @@ public class SingleUploader extends Uploader {
     }
     super.setAutoSubmit(b);
   }
-  
+
   /**
    * Add a customized Upload bar, used in Uibinder.
    */
@@ -293,7 +293,7 @@ public class SingleUploader extends Uploader {
   public void addStatusBar(IUploadStatus status) {
     this.setStatusWidget((IUploadStatus) status);
   }
-  
+
   /**
    * Add any html button created with Uibinder.
    * The content has to implement the interface HasClickHandlers

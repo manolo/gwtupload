@@ -9,7 +9,7 @@ import org.eclipse.jetty.webapp.WebAppContext;
 
 /**
  * When gwtupload samples are packaged with jetty this class is called to start jetty server.
- * 
+ *
  * @author manolo
  */
 public final class Launcher {

@@ -1,13 +1,13 @@
 /*
  * Copyright 2010 Manuel Carrasco Moñino. (manolo at apache/org)
  * http://code.google.com/p/gwtupload
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -36,11 +36,11 @@ import com.google.appengine.api.blobstore.BlobKey;
 
 /**
  * Upload servlet which uses the FilesApiFileItemFactory using the GAE File API.
- * 
+ *
  * To use this servlet you need:
- * 
+ *
  * Add these lines to your web.xml
- * 
+ *
  * <pre>
   &lt;servlet>
     &lt;servlet-class>gwtupload.server.gae.FilesApiUploadAction&lt;/servlet-class>
@@ -52,17 +52,17 @@ import com.google.appengine.api.blobstore.BlobKey;
   &lt;servlet-mapping>
     &lt;servlet-name>uploadServlet&lt;/servlet-name>
     &lt;url-pattern>/upload&lt;/url-pattern>
-  &lt;/servlet-mapping> 
+  &lt;/servlet-mapping>
  </pre>
- * 
+ *
  * Enable Session in your appengine-web.xml
- * 
+ *
  * <pre>
   &lt;sessions-enabled>true&lt;/sessions-enabled>
 </pre>
- * 
+ *
  * You can get the blob key in server client side using this code
- * 
+ *
  * <pre>
   uploader.addOnFinishUploadHandler(new OnFinishUploaderHandler() {
     public void onFinish(IUploader uploader) {
@@ -72,19 +72,19 @@ import com.google.appengine.api.blobstore.BlobKey;
     }
   });
 </pre>
- * 
+ *
  * @author Vyacheslav Sokolov
  * @author Manuel Carrasco
  */
 public class FilesApiUploadAction extends UploadAction {
   private static final long serialVersionUID = 3683112300714613746L;
-  
-  
+
+
   @Override
   public boolean isAppEngine() {
     return true;
   }
-  
+
   @Override
   public String executeAction(HttpServletRequest request,
       List<FileItem> sessionFiles) throws UploadActionException {
