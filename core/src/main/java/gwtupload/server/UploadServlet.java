@@ -93,6 +93,12 @@ import org.apache.commons.io.IOUtils;
  *     &lt;param-value&gt;200&lt;/param-value&gt;
  *   &lt;/context-param&gt;
  *
+ *   &lt;context-param&gt;
+ *     &lt;!-- max file size of the upload request --&gt;
+ *     &lt;param-name&gt;maxFileSize&lt;/param-name&gt;
+ *     &lt;param-value&gt;3145728&lt;/param-value&gt;
+ *   &lt;/context-param&gt;
+ *
  *   &lt;servlet&gt;
  *     &lt;servlet-name&gt;uploadServlet&lt;/servlet-name&gt;
  *     &lt;servlet-class&gt;gwtupload.server.UploadServlet&lt;/servlet-class&gt;
@@ -467,6 +473,8 @@ public class UploadServlet extends HttpServlet implements Servlet {
 
   protected long maxSize = DEFAULT_REQUEST_LIMIT_KB;
 
+  protected  long maxFileSize = DEFAULT_REQUEST_LIMIT_KB;
+
   protected int uploadDelay = 0;
 
   protected boolean useBlobstore = false;
@@ -539,6 +547,14 @@ public class UploadServlet extends HttpServlet implements Servlet {
       try {
         maxSize = Long.parseLong(size);
       } catch (NumberFormatException e) {
+      }
+    }
+
+    String fileSize = getInitParameter("maxFileSize");
+    if (null != fileSize){
+      try {
+        maxFileSize = Long.parseLong(fileSize);
+      } catch (NumberFormatException e){
       }
     }
 
@@ -896,6 +912,7 @@ public class UploadServlet extends HttpServlet implements Servlet {
       FileItemFactory factory = getFileItemFactory(getContentLength(request));
       ServletFileUpload uploader = new ServletFileUpload(factory);
       uploader.setSizeMax(maxSize);
+      uploader.setFileSizeMax(maxFileSize);
       uploader.setProgressListener(listener);
 
       // Receive the files

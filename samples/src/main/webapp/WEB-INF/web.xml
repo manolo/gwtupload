@@ -13,6 +13,10 @@
 	    <param-value>1024000</param-value>
     </init-param>
     <init-param>
+	    <param-name>maxFileSize</param-name>
+	    <param-value>1024000</param-value>
+    </init-param>
+    <init-param>
 	    <param-name>slowUploads</param-name>
 	    <param-value>true</param-value>
     </init-param>
