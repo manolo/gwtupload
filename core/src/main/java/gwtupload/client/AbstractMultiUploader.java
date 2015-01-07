@@ -642,11 +642,11 @@ public class AbstractMultiUploader<T extends IsWidget & HasWidgets.ForIsWidget> 
   }
 
   public void setServerMessage(ServerMessage msg) {
-    currentUploader.setServerMessage(msg);
+    lastUploader.setServerMessage(msg);
   }
 
   public ServerMessage getServerMessage() {
-    return currentUploader.getServerMessage();
+    return lastUploader.getServerMessage();
   }
 
   public void setAddNewUploaderInstancesAtTop(boolean addNewUploaderInstancesAtTop) {
