@@ -51,32 +51,33 @@ public final class Utils {
     NodeList textNodes = node.getChildNodes();
     for (int i = 0; i < textNodes.getLength(); i++) {
       Node n = textNodes.item(i);
-      if (n.getNodeType() == Node.TEXT_NODE && n.getNodeValue().replaceAll("[ \\n\\t\\r]", "").length() > 0) {
+      if (n.getNodeType() == Node.TEXT_NODE
+          && n.getNodeValue().replaceAll("[ \\n\\t\\r]", "").length() > 0) {
         ret += n.getNodeValue();
       } else if (n.getNodeType() == Node.CDATA_SECTION_NODE) {
         ret += n.getNodeValue();
       }
-		return getXmlNodeValue(list.item(0));
     }
     return ret.length() == 0 ? null : ret.replaceAll("^\\s+", "").replaceAll("\\s+$", "");
   }
 
-    public static String getXmlNodeValue(Node node) {
-    	if (node.getNodeType() != Node.ELEMENT_NODE) {
-    		return null;
-    	}
-    	String ret = "";
-    	NodeList textNodes = node.getChildNodes();
-    	for (int i = 0; i < textNodes.getLength(); i++) {
-    		Node n = textNodes.item(i);
-    		if (n.getNodeType() == Node.TEXT_NODE && n.getNodeValue().replaceAll("[ \\n\\t\\r]", "").length() > 0) {
-    			ret += n.getNodeValue();
-    		} else if (n.getNodeType() == Node.CDATA_SECTION_NODE) {
-    			ret += n.getNodeValue();
-    		}
-    	}
-    	return ret.length() == 0 ? null : ret.replaceAll("^\\s+", "").replaceAll("\\s+$", "");
-	}
+  public static String getXmlNodeValue(Node node) {
+    if (node.getNodeType() != Node.ELEMENT_NODE) {
+      return null;
+    }
+    String ret = "";
+    NodeList textNodes = node.getChildNodes();
+    for (int i = 0; i < textNodes.getLength(); i++) {
+      Node n = textNodes.item(i);
+      if (n.getNodeType() == Node.TEXT_NODE
+          && n.getNodeValue().replaceAll("[ \\n\\t\\r]", "").length() > 0) {
+        ret += n.getNodeValue();
+      } else if (n.getNodeType() == Node.CDATA_SECTION_NODE) {
+        ret += n.getNodeValue();
+      }
+    }
+    return ret.length() == 0 ? null : ret.replaceAll("^\\s+", "").replaceAll("\\s+$", "");
+  }
 
   /**
    * Return true in the case of the filename has an extension included in the

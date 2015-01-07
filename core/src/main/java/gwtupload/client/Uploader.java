@@ -445,6 +445,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
         for (int i = 0, l = list.getLength(); i < l; i++) {
           UploadedInfo info = new UploadedInfo();
           info.setField(getInputName() + "-" + i);
+
           info.setName(Utils.getXmlNodeValue(doc, TAG_NAME, i));
           info.setCtype(Utils.getXmlNodeValue(doc, TAG_CTYPE, i));
 
