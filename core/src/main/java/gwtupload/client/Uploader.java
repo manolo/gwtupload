@@ -1307,16 +1307,21 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
       statusWidget.setStatus(IUploadStatus.Status.ERROR);
     }
     onFinishUpload();
-    reatachIframe(uploadForm.getElement());
+    reatachIframe(uploadForm.getElement().getAttribute("target"));
   }
 
   // Fix for issue http://stackoverflow.com/questions/27711821
-  private native static void reatachIframe(Element e) /*-{
-    var t = e.getAttribute('target');
-    if (t) {
-      var i = $doc.querySelector('iframe[name="' + t + '"]');
-      if (i)
-        i.action='javascript:void';
+  private native static void reatachIframe(String name) /*-{
+    if ($doc.querySelector) {
+      var i = $doc.querySelector('iframe[name="' + name + '"]');
+      if (i) {
+        var o = i.onload;
+        i.onload = undefined;
+        var p = i.parentElement;
+        p.removeChild(i);
+        p.appendChild(i);
+        i.onload = o;
+      }
     }
   }-*/;
 
