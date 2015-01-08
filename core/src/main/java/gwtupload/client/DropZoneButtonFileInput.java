@@ -30,160 +30,167 @@ import java.util.List;
  * DropZoneButtonFileInput.
  *
  * @author Sultan Tezadov
- * @since Jan 20, 2014
  */
-public class DropZoneButtonFileInput extends ButtonFileInput
-        implements IDropZone, HasAllDragAndDropHandlers, IDragAndDropFileInput {
+// FIXME(manolo): This file is pretty equal to DropZoneFileInput, why not unify them?
+public class DropZoneButtonFileInput extends ButtonFileInput implements HasAllDragAndDropHandlers,
+    IDragAndDropFileInput {
 
-    private IDropZone externalDropZoneWidget;
-    private DragAndDropFilesProvider dragAndDropFilesProvider;
-    private FileList dragAndDropedFiles;
+  private HasAllDragAndDropHandlers externalDropZoneWidget;
+  private DragAndDropFilesProvider dragAndDropFilesProvider;
+  private FileList dragAndDropedFiles;
+  private boolean pending = false;
 
-    public DropZoneButtonFileInput() {
-        init(this, null);
+  public DropZoneButtonFileInput() {
+    init(this, null);
+  }
+
+  public DropZoneButtonFileInput(Widget w) {
+    super(w);
+    init(this, null);
+  }
+
+  public DropZoneButtonFileInput(Widget w, boolean i18n) {
+    super(w, i18n);
+    init(this, null);
+  }
+
+  public DropZoneButtonFileInput(Widget w, boolean i18n, HasAllDragAndDropHandlers dropZoneWidget) {
+    super(w, i18n);
+    init(dropZoneWidget, dropZoneWidget);
+  }
+
+  private void init(HasAllDragAndDropHandlers dropZoneWidget,
+      HasAllDragAndDropHandlers externalDropZoneWidget) {
+    if (dropZoneWidget == null) {
+      dropZoneWidget = this;
     }
+    this.externalDropZoneWidget = externalDropZoneWidget;
+    dragAndDropFilesProvider = new DragAndDropFilesProvider(dropZoneWidget);
+    dragAndDropFilesProvider.addValueChangeHandler(new ValueChangeHandler<FileList>() {
+      public void onValueChange(ValueChangeEvent<FileList> event) {
+        processDragAndDropedFiles(event.getValue());
+      }
+    });
+  }
 
-    public DropZoneButtonFileInput(Widget w) {
-        super(w);
-        init(this, null);
+  private void processDragAndDropedFiles(FileList dragAndDropedFiles) {
+    pending = DragAndDropFilesProvider.thereAreDragAndDropedFiles(dragAndDropedFiles);
+    if (pending) {
+      this.dragAndDropedFiles = dragAndDropedFiles;
+      fireChangeEvent();
     }
+  }
 
-    public DropZoneButtonFileInput(Widget w, boolean i18n) {
-        super(w, i18n);
-        init(this, null);
-    }
+  public boolean hasFiles() {
+    return pending;
+  }
 
-    public DropZoneButtonFileInput(Widget w, boolean i18n, IDropZone dropZoneWidget) {
-        super(w, i18n);
-        init(dropZoneWidget, dropZoneWidget);
-    }
+  @Override
+  public void reset() {
+    pending = false;
+  }
 
-    private void init(IDropZone dropZoneWidget, IDropZone externalDropZoneWidget) {
-        if (dropZoneWidget == null) {
-            dropZoneWidget = this;
-        }
-        this.externalDropZoneWidget = externalDropZoneWidget;
-        dragAndDropFilesProvider = new DragAndDropFilesProvider(dropZoneWidget);
-        dragAndDropFilesProvider.addValueChangeHandler(new ValueChangeHandler<FileList>() {
-            public void onValueChange(ValueChangeEvent<FileList> event) {
-                processDragAndDropedFiles(event.getValue());
-            }
-        });
-    }
+  public FileList getFiles() {
+    return dragAndDropedFiles;
+  }
 
-    // This is intentionally made public to allow advanced usage:
-    public void processDragAndDropedFiles(FileList dragAndDropedFiles) {
-        if (!DragAndDropFilesProvider.thereAreDragAndDropedFiles(dragAndDropedFiles)) {
-            return;
-        }
-        this.dragAndDropedFiles = dragAndDropedFiles;
-        fireChangeEvent();
-    }
+  @Override
+  public String getFilename() {
+    return hasFiles() ? DragAndDropFilesProvider.getFilename(dragAndDropedFiles)
+        : super.getFilename();
+  }
 
-    public boolean thereAreDragAndDropedFiles() {
-        return DragAndDropFilesProvider.thereAreDragAndDropedFiles(dragAndDropedFiles);
-    }
+  @Override
+  public List<String> getFilenames() {
+    return hasFiles() ? DragAndDropFilesProvider.getFilenames(dragAndDropedFiles)
+        : super.getFilenames();
+  }
 
-    public FileList getDragAndDropedFiles() {
-        return dragAndDropedFiles;
-    }
+  //    public String getName() {
+  //
+  //    }
+  //
+  //    public Widget getWidget() {
+  //        return asWidget();
+  //    }
+  //
+  //    public boolean isEnabled() {
+  //
+  //    }
+  @Override
+  public IFileInput newInstance() {
+    Widget widget = button != null ? button : new Button(this.getText());
+    return new DropZoneButtonFileInput(widget, i18n, externalDropZoneWidget);
+  }
 
-    @Override
-    public String getFilename() {
-        return thereAreDragAndDropedFiles()
-                ? DragAndDropFilesProvider.getFilename(dragAndDropedFiles) : super.getFilename();
-    }
+  @Override
+  public void setEnabled(boolean b) {
+    super.setEnabled(b);
+    dragAndDropFilesProvider.setEnabled(b);
+  }
 
-    @Override
-    public List<String> getFilenames() {
-        return thereAreDragAndDropedFiles()
-                ? DragAndDropFilesProvider.getFilenames(dragAndDropedFiles) : super.getFilenames();
-    }
+  //    public void setLength(int length) {
+  //    }
+  @Override
+  public void setName(String fieldName) {
+    super.setName(fieldName);
+    dragAndDropFilesProvider.setName(fieldName);
+  }
 
-//    public String getName() {
-//
-//    }
-//
-//    public Widget getWidget() {
-//        return asWidget();
-//    }
-//
-//    public boolean isEnabled() {
-//
-//    }
-    @Override
-    public IFileInput newInstance() {
-        Widget widget = button != null ? button : new Button(this.getText());
-        return new DropZoneButtonFileInput(widget, i18n, externalDropZoneWidget);
-    }
+  //
+  //    public void setSize(String width, String height) {
+  //    }
+  //
+  //    public void setText(String text) {
+  //    }
+  //
+  //    public void setVisible(boolean b) {
+  //    }
+  //
+  //    public void updateSize() {
+  //    }
+  //
+  //    public void enableMultiple(boolean b) {
+  //    }
+  //
+  //    public void setAccept(String accept) {
+  //    }
 
-    @Override
-    public void setEnabled(boolean b) {
-        super.setEnabled(b);
-        dragAndDropFilesProvider.setEnabled(b);
-    }
+  @Override
+  public HandlerRegistration addChangeHandler(ChangeHandler handler) {
+    super.addChangeHandler(handler);
+    return addDomHandler(handler, ChangeEvent.getType());
+  }
 
-//    public void setLength(int length) {
-//    }
-    @Override
-    public void setName(String fieldName) {
-        super.setName(fieldName);
-        dragAndDropFilesProvider.setName(fieldName);
-    }
-//
-//    public void setSize(String width, String height) {
-//    }
-//
-//    public void setText(String text) {
-//    }
-//
-//    public void setVisible(boolean b) {
-//    }
-//
-//    public void updateSize() {
-//    }
-//
-//    public void enableMultiple(boolean b) {
-//    }
-//
-//    public void setAccept(String accept) {
-//    }
+  private void fireChangeEvent() {
+    ChangeEvent.fireNativeEvent(Document.get().createChangeEvent(), this);
+  }
 
-    @Override
-    public HandlerRegistration addChangeHandler(ChangeHandler handler) {
-        super.addChangeHandler(handler);
-        return addDomHandler(handler, ChangeEvent.getType());
-    }
+  public HandlerRegistration addDragEndHandler(DragEndHandler handler) {
+    return addBitlessDomHandler(handler, DragEndEvent.getType());
+  }
 
-    private void fireChangeEvent() {
-        ChangeEvent.fireNativeEvent(Document.get().createChangeEvent(), this);
-    }
+  public HandlerRegistration addDragEnterHandler(DragEnterHandler handler) {
+    return addBitlessDomHandler(handler, DragEnterEvent.getType());
+  }
 
-    public HandlerRegistration addDragEndHandler(DragEndHandler handler) {
-        return addBitlessDomHandler(handler, DragEndEvent.getType());
-    }
+  public HandlerRegistration addDragLeaveHandler(DragLeaveHandler handler) {
+    return addBitlessDomHandler(handler, DragLeaveEvent.getType());
+  }
 
-    public HandlerRegistration addDragEnterHandler(DragEnterHandler handler) {
-        return addBitlessDomHandler(handler, DragEnterEvent.getType());
-    }
+  public HandlerRegistration addDragHandler(DragHandler handler) {
+    return addBitlessDomHandler(handler, DragEvent.getType());
+  }
 
-    public HandlerRegistration addDragLeaveHandler(DragLeaveHandler handler) {
-        return addBitlessDomHandler(handler, DragLeaveEvent.getType());
-    }
+  public HandlerRegistration addDragOverHandler(DragOverHandler handler) {
+    return addBitlessDomHandler(handler, DragOverEvent.getType());
+  }
 
-    public HandlerRegistration addDragHandler(DragHandler handler) {
-        return addBitlessDomHandler(handler, DragEvent.getType());
-    }
+  public HandlerRegistration addDragStartHandler(DragStartHandler handler) {
+    return addBitlessDomHandler(handler, DragStartEvent.getType());
+  }
 
-    public HandlerRegistration addDragOverHandler(DragOverHandler handler) {
-        return addBitlessDomHandler(handler, DragOverEvent.getType());
-    }
-
-    public HandlerRegistration addDragStartHandler(DragStartHandler handler) {
-        return addBitlessDomHandler(handler, DragStartEvent.getType());
-    }
-
-    public HandlerRegistration addDropHandler(DropHandler handler) {
-        return addBitlessDomHandler(handler, DropEvent.getType());
-    }
+  public HandlerRegistration addDropHandler(DropHandler handler) {
+    return addBitlessDomHandler(handler, DropEvent.getType());
+  }
 }

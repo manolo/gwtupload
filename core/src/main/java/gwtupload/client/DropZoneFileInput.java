@@ -20,6 +20,7 @@ import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
+import com.google.gwt.event.dom.client.HasAllDragAndDropHandlers;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -31,23 +32,23 @@ import java.util.List;
 /**
  * @author Sultan Tezadov
  */
-public class DropZoneFileInput extends Label implements IDropZone, IFileInput,
+public class DropZoneFileInput extends Label implements HasAllDragAndDropHandlers, IFileInput,
     IDragAndDropFileInput {
 
   boolean i18n = true;
 
-  private IDropZone externalDropZoneWidget;
+  private HasAllDragAndDropHandlers externalDropZoneWidget;
   private DragAndDropFilesProvider dragAndDropFilesProvider;
 
   public DropZoneFileInput() {
     this(null, true);
   }
 
-  public DropZoneFileInput(IDropZone dropZoneWidget) {
+  public DropZoneFileInput(HasAllDragAndDropHandlers dropZoneWidget) {
     this(dropZoneWidget, true);
   }
 
-  public DropZoneFileInput(IDropZone dropZoneWidget, boolean i18n) {
+  public DropZoneFileInput(HasAllDragAndDropHandlers dropZoneWidget, boolean i18n) {
     super(Document.get().createSpanElement());
     this.i18n = i18n;
     if (dropZoneWidget == null) {
@@ -60,7 +61,8 @@ public class DropZoneFileInput extends Label implements IDropZone, IFileInput,
     init(dropZoneWidget, dropZoneWidget);
   }
 
-  private void init(IDropZone dropZoneWidget, IDropZone externalDropZoneWidget) {
+  private void init(HasAllDragAndDropHandlers dropZoneWidget,
+      HasAllDragAndDropHandlers externalDropZoneWidget) {
     if (dropZoneWidget == null) {
       dropZoneWidget = this;
     }
@@ -73,11 +75,16 @@ public class DropZoneFileInput extends Label implements IDropZone, IFileInput,
     });
   }
 
-  public boolean thereAreDragAndDropedFiles() {
+  public boolean hasFiles() {
     return dragAndDropFilesProvider.thereAreDragAndDropedFiles();
   }
 
-  public FileList getDragAndDropedFiles() {
+  @Override
+  public void reset() {
+    dragAndDropFilesProvider.reset();
+  }
+
+  public FileList getFiles() {
     return dragAndDropFilesProvider.getDragAndDropedFiles();
   }
 

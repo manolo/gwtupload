@@ -5,8 +5,7 @@ import com.google.gwt.event.dom.client.HasAllDragAndDropHandlers;
 /**
  * IDropZone.
  *
- * @author Sultan Tezadov
- * @since Jan 20, 2014
+ * @deprecated use {@link HasAllDragAndDropHandlers}
  */
 public interface IDropZone extends HasAllDragAndDropHandlers {
 }

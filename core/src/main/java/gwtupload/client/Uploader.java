@@ -972,7 +972,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     }
     fileInput = input;
     fileInput.addChangeHandler(onFileInputChanged);
-    fileInput.setText(fileInput instanceof IDropZone ?
+    fileInput.setText(fileInput instanceof IDragAndDropFileInput ?
         i18nStrs.uploaderDrop() : i18nStrs.uploaderBrowse());
     fileInput.setEnabled(enabled);
     setFileInputSize(DEFAULT_FILEINPUT_SIZE);
@@ -1000,7 +1000,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
    */
   public void setI18Constants(UploaderConstants strs) {
     this.i18nStrs = strs;
-    fileInput.setText(fileInput instanceof IDropZone ?
+    fileInput.setText(fileInput instanceof IDragAndDropFileInput ?
         i18nStrs.uploaderDrop() : i18nStrs.uploaderBrowse());
     statusWidget.setI18Constants(strs);
   }

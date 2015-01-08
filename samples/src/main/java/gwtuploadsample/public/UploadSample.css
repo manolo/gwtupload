@@ -7,8 +7,8 @@ h2, p, ul {
     margin-top: 10px;
     margin-left: auto;
     margin-right: auto;
-    width: 600px; 
-}       
+    width: 600px;
+}
 
 /*
  * Thumbnails
@@ -47,8 +47,8 @@ h2, p, ul {
 }
 
 .upldContainer {
-  margin-top: 6px; 
-  margin-bottom: 10px; 
+  margin-top: 6px;
+  margin-bottom: 10px;
 }
 
 .backPanel, .langPanel {
@@ -66,13 +66,30 @@ h2, p, ul {
 }
 
 .customButton {
-	background: url(images/chooseFile.png);
-	font-size: 0px;
-	color: transparent;
+   background: url(images/chooseFile.png);
+   font-size: 0px;
+   color: transparent;
+   width: 117px;
+   height: 19px;
+   background-size: cover;
+}
+.customButton:hover, .customButton-over {
+   background-image: url(images/chooseFileO.png);
 }
 
-.customButton-over {
-	background: url(images/chooseFileO.png);
+.customZone {
+  background: #C1C1C9;
+  border: solid #4C4C71 1px;
+  width: 183px;
+  height: 102px;
+  background: url(images/drop.jpg);
+  background-size: cover;
+  border-radius: 8px;
+  padding: 10px;
+  opacity: 0.8;
+}
+.customZone:hover {
+  opacity: 1;
 }
 
 

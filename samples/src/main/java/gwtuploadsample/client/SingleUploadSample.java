@@ -16,7 +16,13 @@
  */
 package gwtuploadsample.client;
 
-import jsupload.client.ChismesUploadProgress;
+import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.dom.client.Style;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Hidden;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.RootPanel;
+
 import gwtupload.client.IFileInput.FileInputType;
 import gwtupload.client.IUploadStatus.Status;
 import gwtupload.client.IUploader;
@@ -25,14 +31,7 @@ import gwtupload.client.PreloadedImage;
 import gwtupload.client.PreloadedImage.OnLoadPreloadedImageHandler;
 import gwtupload.client.SingleUploader;
 import gwtupload.client.SingleUploaderModal;
-
-import com.google.gwt.core.client.EntryPoint;
-import com.google.gwt.dom.client.Style;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Hidden;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.RootPanel;
-import gwtupload.client.IDropZone;
+import jsupload.client.ChismesUploadProgress;
 
 /**
  *  * <p>
@@ -82,14 +81,19 @@ public class SingleUploadSample implements EntryPoint {
     single3.addOnFinishUploadHandler(onFinishUploaderHandler);
     RootPanel.get("single3").add(single3);
 
-    SingleUploader single4 = new SingleUploader(FileInputType.LABEL);
+    Label customButton = new Label();
+    customButton.setStyleName("customButton");
+    Label externalZone = new Label();
+    externalZone.setStyleName("customZone");
+    SingleUploader single4 = new SingleUploader(FileInputType.CUSTOM.with(customButton).withZone(externalZone));
     single4.setAutoSubmit(true);
     single4.setValidExtensions("jpg", "gif", "png");
     single4.addOnFinishUploadHandler(onFinishUploaderHandler);
-    single4.getFileInput().asWidget().setStyleName("customButton");
-    single4.getFileInput().asWidget().setSize("159px", "27px");
     single4.avoidRepeatFiles(true);
     RootPanel.get("single4").add(single4);
+    single4.getElement().getStyle().setProperty("display", "inline-block");
+    RootPanel.get("single4").add(externalZone);
+    externalZone.getElement().getStyle().setProperty("display", "inline-block");
 
     SingleUploader single5 = new SingleUploader(FileInputType.DROPZONE);
     single5.setAutoSubmit(true);
@@ -98,14 +102,13 @@ public class SingleUploadSample implements EntryPoint {
     single5.avoidRepeatFiles(true);
     RootPanel.get("single5").add(single5);
 
-    class IDropZoneLabel extends Label implements IDropZone {}
-
-    IDropZoneLabel externalDropZone = new IDropZoneLabel();
+    Label uploadLabel = new Label("Select images ...");
+    Label externalDropZone = new Label();
     externalDropZone.setText("Drop files here");
     externalDropZone.setSize("160px", "30px");
     externalDropZone.getElement().getStyle().setBorderStyle(Style.BorderStyle.DASHED);
     externalDropZone.getElement().getStyle().setBorderWidth(1, Style.Unit.PX);
-    SingleUploader single6 = new SingleUploader(FileInputType.DROPZONE.with((IDropZone) externalDropZone));
+    SingleUploader single6 = new SingleUploader(FileInputType.DROPZONE.with(uploadLabel).withZone(externalDropZone));
     single6.setAutoSubmit(true);
     single6.setValidExtensions("jpg", "gif", "png");
     single6.addOnFinishUploadHandler(onFinishUploaderHandler);

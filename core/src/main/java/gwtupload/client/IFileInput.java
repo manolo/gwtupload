@@ -21,6 +21,7 @@ import java.util.List;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
+import com.google.gwt.event.dom.client.HasAllDragAndDropHandlers;
 import com.google.gwt.event.dom.client.HasChangeHandlers;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Anchor;
@@ -136,10 +137,10 @@ public interface IFileInput extends HasChangeHandlers, IsWidget {
       public FileInputType with(Widget w) {
         return this;
       }
-      public FileInputType with(IFileInput i) {
+      public FileInputType withInput(IFileInput i) {
         return this;
       }
-      public FileInputType with(IDropZone dropZone) {
+      public FileInputType withZone(HasAllDragAndDropHandlers dropZone) {
         return this;
       }
     },
@@ -153,10 +154,10 @@ public interface IFileInput extends HasChangeHandlers, IsWidget {
       public FileInputType with(Widget w) {
         return this;
       }
-      public FileInputType with(IFileInput i) {
+      public FileInputType withInput(IFileInput i) {
         return this;
       }
-      public FileInputType with(IDropZone dropZone) {
+      public FileInputType withZone(HasAllDragAndDropHandlers dropZone) {
         return this;
       }
     },
@@ -170,10 +171,10 @@ public interface IFileInput extends HasChangeHandlers, IsWidget {
       public FileInputType with(Widget w) {
         return this;
       }
-      public FileInputType with(IFileInput i) {
+      public FileInputType withInput(IFileInput i) {
         return this;
       }
-      public FileInputType with(IDropZone dropZone) {
+      public FileInputType withZone(HasAllDragAndDropHandlers dropZone) {
         return this;
       }
     },
@@ -187,10 +188,10 @@ public interface IFileInput extends HasChangeHandlers, IsWidget {
       public FileInputType with(Widget w) {
         return this;
       }
-      public FileInputType with(IFileInput i) {
+      public FileInputType withInput(IFileInput i) {
         return this;
       }
-      public FileInputType with(IDropZone dropZone) {
+      public FileInputType withZone(HasAllDragAndDropHandlers dropZone) {
         return this;
       }
     },
@@ -198,8 +199,8 @@ public interface IFileInput extends HasChangeHandlers, IsWidget {
       Widget widget;
       boolean hasText = false;
       IFileInput i = null;
-      private IDropZone dropZone;
-      private boolean withDropZone;
+      private HasAllDragAndDropHandlers dropZone = null;
+      private boolean withDropZone = false;
 
       public IFileInput getInstance() {
         if (i == null) {
@@ -224,25 +225,23 @@ public interface IFileInput extends HasChangeHandlers, IsWidget {
         i = null;
         this.widget = widget;
         this.hasText = hasText;
-        this.withDropZone = false;
-        this.dropZone = null;
         return this;
       }
       public FileInputType with(Widget w) {
         return with(w, false);
       }
-      public FileInputType with(IFileInput i) {
+      public FileInputType withInput(IFileInput i) {
         this.i = i;
         return this;
       }
-      public FileInputType with(IDropZone dropZone) {
-        this.withDropZone = true; // dropZone can be null
+      public FileInputType withZone(HasAllDragAndDropHandlers dropZone) {
+        this.withDropZone = dropZone != null;
         this.dropZone = dropZone;
         return this;
       }
     },
     DROPZONE {
-      private IDropZone dropZone;
+      private HasAllDragAndDropHandlers dropZone;
 
       public IFileInput getInstance() {
         return new DropZoneFileInput(dropZone);
@@ -253,10 +252,10 @@ public interface IFileInput extends HasChangeHandlers, IsWidget {
       public FileInputType with(Widget w) {
         return with(w, false);
       }
-      public FileInputType with(IFileInput i) {
+      public FileInputType withInput(IFileInput i) {
         return this;
       }
-      public FileInputType with(IDropZone dropZone) {
+      public FileInputType withZone(HasAllDragAndDropHandlers dropZone) {
         this.dropZone = dropZone;
         return this;
       }
@@ -270,8 +269,8 @@ public interface IFileInput extends HasChangeHandlers, IsWidget {
     IFileInput getInstance();
     FileInputType with(Widget w, boolean hasText);
     FileInputType with(Widget w);
-    FileInputType with(IFileInput w);
-    FileInputType with(IDropZone dropZone);
+    FileInputType withInput(IFileInput w);
+    FileInputType withZone(HasAllDragAndDropHandlers dropZone);
   }
 
   /**

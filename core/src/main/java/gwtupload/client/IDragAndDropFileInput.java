@@ -4,13 +4,14 @@ package gwtupload.client;
  * IDragAndDropFileInput.
  *
  * @author Sultan Tezadov
- * @since Jan 20, 2014
  */
 public interface IDragAndDropFileInput {
 
-    public boolean thereAreDragAndDropedFiles();
+    public boolean hasFiles();
 
-    public FileList getDragAndDropedFiles();
+    public FileList getFiles();
 
     public String getName();
+
+    public void reset();
 }
