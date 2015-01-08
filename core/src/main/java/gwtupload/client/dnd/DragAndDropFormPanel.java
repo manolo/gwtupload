@@ -1,12 +1,16 @@
-package gwtupload.client;
+package gwtupload.client.dnd;
 
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import gwtupload.client.FileList;
+import gwtupload.client.IFileInput;
 
 /**
  * DragAndDropFormPanel.
@@ -105,6 +109,7 @@ public class DragAndDropFormPanel extends FormPanel {
     for (IDragAndDropFileInput fileInput : dndFileInputs) {
       final FileList files = fileInput.getFiles();
       if (files != null && files.getLength() > 0) {
+        fileInput.lock();
         jsSubmit(getAction(), getMethod(), fileInput.getName(), files, dndFileInputs);
       }
     }

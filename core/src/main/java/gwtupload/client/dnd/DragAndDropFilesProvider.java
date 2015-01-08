@@ -1,4 +1,4 @@
-package gwtupload.client;
+package gwtupload.client.dnd;
 
 import com.google.gwt.dom.client.DataTransfer;
 import com.google.gwt.event.dom.client.DragDropEventBase;
@@ -30,6 +30,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import gwtupload.client.FileList;
 
 /**
  * DragAndDropFilesProvider.
@@ -67,6 +69,7 @@ public class DragAndDropFilesProvider implements HasValueChangeHandlers<FileList
   private FileList files;
   private String fieldName;
   private boolean enabled = true;
+  private boolean sending = false;
   private boolean pending = false;
   private HandlerManager handlerManager;
 
@@ -127,30 +130,6 @@ public class DragAndDropFilesProvider implements HasValueChangeHandlers<FileList
     //
     final Handlers handlers = new Handlers();
     rememberHandlerRegistration(dropZoneWidget, dropZoneWidget.addDropHandler(handlers));
-    //        if (dropZoneWidget instanceof HasDragOverHandlers) {
-    //            handler = ((HasDragOverHandlers) dropZoneWidget).addDragOverHandler(handlers);
-    //            rememberHandlerRegistration(dropZoneWidget, handler);
-    //        }
-    //        if (dropZoneWidget instanceof HasDragHandlers) {
-    //            handler = ((HasDragHandlers) dropZoneWidget).addDragHandler(handlers);
-    //            rememberHandlerRegistration(dropZoneWidget, handler);
-    //        }
-    //        if (dropZoneWidget instanceof HasDragEndHandlers) {
-    //            handler = ((HasDragEndHandlers) dropZoneWidget).addDragEndHandler(handlers);
-    //            rememberHandlerRegistration(dropZoneWidget, handler);
-    //        }
-    //        if (dropZoneWidget instanceof HasDragEnterHandlers) {
-    //            handler = ((HasDragEnterHandlers) dropZoneWidget).addDragEnterHandler(handlers);
-    //            rememberHandlerRegistration(dropZoneWidget, handler);
-    //        }
-    //        if (dropZoneWidget instanceof HasDragLeaveHandlers) {
-    //            handler = ((HasDragLeaveHandlers) dropZoneWidget).addDragLeaveHandler(handlers);
-    //            rememberHandlerRegistration(dropZoneWidget, handler);
-    //        }
-    //        if (dropZoneWidget instanceof HasDragStartHandlers) {
-    //            handler = ((HasDragStartHandlers) dropZoneWidget).addDragStartHandler(handlers);
-    //            rememberHandlerRegistration(dropZoneWidget, handler);
-    //        }
     rememberHandlerRegistration(dropZoneWidget, dropZoneWidget.addDragOverHandler(handlers));
     rememberHandlerRegistration(dropZoneWidget, dropZoneWidget.addDragHandler(handlers));
     rememberHandlerRegistration(dropZoneWidget, dropZoneWidget.addDragEndHandler(handlers));
@@ -164,7 +143,7 @@ public class DragAndDropFilesProvider implements HasValueChangeHandlers<FileList
   }
 
   private void onDragDrop(DataTransfer dataTransfer) {
-    if (!enabled) {
+    if (!enabled || sending) {
       return;
     }
     files = getDataTransferFiles(dataTransfer);
@@ -184,9 +163,12 @@ public class DragAndDropFilesProvider implements HasValueChangeHandlers<FileList
     return fileList != null && fileList.getLength() > 0;
   }
 
+  public void lock() {
+    sending = true;
+  }
 
   public void reset() {
-    pending = false;
+    sending = pending = false;
   }
 
   public boolean thereAreDragAndDropedFiles() {
@@ -257,5 +239,4 @@ public class DragAndDropFilesProvider implements HasValueChangeHandlers<FileList
       handlerManager.fireEvent(event);
     }
   }
-
 }

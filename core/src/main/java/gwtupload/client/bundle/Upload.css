@@ -175,3 +175,11 @@
 .GWTUpld input[type="file"] {
   cursor: pointer;
 }
+
+.upld-drop-zone {
+  border: 1px dashed;
+}
+
+.upld-drop-zone-sending {
+  opacity: 0.2;
+}

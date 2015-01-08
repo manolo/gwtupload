@@ -1,4 +1,6 @@
-package gwtupload.client;
+package gwtupload.client.dnd;
+
+import gwtupload.client.FileList;
 
 /**
  * IDragAndDropFileInput.
@@ -14,4 +16,6 @@ public interface IDragAndDropFileInput {
     public String getName();
 
     public void reset();
+    
+    public void lock();
 }

@@ -1,18 +1,20 @@
 package gwtupload.client;
 
-import static gwtupload.shared.UConsts.*;
-
-import java.util.List;
-import java.util.Map.Entry;
-
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.RequestBuilder;
+import com.google.gwt.http.client.RequestBuilder.Method;
 import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.xml.client.XMLParser;
+
+import java.util.List;
+import java.util.Map.Entry;
+
+import static gwtupload.shared.UConsts.PARAM_SESSION;
+import static gwtupload.shared.UConsts.TAG_SESSION_ID;
 
 public interface ISession {
 
@@ -23,6 +25,13 @@ public interface ISession {
       s = s == null? "" : (";jsessionid=" + s);
       servletPath = servletPath.replaceFirst("^(.+)(/[^/\\?;]*)(;[^/\\?]*|)(\\?|/$|$)(.*)", "$1$2" + s + "$4$5");
       System.err.println("CORS Session: " + servletPath);
+    }
+    
+    @Override
+    protected RequestBuilder createRequest(Method method, int timeout, String... params) {
+      RequestBuilder req =  super.createRequest(method, timeout, params);
+      req.setIncludeCredentials(true);
+      return req;
     }
   }
 
@@ -78,13 +87,18 @@ public interface ISession {
 
     public void sendRequest(String payload, RequestCallback callback, String... params) {
       // Using a reusable builder makes IE fail
-      RequestBuilder reqBuilder = new RequestBuilder(RequestBuilder.GET, composeURL(params));
-      reqBuilder.setTimeoutMillis(DEFAULT_AJAX_TIMEOUT);
+      RequestBuilder reqBuilder = createRequest(RequestBuilder.GET, DEFAULT_AJAX_TIMEOUT, params);
       try {
         reqBuilder.sendRequest(payload, callback);
       } catch (RequestException e) {
         callback.onError(null, e);
       }
+    }
+
+    protected RequestBuilder createRequest(Method method, int timeout, String...params) {
+      RequestBuilder reqBuilder = new RequestBuilder(RequestBuilder.GET, composeURL(params));
+      reqBuilder.setTimeoutMillis(timeout);
+      return reqBuilder;
     }
 
     public String composeURL(String... params) {

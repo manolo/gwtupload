@@ -86,10 +86,6 @@ h2, p, ul {
   background-size: cover;
   border-radius: 8px;
   padding: 10px;
-  opacity: 0.8;
-}
-.customZone:hover {
-  opacity: 1;
 }
 
 

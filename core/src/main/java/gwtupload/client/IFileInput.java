@@ -18,6 +18,9 @@ package gwtupload.client;
 
 import java.util.List;
 
+import gwtupload.client.dnd.DropZoneButtonFileInput;
+import gwtupload.client.dnd.DropZoneFileInput;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
@@ -90,7 +93,7 @@ public interface IFileInput extends HasChangeHandlers, IsWidget {
    *
    */
   public class ButtonFileInput extends DecoratedFileUpload implements IFileInput {
-    boolean i18n = true;
+    protected boolean i18n = true;
 
     public ButtonFileInput() {
       this(new Button());

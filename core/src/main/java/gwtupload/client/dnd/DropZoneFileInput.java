@@ -14,7 +14,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package gwtupload.client;
+package gwtupload.client.dnd;
 
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Style;
@@ -29,6 +29,10 @@ import com.google.gwt.user.client.ui.Widget;
 
 import java.util.List;
 
+import gwtupload.client.FileList;
+import gwtupload.client.IFileInput;
+import gwtupload.client.Uploader;
+
 /**
  * @author Sultan Tezadov
  */
@@ -39,6 +43,10 @@ public class DropZoneFileInput extends Label implements HasAllDragAndDropHandler
 
   private HasAllDragAndDropHandlers externalDropZoneWidget;
   private DragAndDropFilesProvider dragAndDropFilesProvider;
+  public static final String STYLE_DROP_ZONE = "upld-drop-zone";
+  public static final String STYLE_DROP_ZONE_SENDING = "upld-drop-zone-sending";
+  public static final String STYLE_DROP_ZONE_DISABLED = "upld-drop-zone-disabled";
+  private Widget dropZone;
 
   public DropZoneFileInput() {
     this(null, true);
@@ -55,8 +63,6 @@ public class DropZoneFileInput extends Label implements HasAllDragAndDropHandler
       if (i18n) {
         setText(Uploader.I18N_CONSTANTS.uploaderDrop());
       }
-      getElement().getStyle().setBorderStyle(Style.BorderStyle.DASHED);
-      getElement().getStyle().setBorderWidth(1, Style.Unit.PX);
     }
     init(dropZoneWidget, dropZoneWidget);
   }
@@ -73,6 +79,8 @@ public class DropZoneFileInput extends Label implements HasAllDragAndDropHandler
         fireChangeEvent();
       }
     });
+    dropZone = (Widget) dropZoneWidget;
+    dropZone.addStyleName(STYLE_DROP_ZONE);
   }
 
   public boolean hasFiles() {
@@ -82,6 +90,13 @@ public class DropZoneFileInput extends Label implements HasAllDragAndDropHandler
   @Override
   public void reset() {
     dragAndDropFilesProvider.reset();
+    dropZone.removeStyleName(STYLE_DROP_ZONE_SENDING);
+  }
+  
+  @Override
+  public void lock() {
+    dropZone.addStyleName(STYLE_DROP_ZONE_SENDING);
+    dragAndDropFilesProvider.lock();
   }
 
   public FileList getFiles() {

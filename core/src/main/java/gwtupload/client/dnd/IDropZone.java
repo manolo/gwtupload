@@ -1,4 +1,4 @@
-package gwtupload.client;
+package gwtupload.client.dnd;
 
 import com.google.gwt.event.dom.client.HasAllDragAndDropHandlers;
 

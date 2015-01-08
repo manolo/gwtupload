@@ -1,4 +1,4 @@
-package gwtupload.client;
+package gwtupload.client.dnd;
 
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -23,9 +23,16 @@ import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Widget;
-import gwtupload.client.IFileInput.ButtonFileInput;
+
 import java.util.List;
 
+import static gwtupload.client.dnd.DropZoneFileInput.STYLE_DROP_ZONE;
+import static gwtupload.client.dnd.DropZoneFileInput.STYLE_DROP_ZONE_SENDING;
+
+import gwtupload.client.FileList;
+import gwtupload.client.IFileInput;
+
+import gwtupload.client.IFileInput.ButtonFileInput;
 /**
  * DropZoneButtonFileInput.
  *
@@ -37,8 +44,7 @@ public class DropZoneButtonFileInput extends ButtonFileInput implements HasAllDr
 
   private HasAllDragAndDropHandlers externalDropZoneWidget;
   private DragAndDropFilesProvider dragAndDropFilesProvider;
-  private FileList dragAndDropedFiles;
-  private boolean pending = false;
+  private Widget dropZone;
 
   public DropZoneButtonFileInput() {
     init(this, null);
@@ -59,6 +65,7 @@ public class DropZoneButtonFileInput extends ButtonFileInput implements HasAllDr
     init(dropZoneWidget, dropZoneWidget);
   }
 
+
   private void init(HasAllDragAndDropHandlers dropZoneWidget,
       HasAllDragAndDropHandlers externalDropZoneWidget) {
     if (dropZoneWidget == null) {
@@ -68,55 +75,45 @@ public class DropZoneButtonFileInput extends ButtonFileInput implements HasAllDr
     dragAndDropFilesProvider = new DragAndDropFilesProvider(dropZoneWidget);
     dragAndDropFilesProvider.addValueChangeHandler(new ValueChangeHandler<FileList>() {
       public void onValueChange(ValueChangeEvent<FileList> event) {
-        processDragAndDropedFiles(event.getValue());
+        fireChangeEvent();
       }
     });
-  }
-
-  private void processDragAndDropedFiles(FileList dragAndDropedFiles) {
-    pending = DragAndDropFilesProvider.thereAreDragAndDropedFiles(dragAndDropedFiles);
-    if (pending) {
-      this.dragAndDropedFiles = dragAndDropedFiles;
-      fireChangeEvent();
-    }
+    dropZone = (Widget) dropZoneWidget;
+    dropZone.addStyleName(STYLE_DROP_ZONE);    
   }
 
   public boolean hasFiles() {
-    return pending;
+    return dragAndDropFilesProvider.thereAreDragAndDropedFiles();
   }
 
   @Override
   public void reset() {
-    pending = false;
+    dragAndDropFilesProvider.reset();
+    dropZone.removeStyleName(STYLE_DROP_ZONE_SENDING);
   }
 
   public FileList getFiles() {
-    return dragAndDropedFiles;
+    return dragAndDropFilesProvider.getDragAndDropedFiles();
+  }
+
+  @Override
+  public void lock() {
+    dragAndDropFilesProvider.lock();
+    dropZone.addStyleName(STYLE_DROP_ZONE_SENDING);
   }
 
   @Override
   public String getFilename() {
-    return hasFiles() ? DragAndDropFilesProvider.getFilename(dragAndDropedFiles)
+    return hasFiles() ? dragAndDropFilesProvider.getFilename()
         : super.getFilename();
   }
 
   @Override
   public List<String> getFilenames() {
-    return hasFiles() ? DragAndDropFilesProvider.getFilenames(dragAndDropedFiles)
+    return hasFiles() ? dragAndDropFilesProvider.getFilenames()
         : super.getFilenames();
   }
 
-  //    public String getName() {
-  //
-  //    }
-  //
-  //    public Widget getWidget() {
-  //        return asWidget();
-  //    }
-  //
-  //    public boolean isEnabled() {
-  //
-  //    }
   @Override
   public IFileInput newInstance() {
     Widget widget = button != null ? button : new Button(this.getText());
@@ -129,32 +126,11 @@ public class DropZoneButtonFileInput extends ButtonFileInput implements HasAllDr
     dragAndDropFilesProvider.setEnabled(b);
   }
 
-  //    public void setLength(int length) {
-  //    }
   @Override
   public void setName(String fieldName) {
     super.setName(fieldName);
     dragAndDropFilesProvider.setName(fieldName);
   }
-
-  //
-  //    public void setSize(String width, String height) {
-  //    }
-  //
-  //    public void setText(String text) {
-  //    }
-  //
-  //    public void setVisible(boolean b) {
-  //    }
-  //
-  //    public void updateSize() {
-  //    }
-  //
-  //    public void enableMultiple(boolean b) {
-  //    }
-  //
-  //    public void setAccept(String accept) {
-  //    }
 
   @Override
   public HandlerRegistration addChangeHandler(ChangeHandler handler) {
