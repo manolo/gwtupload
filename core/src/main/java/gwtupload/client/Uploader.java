@@ -1083,7 +1083,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
       return;
     }
     waitingForResponse = true;
-    session.sendRequest("get_status", onStatusReceivedCallback, "filename=" + fileInput.getName() , "c=" + requestsCounter++);
+    session.sendRequest("get_status", onStatusReceivedCallback, "filename=" + fileInput.getName().replace(MULTI_SUFFIX, "") , "c=" + requestsCounter++);
   }
 
   /**
