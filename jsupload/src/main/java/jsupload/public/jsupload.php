@@ -154,9 +154,9 @@ if($_SERVER['REQUEST_METHOD'] == 'GET') {
     writeResponse("<error>You have sent an incorrect APC_UPLOAD_PROGRESS key:" . $key . "</error>", 1);
   }
 
-  $fld = preg_replace("\[\]$", """, $key);
+  $fld = preg_replace("\[\]$", "", $key);
   $cnt = 0;
-  foreach ($_FILES[$key]['tmp_name'] as $tmpfile)) {
+  foreach ($_FILES[$key]['tmp_name'] as $tmpfile) {
     $size = $_FILES[$key]['size'][$cnt];
     $type = $_FILES[$key]['type'][$cnt];
     $name = $_FILES[$key]['name'][$cnt];
