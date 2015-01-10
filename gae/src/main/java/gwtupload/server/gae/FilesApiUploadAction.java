@@ -74,7 +74,7 @@ import com.google.appengine.api.blobstore.BlobKey;
 </pre>
  *
  * @author Vyacheslav Sokolov
- * @author Manuel Carrasco
+ * @author Manolo Carrasco Moñino
  */
 public class FilesApiUploadAction extends UploadAction {
   private static final long serialVersionUID = 3683112300714613746L;
@@ -107,10 +107,10 @@ public class FilesApiUploadAction extends UploadAction {
   protected void doGet(HttpServletRequest request, HttpServletResponse response)
       throws IOException, ServletException {
     String bkey = request.getParameter(PARAM_BLOBKEY);
+    logger.info("Files doGet " + bkey);
     if (bkey != null) {
       logger.info("Serving a blobstore file with the key:" + bkey);
-      FilesAPIFileItem.getBlobstoreService()
-        .serve(new BlobKey(bkey), response);
+      FilesAPIFileItem.getBlobstoreService().serve(new BlobKey(bkey), response);
     } else {
       super.doGet(request, response);
     }

@@ -16,13 +16,13 @@
  */
 package gwtupload.server;
 
-import static gwtupload.shared.UConsts.*;
-import gwtupload.server.exceptions.UploadActionException;
-import gwtupload.server.exceptions.UploadCanceledException;
-import gwtupload.server.exceptions.UploadException;
-import gwtupload.server.exceptions.UploadSizeLimitException;
-import gwtupload.server.exceptions.UploadTimeoutException;
-import gwtupload.shared.UConsts;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileItemFactory;
+import org.apache.commons.fileupload.FileUploadBase;
+import org.apache.commons.fileupload.FileUploadBase.SizeLimitExceededException;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -46,13 +46,39 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileItemFactory;
-import org.apache.commons.fileupload.FileUploadBase;
-import org.apache.commons.fileupload.FileUploadBase.SizeLimitExceededException;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.apache.commons.io.IOUtils;
+import static gwtupload.shared.UConsts.MULTI_SUFFIX;
+import static gwtupload.shared.UConsts.PARAM_DELAY;
+import static gwtupload.shared.UConsts.TAG_BLOBSTORE;
+import static gwtupload.shared.UConsts.TAG_BLOBSTORE_PATH;
+import static gwtupload.shared.UConsts.TAG_CANCELED;
+import static gwtupload.shared.UConsts.TAG_CTYPE;
+import static gwtupload.shared.UConsts.TAG_CURRENT_BYTES;
+import static gwtupload.shared.UConsts.TAG_DELETED;
+import static gwtupload.shared.UConsts.TAG_ERROR;
+import static gwtupload.shared.UConsts.TAG_FIELD;
+import static gwtupload.shared.UConsts.TAG_FILE;
+import static gwtupload.shared.UConsts.TAG_FILES;
+import static gwtupload.shared.UConsts.TAG_FINISHED;
+import static gwtupload.shared.UConsts.TAG_KEY;
+import static gwtupload.shared.UConsts.TAG_MSG_END;
+import static gwtupload.shared.UConsts.TAG_MSG_GT;
+import static gwtupload.shared.UConsts.TAG_MSG_LT;
+import static gwtupload.shared.UConsts.TAG_MSG_START;
+import static gwtupload.shared.UConsts.TAG_NAME;
+import static gwtupload.shared.UConsts.TAG_PARAM;
+import static gwtupload.shared.UConsts.TAG_PARAMS;
+import static gwtupload.shared.UConsts.TAG_PERCENT;
+import static gwtupload.shared.UConsts.TAG_SESSION_ID;
+import static gwtupload.shared.UConsts.TAG_SIZE;
+import static gwtupload.shared.UConsts.TAG_TOTAL_BYTES;
+import static gwtupload.shared.UConsts.TAG_VALUE;
+
+import gwtupload.server.exceptions.UploadActionException;
+import gwtupload.server.exceptions.UploadCanceledException;
+import gwtupload.server.exceptions.UploadException;
+import gwtupload.server.exceptions.UploadSizeLimitException;
+import gwtupload.server.exceptions.UploadTimeoutException;
+import gwtupload.shared.UConsts;
 
 /**
  * <p>
@@ -231,6 +257,7 @@ public class UploadServlet extends HttpServlet implements Servlet {
   /**
    * Return the list of FileItems stored in session under the session key.
    */
+  // FIXME(manolo): Not sure about the convenience of this and sessionFilesKey.
   public List<FileItem> getMySessionFileItems(HttpServletRequest request) {
     return getSessionFileItems(request, getSessionFilesKey(request));
   }
@@ -342,14 +369,6 @@ public class UploadServlet extends HttpServlet implements Servlet {
   }
 
   /**
-   *
-   * @deprecated use removeSessionFileItems
-   */
-  public static void removeSessionFiles(HttpServletRequest request) {
-    removeSessionFileItems(request);
-  }
-
-  /**
    * Delete an uploaded file.
    *
    * @param request
@@ -413,6 +432,8 @@ public class UploadServlet extends HttpServlet implements Servlet {
       response.addHeader("Access-Control-Allow-Origin", origin);
       response.addHeader("Access-Control-Allow-Credentials", "true");
       return true;
+    } else if (origin != null) {
+      logger.error("checkCORS error Origin: " + origin + " does not match:" + corsDomainsRegex);
     }
     return false;
   }
@@ -517,12 +538,12 @@ public class UploadServlet extends HttpServlet implements Servlet {
     String parameter = request.getParameter(UConsts.PARAM_SHOW);
     FileItem item = findFileItem(getMySessionFileItems(request), parameter);
     if (item != null) {
-      logger.debug("UPLOAD-SERVLET (" + request.getSession().getId() + ") getUploadedFile: " + parameter + " returning: " + item.getContentType() + ", " + item.getName() + ", " + item.getSize()
+      logger.error("UPLOAD-SERVLET (" + request.getSession().getId() + ") getUploadedFile: " + parameter + " returning: " + item.getContentType() + ", " + item.getName() + ", " + item.getSize()
             + " bytes");
       response.setContentType(item.getContentType());
       copyFromInputStreamToOutputStream(item.getInputStream(), response.getOutputStream());
     } else {
-      logger.info("UPLOAD-SERVLET (" + request.getSession().getId() + ") getUploadedFile: " + parameter + " file isn't in session.");
+      logger.error("UPLOAD-SERVLET (" + request.getSession().getId() + ") getUploadedFile: " + parameter + " file isn't in session.");
       renderXmlResponse(request, response, XML_ERROR_ITEM_NOT_FOUND);
     }
   }
@@ -625,6 +646,7 @@ public class UploadServlet extends HttpServlet implements Servlet {
   protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
     perThreadRequest.set(request);
     try {
+      AbstractUploadListener listener = getCurrentListener(request);
       if (request.getParameter(UConsts.PARAM_SESSION) != null) {
         logger.debug("UPLOAD-SERVLET (" + request.getSession().getId() + ") new session, blobstore=" + (isAppEngine() && useBlobstore));
         String sessionId = request.getSession().getId();
@@ -644,11 +666,13 @@ public class UploadServlet extends HttpServlet implements Servlet {
         removeUploadedFile(request, response);
       } else if (request.getParameter(UConsts.PARAM_CLEAN) != null) {
         logger.debug("UPLOAD-SERVLET (" + request.getSession().getId() + ") cleanListener");
-        AbstractUploadListener listener = getCurrentListener(request);
         if (listener != null) {
           listener.remove();
         }
         renderXmlResponse(request, response, XML_FINISHED_OK);
+      } else if (listener != null && listener.isFinished()) {
+        removeCurrentListener(request);
+        renderXmlResponse(request, response, listener.getPostResponse());
       } else {
         String message = statusToString(getUploadStatus(request, request.getParameter(UConsts.PARAM_FILENAME), null));
         renderXmlResponse(request, response, message);
@@ -684,14 +708,15 @@ public class UploadServlet extends HttpServlet implements Servlet {
     String error;
     try {
       error = parsePostRequest(request, response);
-      finish(request);
       Map<String, String> stat = new HashMap<String, String>();
       if (error != null && error.length() > 0 ) {
         stat.put(TAG_ERROR, error);
       } else {
         getFileItemsSummary(request, stat);
       }
-      renderXmlResponse(request, response, statusToString(stat), true);
+      String postResponse = statusToString(stat);
+      finish(request, postResponse);
+      renderXmlResponse(request, response, postResponse, true);
     } catch (UploadCanceledException e) {
       renderXmlResponse(request, response, XML_CANCELED_TRUE, true);
     } catch (UploadTimeoutException e) {
@@ -759,11 +784,12 @@ public class UploadServlet extends HttpServlet implements Servlet {
    * Notify to the listener that the upload has finished.
    *
    * @param request
+ * @param postResponse
    */
-  protected void finish(HttpServletRequest request) {
+  protected void finish(HttpServletRequest request, String postResponse) {
     AbstractUploadListener listener = getCurrentListener(request);
     if (listener != null) {
-      listener.setFinished(true);
+      listener.setFinished(postResponse);
     }
   }
 
@@ -791,7 +817,7 @@ public class UploadServlet extends HttpServlet implements Servlet {
    * @return FileItemFactory
    */
   protected FileItemFactory getFileItemFactory(long requestSize) {
-    return new DiskFileItemFactory();
+    return new DefaultFileItemFactory();
   }
 
   /**
@@ -803,9 +829,7 @@ public class UploadServlet extends HttpServlet implements Servlet {
    * @return a map of tag/values to be rendered
    */
   protected Map<String, String> getUploadStatus(HttpServletRequest request, String fieldname, Map<String, String> ret) {
-
     perThreadRequest.set(request);
-
     HttpSession session = request.getSession();
 
     if (ret == null) {
@@ -817,7 +841,9 @@ public class UploadServlet extends HttpServlet implements Servlet {
     long percent = 0;
     AbstractUploadListener listener = getCurrentListener(request);
     if (listener != null) {
-      if (listener.getException() != null) {
+      if (listener.isFinished()) {
+
+      } else if (listener.getException() != null) {
         if (listener.getException() instanceof UploadCanceledException) {
           ret.put(TAG_CANCELED, "true");
           ret.put(TAG_FINISHED, TAG_CANCELED);
@@ -836,9 +862,6 @@ public class UploadServlet extends HttpServlet implements Servlet {
         ret.put(TAG_PERCENT, "" + percent);
         ret.put(TAG_CURRENT_BYTES, "" + currentBytes);
         ret.put(TAG_TOTAL_BYTES, "" + totalBytes);
-        if (listener.isFinished()) {
-          ret.put(TAG_FINISHED, "ok");
-        }
       }
     } else if (getMySessionFileItems(request) != null) {
       if (fieldname == null) {
@@ -863,7 +886,6 @@ public class UploadServlet extends HttpServlet implements Servlet {
     if (ret.containsKey(TAG_FINISHED)) {
       removeCurrentListener(request);
     }
-
     perThreadRequest.set(null);
     return ret;
   }
@@ -876,7 +898,6 @@ public class UploadServlet extends HttpServlet implements Servlet {
    * returns null in the case of success or a string with the error
    *
    */
-  @SuppressWarnings("unchecked")
   protected String parsePostRequest(HttpServletRequest request, HttpServletResponse response) {
 
     try {
@@ -898,6 +919,7 @@ public class UploadServlet extends HttpServlet implements Servlet {
         return error;
       }
     }
+
     // Create a file upload progress listener, and put it in the user session,
     // so the browser can use ajax to query status of the upload process
     listener = createNewListener(request);
@@ -916,10 +938,10 @@ public class UploadServlet extends HttpServlet implements Servlet {
       uploader.setProgressListener(listener);
 
       // Receive the files
-      logger.debug("UPLOAD-SERVLET (" + session.getId() + ") parsing HTTP POST request ");
+      logger.error("UPLOAD-SERVLET (" + session.getId() + ") parsing HTTP POST request ");
       uploadedItems = uploader.parseRequest(request);
       session.removeAttribute(getSessionLastFilesKey(request));
-      logger.debug("UPLOAD-SERVLET (" + session.getId() + ") parsed request, " + uploadedItems.size() + " items received.");
+      logger.error("UPLOAD-SERVLET (" + session.getId() + ") parsed request, " + uploadedItems.size() + " items received.");
 
       // Received files are put in session
       List<FileItem> sessionFiles = getMySessionFileItems(request);
@@ -928,17 +950,7 @@ public class UploadServlet extends HttpServlet implements Servlet {
       }
 
       String error = "";
-
       if (uploadedItems.size() > 0) {
-
-        // We append to the field name the sequence of the uploaded file
-        int cnt = 0;
-        for (FileItem i : uploadedItems) {
-          if (!i.isFormField()) {
-            i.setFieldName(i.getFieldName().replace(UConsts.MULTI_SUFFIX, "") + "-" + cnt++);
-          }
-        }
-
         sessionFiles.addAll(uploadedItems);
         String msg = "";
         for (FileItem i : sessionFiles) {
@@ -947,11 +959,10 @@ public class UploadServlet extends HttpServlet implements Servlet {
         logger.debug("UPLOAD-SERVLET (" + session.getId() + ") puting items in session: " + msg);
         session.setAttribute(getSessionFilesKey(request), sessionFiles);
         session.setAttribute(getSessionLastFilesKey(request), uploadedItems);
-      } else {
+      } else if (!isAppEngine()){
         logger.error("UPLOAD-SERVLET (" + session.getId() + ") error NO DATA received ");
         error += getMessage("no_data");
       }
-
       return error.length() > 0 ? error : null;
 
     // So much silly questions in the list about this issue.
@@ -1020,5 +1031,23 @@ public class UploadServlet extends HttpServlet implements Servlet {
    */
   protected String getSessionLastFilesKey(HttpServletRequest request) {
     return SESSION_LAST_FILES;
+  }
+
+  /**
+   * DiskFileItemFactory for Multiple file selection.
+   */
+  public static class DefaultFileItemFactory extends DiskFileItemFactory {
+    private HashMap<String, Integer> map = new HashMap<String, Integer>();
+
+    @Override
+    public FileItem createItem(String fieldName, String contentType, boolean isFormField,
+        String fileName) {
+      if (fieldName.contains(MULTI_SUFFIX)) {
+        Integer cont = map.get(fieldName) != null ? (map.get(fieldName) + 1): 0;
+        map.put(fieldName, cont);
+        fieldName = fieldName.replace(MULTI_SUFFIX, "") + "-" + cont;
+      }
+      return super.createItem(fieldName, contentType, isFormField, fileName);
+    }
   }
 }

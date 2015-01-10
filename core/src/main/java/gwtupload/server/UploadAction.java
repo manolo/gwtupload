@@ -57,8 +57,8 @@ public class UploadAction extends UploadServlet {
   public void init(ServletConfig config) throws ServletException {
     super.init(config);
     ServletContext ctx = config.getServletContext();
-    removeSessionFiles = "true".equalsIgnoreCase(ctx.getInitParameter("removeSessionFiles"));
-    removeData = "true".equalsIgnoreCase(ctx.getInitParameter("removeData"));
+    removeSessionFiles = Boolean.valueOf(ctx.getInitParameter("removeSessionFiles"));
+    removeData = Boolean.valueOf(ctx.getInitParameter("removeData"));
 
     logger.info("UPLOAD-ACTION init: removeSessionFiles=" + removeSessionFiles + ", removeData=" + removeData);
   }
@@ -194,9 +194,11 @@ public class UploadAction extends UploadServlet {
       perThreadRequest.set(null);
     }
 
+    String postResponse = null;
     AbstractUploadListener listener = getCurrentListener(request);
     if (error != null) {
-      renderXmlResponse(request, response, "<" + TAG_ERROR + ">" + error + "</" + TAG_ERROR + ">");
+      postResponse = "<" + TAG_ERROR + ">" + error + "</" + TAG_ERROR + ">";
+      renderXmlResponse(request, response, postResponse);
       if (listener != null) {
         listener.setException(new RuntimeException(error));
       }
@@ -209,10 +211,11 @@ public class UploadAction extends UploadServlet {
         // see issue #139
         stat.put("message", "<![CDATA[" + message + "]]>");
       }
-      renderXmlResponse(request, response, statusToString(stat), true);
+      postResponse = statusToString(stat);
+      renderXmlResponse(request, response, postResponse, true);
     }
+    finish(request, postResponse);
 
-    finish(request);
     if (removeSessionFiles) {
       removeSessionFileItems(request, removeData);
     }

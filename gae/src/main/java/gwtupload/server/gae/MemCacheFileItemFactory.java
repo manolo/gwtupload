@@ -16,6 +16,12 @@
  */
 package gwtupload.server.gae;
 
+import com.google.appengine.api.memcache.stdimpl.GCacheFactory;
+
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileItemFactory;
+import org.apache.commons.fileupload.FileItemHeaders;
+
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -29,11 +35,7 @@ import java.util.HashMap;
 import javax.cache.Cache;
 import javax.cache.CacheManager;
 
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileItemFactory;
-import org.apache.commons.fileupload.FileItemHeaders;
-
-import com.google.appengine.api.memcache.stdimpl.GCacheFactory;
+import static gwtupload.shared.UConsts.MULTI_SUFFIX;
 
 /**
  * <p>
@@ -110,6 +112,7 @@ public class MemCacheFileItemFactory implements FileItemFactory, Serializable {
    */
   public class CacheableFileItem implements FileItem, Saveable<CacheableByteArrayOutputStream> {
     private static final long serialVersionUID = 1L;
+    private static final String SUFFIX = "X";
     String ctype;
     CacheableByteArrayOutputStream data = null;
     String fname;
@@ -137,7 +140,7 @@ public class MemCacheFileItemFactory implements FileItemFactory, Serializable {
           Cache cache = CacheManager.getInstance().getCacheFactory().createCache(Collections.emptyMap());
           String key = fname;
           while (cache.remove(key) != null) {
-            key += "X";
+            key += SUFFIX;
           }
         } catch (Exception e) { }
         data = new CacheableByteArrayOutputStream(this, rSize);
@@ -197,12 +200,12 @@ public class MemCacheFileItemFactory implements FileItemFactory, Serializable {
           }});
           size = data.size();
           int storedBytes = 0;
-          String sufix = "";
+          String suffix = "";
           while(storedBytes < size) {
             byte[] buff = new byte[Math.min(MEMCACHE_LIMIT, size - storedBytes)];
             storedBytes += data.read(buff);
-            cache.put(fname + sufix, buff);
-            sufix += "X";
+            cache.put(fname + suffix, buff);
+            suffix += SUFFIX;
           }
           data = null;
         } catch (Exception e) {
@@ -234,7 +237,7 @@ public class MemCacheFileItemFactory implements FileItemFactory, Serializable {
           while ((cacheBuf = (byte[]) cache.get(fname + suffix)) != null) {
             System.arraycopy(cacheBuf, 0, pData, pos, cacheBuf.length);
             pos += cacheBuf.length;
-            suffix += "X";
+            suffix += SUFFIX;
           }
           return pData;
         } catch (Exception e) {
@@ -306,6 +309,8 @@ public class MemCacheFileItemFactory implements FileItemFactory, Serializable {
 
   private int requestSize = 0;
 
+  private HashMap<String, Integer> map = new HashMap<String, Integer>();
+
   public MemCacheFileItemFactory() {
     this(DEFAULT_REQUEST_SIZE);
   }
@@ -315,7 +320,11 @@ public class MemCacheFileItemFactory implements FileItemFactory, Serializable {
   }
 
   public FileItem createItem(String fieldName, String contentType, boolean isFormField, String fileName) {
+    if (fieldName.contains(MULTI_SUFFIX)) {
+      Integer cont = map.get(fieldName) != null ? (map.get(fieldName) + 1): 0;
+      map.put(fieldName, cont);
+      fieldName = fieldName.replace(MULTI_SUFFIX, "") + "-" + cont;
+    }
     return new CacheableFileItem(fieldName, contentType, isFormField, fileName, requestSize);
   }
-
 }

@@ -17,7 +17,6 @@
 package gwtupload.server.gae;
 
 import com.google.appengine.api.blobstore.BlobKey;
-import com.google.gwt.event.logical.shared.HasInitializeHandlers;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
@@ -29,6 +28,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+
+import static gwtupload.shared.UConsts.MULTI_SUFFIX;
 
 /**
  * @author Manolo Carrasco Moñino
@@ -38,7 +40,6 @@ public class BlobstoreFileItemFactory implements FileItemFactory, Serializable {
 
   /**
    * FileItem class which stores file data in cache.
-   *
    */
   public static class BlobstoreFileItem implements FileItem, Serializable, HasBlobKey {
 
@@ -62,9 +63,7 @@ public class BlobstoreFileItemFactory implements FileItemFactory, Serializable {
     }
 
     public void delete() {
-      if (key != null) {
-        BlobstoreUploadAction.blobstoreService.delete(key);
-      }
+      // We should not remove data from data store, should be done by user.
     }
 
     public byte[] get() {
@@ -168,6 +167,8 @@ public class BlobstoreFileItemFactory implements FileItemFactory, Serializable {
     }
   }
 
+  private HashMap<String, Integer> map = new HashMap<String, Integer>();
+
   public BlobstoreFileItemFactory() {
   }
 
@@ -176,7 +177,11 @@ public class BlobstoreFileItemFactory implements FileItemFactory, Serializable {
 
   public FileItem createItem(String fieldName, String contentType,
       boolean isFormField, String fileName) {
+    if (fieldName.contains(MULTI_SUFFIX)) {
+      Integer cont = map.get(fieldName) != null ? (map.get(fieldName) + 1): 0;
+      map.put(fieldName, cont);
+      fieldName = fieldName.replace(MULTI_SUFFIX, "") + "-" + cont;
+    }
     return new BlobstoreFileItem(fieldName, contentType, isFormField, fileName);
   }
-
 }

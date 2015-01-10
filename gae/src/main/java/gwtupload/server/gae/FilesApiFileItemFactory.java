@@ -16,18 +16,6 @@
  */
 package gwtupload.server.gae;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
-import java.nio.channels.Channels;
-
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileItemFactory;
-import org.apache.commons.fileupload.FileItemHeaders;
-
 import com.google.appengine.api.blobstore.BlobInfo;
 import com.google.appengine.api.blobstore.BlobInfoFactory;
 import com.google.appengine.api.blobstore.BlobKey;
@@ -39,11 +27,26 @@ import com.google.appengine.api.files.FileService;
 import com.google.appengine.api.files.FileServiceFactory;
 import com.google.appengine.api.files.FileWriteChannel;
 
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileItemFactory;
+import org.apache.commons.fileupload.FileItemHeaders;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+import java.nio.channels.Channels;
+import java.util.HashMap;
+
+import static gwtupload.shared.UConsts.MULTI_SUFFIX;
+
 /**
  * Upload factory based in the GAE File API.
  *
  * @author Vyacheslav Sokolov
- * @author Manuel Carrasco
+ * @author Manolo Carrasco Moñino
  */
 public class FilesApiFileItemFactory implements FileItemFactory, Serializable {
 
@@ -199,8 +202,16 @@ public class FilesApiFileItemFactory implements FileItemFactory, Serializable {
     }
   }
 
+  private HashMap<String, Integer> map = new HashMap<String, Integer>();
+
   public FileItem createItem(String fieldName, String contentType,
       boolean isFormField, String fileName) {
+
+    if (fieldName.contains(MULTI_SUFFIX)) {
+      Integer cont = map.get(fieldName) != null ? (map.get(fieldName) + 1): 0;
+      map.put(fieldName, cont);
+      fieldName = fieldName.replace(MULTI_SUFFIX, "") + "-" + cont;
+    }
     try {
       return new FilesAPIFileItem(fieldName, contentType, isFormField, fileName);
     } catch (IOException x) {

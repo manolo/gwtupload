@@ -54,7 +54,7 @@ public abstract class AbstractUploadListener implements ProgressListener, Serial
 
   protected boolean exceptionTrhown = false;
 
-  protected boolean finished = false;
+  private String postResponse = null;
 
   protected int frozenTimeout = 60000;
 
@@ -63,6 +63,7 @@ public abstract class AbstractUploadListener implements ProgressListener, Serial
   protected String sessionId = "";
 
   protected int slowUploads = 0;
+
 
   public AbstractUploadListener(int sleepMilliseconds, long requestSize) {
     this();
@@ -127,7 +128,7 @@ public abstract class AbstractUploadListener implements ProgressListener, Serial
   }
 
   public boolean isFinished() {
-    return finished;
+    return postResponse != null;
   }
 
   /**
@@ -159,8 +160,8 @@ public abstract class AbstractUploadListener implements ProgressListener, Serial
     save();
   }
 
-  public void setFinished(boolean finished) {
-    this.finished = finished;
+  public void setFinished(String postResponse) {
+    this.postResponse = postResponse;
     save();
   }
 
@@ -200,5 +201,9 @@ public abstract class AbstractUploadListener implements ProgressListener, Serial
         exception = new RuntimeException(e);
       }
     }
+  }
+
+  public String getPostResponse() {
+    return postResponse;
   }
 }

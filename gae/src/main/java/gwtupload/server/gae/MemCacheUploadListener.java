@@ -116,9 +116,10 @@ public class MemCacheUploadListener extends AbstractUploadListener {
     }
   }
 
-  public void setFinished(boolean finished) {
+  @Override
+  public void setFinished(String postResponse) {
     counter = 0;
-    super.setFinished(finished);
+    super.setFinished(postResponse);
   }
 
   public String toString() {
