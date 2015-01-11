@@ -81,7 +81,7 @@ public class SingleUploadSample implements EntryPoint {
     single1.add(new Hidden("APC_UPLOAD_PROGRESS", single1.getInputName()), 0);
     single1.avoidEmptyFiles(false);
     single1.addOnFinishUploadHandler(onFinishUploaderHandler);
-    single1.setMultipleSelection(false);
+//    single1.setMultipleSelection(false);
     RootPanel.get("single1").add(single1);
 
     SingleUploader single2 = new SingleUploaderModal(FileInputType.ANCHOR, new ChismesUploadProgress(true));
@@ -98,7 +98,9 @@ public class SingleUploadSample implements EntryPoint {
     customButton.setStyleName("customButton");
     Label externalZone = new Label();
     externalZone.setStyleName("customZone");
+
     SingleUploader single4 = new SingleUploader(FileInputType.CUSTOM.with(customButton).withZone(externalZone));
+    single4.add(new Hidden("APC_UPLOAD_PROGRESS", single4.getInputName()), 0);
     single4.setServletPath(servletPath);
     single4.setAutoSubmit(true);
     single4.setValidExtensions("jpg", "gif", "png");
