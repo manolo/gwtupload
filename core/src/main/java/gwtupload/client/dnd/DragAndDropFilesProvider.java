@@ -31,12 +31,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import gwtupload.client.Uploader;
+
 import gwtupload.client.FileList;
 
 /**
  * DragAndDropFilesProvider.
  *
  * @author Sultan Tezadov
+ * @author Manolo Carrasco Moñino
  */
 public class DragAndDropFilesProvider implements HasValueChangeHandlers<FileList> {
 
@@ -143,6 +146,7 @@ public class DragAndDropFilesProvider implements HasValueChangeHandlers<FileList
   }
 
   private void onDragDrop(DataTransfer dataTransfer) {
+    Uploader.log("DnD onDra " + enabled + " " +sending, null);
     if (!enabled || sending) {
       return;
     }
@@ -164,11 +168,12 @@ public class DragAndDropFilesProvider implements HasValueChangeHandlers<FileList
   }
 
   public void lock() {
-    sending = true;
+//    sending = true;
   }
 
   public void reset() {
     sending = pending = false;
+    DragAndDropFormPanel.abortIfRunning();
   }
 
   public boolean thereAreDragAndDropedFiles() {
@@ -231,10 +236,12 @@ public class DragAndDropFilesProvider implements HasValueChangeHandlers<FileList
   }
 
   private void fireChangeEvent() {
+    Uploader.log("AAA", null);
     ValueChangeEvent.fire(this, files);
   }
 
   public void fireEvent(GwtEvent<?> event) {
+    Uploader.log("BBB", null);
     if (handlerManager != null) {
       handlerManager.fireEvent(event);
     }

@@ -4,10 +4,13 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.xhr.client.XMLHttpRequest;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import gwtupload.client.Uploader;
 
 import gwtupload.client.FileList;
 import gwtupload.client.IFileInput;
@@ -16,6 +19,7 @@ import gwtupload.client.IFileInput;
  * DragAndDropFormPanel.
  *
  * @author Sultan Tezadov
+ * @author Manolo Carrasco Moñino
  */
 public class DragAndDropFormPanel extends FormPanel {
 
@@ -71,6 +75,7 @@ public class DragAndDropFormPanel extends FormPanel {
 
   @Override
   public void submit() {
+    Uploader.log("panel submit", null);
     final List<IFileInput> childFileInputs = getChildFileInputs();
     if (childFileInputs == null || childFileInputs.isEmpty()) {
       return;
@@ -98,11 +103,20 @@ public class DragAndDropFormPanel extends FormPanel {
       submitDragAndDropFileInputs(dndFileInputs); // submit dnd file inputs
     }
   }
+  private static DragAndDropFormPanel currentInstance = null;
+  private XMLHttpRequest request = null;
 
   private void submitDragAndDropFileInputs(ArrayList<IDragAndDropFileInput> dndFileInputs) {
+    Uploader.log("panel submitDragAndDropFileInputs", null);
+
     // Fire the onSubmit event, because javascript's form.submit() does not
     // fire the built-in onsubmit event.
     if (!fireSubmitEvent()) {
+      return;
+    }
+
+    if (currentInstance != null) {
+      Uploader.log("DnD panel already sending files. ", null);
       return;
     }
 
@@ -110,7 +124,8 @@ public class DragAndDropFormPanel extends FormPanel {
       final FileList files = fileInput.getFiles();
       if (files != null && files.getLength() > 0) {
         fileInput.lock();
-        jsSubmit(getAction(), getMethod(), fileInput.getName(), files, dndFileInputs);
+        currentInstance = this;
+        request = jsSubmit(getAction(), getMethod(), fileInput.getName(), files, dndFileInputs);
       }
     }
   }
@@ -121,6 +136,7 @@ public class DragAndDropFormPanel extends FormPanel {
    * @return true to continue, false if canceled
    */
   private boolean fireSubmitEvent() {
+    Uploader.log("fireSubmitEvent ", null);
     FormPanel.SubmitEvent event = new FormPanel.SubmitEvent();
     fireEvent(event);
     return !event.isCanceled();
@@ -148,7 +164,7 @@ public class DragAndDropFormPanel extends FormPanel {
   }
 
   // FIXME(manolo): Use session and reuse gwt form panel
-  private native void jsSubmit(String action, String method, String fieldName, FileList files, ArrayList<IDragAndDropFileInput> inputs) /*-{
+  private native XMLHttpRequest jsSubmit(String action, String method, String fieldName, FileList files, ArrayList<IDragAndDropFileInput> inputs) /*-{
     var formData = new FormData();
     for (var i = 0; i < files.length; i++) {
       formData.append(fieldName, files[i]);
@@ -157,19 +173,32 @@ public class DragAndDropFormPanel extends FormPanel {
     var outerThis = this;
     request.onreadystatechange = function() {
       if (request.readyState == 4) { // the request has completed
-        outerThis.@gwtupload.client.DragAndDropFormPanel::onSubmitComplete(*)(request.responseText, inputs);
+        outerThis.@gwtupload.client.dnd.DragAndDropFormPanel::onSubmitComplete(*)(request.responseText, request.status, inputs);
       }
     };
     request.open(method, action);
     request.send(formData);
+    return request;
   }-*/;
 
   // This is invoked from jsSubmit():
-  private void onSubmitComplete(String resultsHtml, ArrayList<IDragAndDropFileInput> dndFileInputs) {
-    for (IDragAndDropFileInput fileInput : dndFileInputs) {
-      fileInput.reset();
+  private void onSubmitComplete(String resultsHtml, int status, ArrayList<IDragAndDropFileInput> dndFileInputs) {
+    Uploader.log("DnD panel complete. " + dndFileInputs.size() + " " + status, null);
+    currentInstance = null;
+    if (dndFileInputs != null) {
+      for (IDragAndDropFileInput fileInput : dndFileInputs) {
+        fileInput.reset();
+      }
     }
     fireEvent(new SubmitCompleteEvent(resultsHtml) {
     });
+  }
+
+  protected static void abortIfRunning() {
+    currentInstance = null;
+//     if (currentInstance != null) {
+//      currentInstance.request.abort();
+//      currentInstance.onSubmitComplete(null, 0, null);
+//    }
   }
 }

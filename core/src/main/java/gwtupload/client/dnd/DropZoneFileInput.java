@@ -17,7 +17,6 @@
 package gwtupload.client.dnd;
 
 import com.google.gwt.dom.client.Document;
-import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.HasAllDragAndDropHandlers;
@@ -35,6 +34,7 @@ import gwtupload.client.Uploader;
 
 /**
  * @author Sultan Tezadov
+ * @author Manolo Carrasco Moñino
  */
 public class DropZoneFileInput extends Label implements HasAllDragAndDropHandlers, IFileInput,
     IDragAndDropFileInput {
@@ -76,6 +76,7 @@ public class DropZoneFileInput extends Label implements HasAllDragAndDropHandler
     dragAndDropFilesProvider = new DragAndDropFilesProvider(dropZoneWidget);
     dragAndDropFilesProvider.addValueChangeHandler(new ValueChangeHandler<FileList>() {
       public void onValueChange(ValueChangeEvent<FileList> event) {
+        Uploader.log("DZFI onValueChange", null);
         fireChangeEvent();
       }
     });
@@ -92,7 +93,7 @@ public class DropZoneFileInput extends Label implements HasAllDragAndDropHandler
     dragAndDropFilesProvider.reset();
     dropZone.removeStyleName(STYLE_DROP_ZONE_SENDING);
   }
-  
+
   @Override
   public void lock() {
     dropZone.addStyleName(STYLE_DROP_ZONE_SENDING);
