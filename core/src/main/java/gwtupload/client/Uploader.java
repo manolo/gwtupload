@@ -19,7 +19,7 @@ package gwtupload.client;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
-import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.AnchorElement;
 import com.google.gwt.dom.client.FormElement;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
@@ -60,7 +60,6 @@ import java.util.logging.Logger;
 
 import gwtupload.client.dnd.DragAndDropFormPanel;
 import gwtupload.client.dnd.IDragAndDropFileInput;
-
 import static gwtupload.shared.UConsts.ATTR_BLOBSTORE_PARAM_NAME;
 import static gwtupload.shared.UConsts.MULTI_SUFFIX;
 import static gwtupload.shared.UConsts.PARAM_BLOBKEY;
@@ -272,20 +271,27 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
       String text = response.getText();
       String url = null;
       Document document = null;
-      try {
-        document = XMLParser.parse(text);
-        url = Utils.getXmlNodeValue(document, TAG_BLOBSTORE_PATH);
-      } catch (DOMParseException e) {
-        String bpath = "<" + TAG_BLOBSTORE_PATH + ">";
-        String sbpath = "</" + TAG_BLOBSTORE_PATH + ">";
-        if (text.contains(bpath)) {
+
+      String bpath = "<" + TAG_BLOBSTORE_PATH + ">";
+      String sbpath = "</" + TAG_BLOBSTORE_PATH + ">";
+      if (text.contains(bpath)) {
+        try {
+          document = XMLParser.parse(text);
+          log("document=" + document + " " + TAG_BLOBSTORE_PATH, null);
+          url = Utils.getXmlNodeValue(document, TAG_BLOBSTORE_PATH);
+          log("url=" + url, null);
+        } catch (Exception e) {
+          cancelUpload(i18nStrs.uploaderBlobstoreError() + "\n>>>\n" + e.getMessage() + "\n>>>>\n" + e);
+          return;
+        }
+        if (url == null) {
           url = text.replaceAll("[\r\n]+","").replaceAll("^.*" + bpath + "\\s*", "").replaceAll("\\s*" + sbpath + ".*$", "");
         }
-      } catch (Exception e) {
-        cancelUpload(i18nStrs.uploaderBlobstoreError() + "\n>>>\n" + e.getMessage() + "\n>>>>\n" + e);
-        return;
       }
       if (url != null && url.length() > 0 && !"null".equalsIgnoreCase(url)) {
+        if (session.getServletPath().startsWith("http")) {
+          url = session.getServletPath().replaceFirst("(https?://[^/]+).*", "$1") + url;
+        }
         uploadForm.setAction(url);
       } else {
         uploadForm.setAction(session.getServletPath());
@@ -438,38 +444,6 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
       try {
         // Parse the xml and extract UploadedInfos
         Document doc = XMLParser.parse(serverRawResponse);
-
-        String msg = Utils.getXmlNodeValue(doc, TAG_MESSAGE);
-        serverMessage.setMessage(msg);
-        String fld = Utils.getXmlNodeValue(doc, TAG_FIELD);
-
-        NodeList list = doc.getElementsByTagName(TAG_FILE);
-        for (int i = 0, l = list.getLength(); i < l; i++) {
-          UploadedInfo info = new UploadedInfo();
-          info.setField(getInputName() + "-" + i);
-
-          info.setName(Utils.getXmlNodeValue(doc, TAG_NAME, i));
-          info.setCtype(Utils.getXmlNodeValue(doc, TAG_CTYPE, i));
-
-          // TODO: test
-          info.setKey (Utils.getXmlNodeValue(doc, TAG_KEY, i));
-
-          // TODO: remove
-          info.message = msg;
-
-          String url = session.composeURL(PARAM_SHOW + "=" + info.getField());
-          if (info.getKey() != null) {
-            url += "&" + PARAM_BLOBKEY + "=" + info.getKey();
-          }
-          info.setFileUrl(url);
-
-          String size = Utils.getXmlNodeValue(doc, TAG_SIZE, i);
-          if (size != null) {
-            info.setSize(Integer.parseInt(size));
-          }
-          serverMessage.getUploadedInfos().add(info);
-        }
-
         // If the server response is a valid xml
         parseAjaxResponse(serverRawResponse);
       } catch (Exception e) {
@@ -1157,6 +1131,9 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
   private void cancelUpload(String msg) {
     successful = false;
     uploadFinished();
+    if (fileInput instanceof IDragAndDropFileInput) {
+      ((IDragAndDropFileInput)fileInput).reset();
+    }
     statusWidget.setStatus(IUploadStatus.Status.ERROR);
     statusWidget.setError(msg);
   }
@@ -1192,7 +1169,38 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     Document doc = null;
     try {
       doc = XMLParser.parse(responseTxt);
+      log("responseText " + responseTxt + " ", null);
       error = Utils.getXmlNodeValue(doc, "error");
+      if (error == null) {
+        // Response brings uploaded files info in either:
+        // POST response or FINISHED status
+        String msg = Utils.getXmlNodeValue(doc, TAG_MESSAGE);
+        serverMessage.setMessage(msg);
+        String fld = Utils.getXmlNodeValue(doc, TAG_FIELD);
+        NodeList list = doc.getElementsByTagName(TAG_FILE);
+        for (int i = 0, l = list.getLength(); i < l; i++) {
+          UploadedInfo info = new UploadedInfo();
+          info.setField(getInputName() + "-" + i);
+          info.setName(Utils.getXmlNodeValue(doc, TAG_NAME, i));
+          info.setCtype(Utils.getXmlNodeValue(doc, TAG_CTYPE, i));
+          // TODO: test
+          info.setKey (Utils.getXmlNodeValue(doc, TAG_KEY, i));
+          // TODO: remove
+          info.message = msg;
+          String url = session.composeURL(PARAM_SHOW + "=" + info.getField());
+          if (info.getKey() != null) {
+            url += "&" + PARAM_BLOBKEY + "=" + info.getKey();
+          }
+          info.setFileUrl(url);
+
+          String size = Utils.getXmlNodeValue(doc, TAG_SIZE, i);
+          if (size != null) {
+            info.setSize(Integer.parseInt(size));
+          }
+          log(info.toString(), null);
+          serverMessage.getUploadedInfos().add(info);
+        }
+      }
     } catch (Exception e) {
       if (responseTxt.toLowerCase().matches("error")) {
         error = i18nStrs.uploaderServerError() + "\nAction: " + getServletPath() + "\nException: " + e.getMessage() + responseTxt;
@@ -1234,7 +1242,10 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
         String msg = i18nStrs.uploaderBadServerResponse() + "\n" + serverRawResponse;
         if (blobstore) {
           msg += "\n" + i18nStrs.uploaderBlobstoreBilling();
+        } else {
+          msg += "\n" + i18nStrs.uploaderBadParsing();
         }
+        msg += "\n\n" + responseTxt;
         log(msg, null);
         statusWidget.setError(msg);
         uploadFinished();

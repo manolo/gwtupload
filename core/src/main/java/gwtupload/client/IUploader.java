@@ -103,6 +103,12 @@ public interface IUploader extends HasJsData, HasWidgets, IsWidget {
      */
     public String ctype;
 
+    @Override
+    public String toString() {
+      return "UploadedInfo [field=" + field + ", name=" + name + ", ctype=" + ctype + ", size="
+          + size + ", key=" + key + ", fileUrl=" + fileUrl + ", message=" + message + "]";
+    }
+
     /**
      * Size in bytes calculated in the server
      */
@@ -258,6 +264,9 @@ public interface IUploader extends HasJsData, HasWidgets, IsWidget {
 
     @DefaultStringValue("Error you have typed an invalid file name, please select a valid one.")
     String uploaderInvalidPathError();
+
+    @DefaultStringValue("Check logs in server side, maybe it raised an exception, or maybe it made a CORS request.")
+    String uploaderBadParsing();
   }
 
   /**
