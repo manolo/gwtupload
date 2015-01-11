@@ -18,6 +18,7 @@ package gwtuploadsample.client;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.dom.client.Style;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Hidden;
 import com.google.gwt.user.client.ui.Label;
@@ -31,6 +32,7 @@ import gwtupload.client.PreloadedImage;
 import gwtupload.client.PreloadedImage.OnLoadPreloadedImageHandler;
 import gwtupload.client.SingleUploader;
 import gwtupload.client.SingleUploaderModal;
+import gwtupload.client.Uploader;
 import jsupload.client.ChismesUploadProgress;
 
 /**
@@ -58,6 +60,7 @@ public class SingleUploadSample implements EntryPoint {
     public void onFinish(IUploader uploader) {
       if (uploader.getStatus() == Status.SUCCESS) {
         for (String url : uploader.getServerMessage().getUploadedFileUrls()) {
+          Uploader.log("Image Url " + url , null);
           new PreloadedImage(url, showImage);
         }
       }
@@ -65,20 +68,30 @@ public class SingleUploadSample implements EntryPoint {
   };
 
   public void onModuleLoad() {
+    // Configurable servlet path to experiment with different options
+    String servletPath = Window.Location.getParameter("servlet");
+    if (servletPath == null) {
+      servletPath = "servlet.gupld";
+    }
+
     SingleUploader single1 = new SingleUploaderModal();
-    single1.addOnFinishUploadHandler(onFinishUploaderHandler);
+    single1.setServletPath(servletPath);
 
     // This enables php apc progress mechanism
     single1.add(new Hidden("APC_UPLOAD_PROGRESS", single1.getInputName()), 0);
     single1.avoidEmptyFiles(false);
+    single1.addOnFinishUploadHandler(onFinishUploaderHandler);
+    single1.setMultipleSelection(false);
     RootPanel.get("single1").add(single1);
 
     SingleUploader single2 = new SingleUploaderModal(FileInputType.ANCHOR, new ChismesUploadProgress(true));
+    single2.setServletPath(servletPath);
     single2.addOnFinishUploadHandler(onFinishUploaderHandler);
     RootPanel.get("single2").add(single2);
 
     SingleUploader single3 = new SingleUploader(FileInputType.BUTTON);
     single3.addOnFinishUploadHandler(onFinishUploaderHandler);
+    single3.setServletPath(servletPath);
     RootPanel.get("single3").add(single3);
 
     Label customButton = new Label();
@@ -86,6 +99,7 @@ public class SingleUploadSample implements EntryPoint {
     Label externalZone = new Label();
     externalZone.setStyleName("customZone");
     SingleUploader single4 = new SingleUploader(FileInputType.CUSTOM.with(customButton).withZone(externalZone));
+    single4.setServletPath(servletPath);
     single4.setAutoSubmit(true);
     single4.setValidExtensions("jpg", "gif", "png");
     single4.addOnFinishUploadHandler(onFinishUploaderHandler);
@@ -96,6 +110,7 @@ public class SingleUploadSample implements EntryPoint {
     externalZone.getElement().getStyle().setProperty("display", "inline-block");
 
     SingleUploader single5 = new SingleUploader(FileInputType.DROPZONE);
+    single5.setServletPath(servletPath);
     single5.setAutoSubmit(true);
     single5.setValidExtensions("jpg", "gif", "png");
     single5.addOnFinishUploadHandler(onFinishUploaderHandler);
@@ -109,6 +124,7 @@ public class SingleUploadSample implements EntryPoint {
     externalDropZone.getElement().getStyle().setBorderStyle(Style.BorderStyle.DASHED);
     externalDropZone.getElement().getStyle().setBorderWidth(1, Style.Unit.PX);
     SingleUploader single6 = new SingleUploader(FileInputType.DROPZONE.with(uploadLabel).withZone(externalDropZone));
+    single6.setServletPath(servletPath);
     single6.setAutoSubmit(true);
     single6.setValidExtensions("jpg", "gif", "png");
     single6.addOnFinishUploadHandler(onFinishUploaderHandler);
@@ -118,5 +134,4 @@ public class SingleUploadSample implements EntryPoint {
 
     RootPanel.get("thumbnails").add(panelImages);
   }
-
 }

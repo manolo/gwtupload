@@ -1,7 +1,4 @@
 <module>
   <inherits name="gwtuploadsample.Sample"/>
   <entry-point class="gwtuploadsample.client.SingleUploadSample"/>
-  <set-property name="compiler.stackMode" value="strip"/>
-  <add-linker name="xsiframe"/>
-  <collapse-all-properties />
 </module>
