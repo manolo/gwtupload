@@ -1,8 +1,7 @@
-<project
-  xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
-        http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
   <artifactId>gwtupload-samples-gae</artifactId>
@@ -13,21 +12,44 @@
   <parent>
     <groupId>com.googlecode.gwtupload</groupId>
     <artifactId>gwtupload-project</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.0.2-SNAPSHOT</version>
   </parent>
 
+  <properties>
+    <appengine.app.version>1</appengine.app.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <gae.version>1.9.17</gae.version>
+  </properties>
+
+  <prerequisites>
+    <maven>3.1.0</maven>
+  </prerequisites>
+
   <dependencies>
+    <!-- Compile/runtime dependencies -->
+    <dependency>
+      <groupId>com.google.appengine</groupId>
+      <artifactId>appengine-api-1.0-sdk</artifactId>
+      <version>${gae.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <version>2.5</version>
+      <scope>provided</scope>
+    </dependency>
+<!--
+    <dependency>
+      <groupId>jstl</groupId>
+      <artifactId>jstl</artifactId>
+      <version>1.2</version>
+    </dependency>
+-->
     <dependency>
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-user</artifactId>
       <version>${gwtVersion}</version>
       <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.google.gwt</groupId>
-      <artifactId>gwt-servlet</artifactId>
-      <version>${gwtVersion}</version>
-      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>${groupId}</groupId>
@@ -69,14 +91,10 @@
       <version>${gwtIncubatorVersion}</version>
       <scope>provided</scope>
     </dependency>
-    <dependency>
-      <groupId>com.google.appengine</groupId>
-      <artifactId>appengine-api-1.0-sdk</artifactId>
-      <version>${gae.version}</version>
-    </dependency>
   </dependencies>
 
   <build>
+    <!-- for hot reload of the web application-->
     <outputDirectory>${project.build.directory}/${project.build.finalName}/WEB-INF/classes</outputDirectory>
     <resources>
       <resource>
@@ -90,29 +108,42 @@
       </resource>
     </resources>
     <plugins>
-      <!-- GWT plugin does not copy the webapp folder in hosted mode -->
       <plugin>
-        <artifactId>maven-resources-plugin</artifactId>
-        <version>2.5</version>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>versions-maven-plugin</artifactId>
         <executions>
           <execution>
-            <id>copy-resources</id>
-            <phase>generate-sources</phase>
+            <phase>compile</phase>
             <goals>
-              <goal>copy-resources</goal>
+              <goal>display-dependency-updates</goal>
+              <goal>display-plugin-updates</goal>
             </goals>
-            <configuration>
-              <outputDirectory>${project.build.directory}/${project.build.finalName}</outputDirectory>
-              <resources>
-                <resource>
-                 <directory>src/main/webapp</directory>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
+           </execution>
         </executions>
       </plugin>
-
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.7</source>
+          <target>1.7</target>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-war-plugin</artifactId>
+        <configuration>
+        <archiveClasses>true</archiveClasses>
+        <webResources>
+          <!-- in order to interpolate version from pom into appengine-web.xml -->
+          <resource>
+            <directory>${basedir}/src/main/webapp/WEB-INF</directory>
+            <filtering>true</filtering>
+            <targetPath>WEB-INF</targetPath>
+          </resource>
+        </webResources>
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>gwt-maven-plugin</artifactId>
@@ -127,8 +158,6 @@
         </executions>
         <configuration>
           <runTarget>index.html</runTarget>
-          <hostedWebapp>${www}</hostedWebapp>
-          <soyc>false</soyc>
           <style>OBFUSCATED</style>
           <modules>
             <module>gwtuploadsample.ChismesUploadSample</module>
@@ -136,57 +165,29 @@
             <module>gwtuploadsample.MultipleUploadSample</module>
             <module>jsupload.JsUpload</module>
           </modules>
+          <appEngineVersion>${gae.version}</appEngineVersion>
+          <appEngineHome>${gae.home}</appEngineHome>
+          <logLevel>INFO</logLevel>
+          <server>com.google.appengine.tools.development.gwt.AppEngineLauncher</server>
+          <copyWebapp>true</copyWebapp>
         </configuration>
       </plugin>
       <plugin>
-        <groupId>net.kindleit</groupId>
-        <artifactId>maven-gae-plugin</artifactId>
-        <configuration><port>6666</port></configuration>
-        <executions>
-          <execution>
-            <phase>deploy</phase>
-            <goals>
-              <goal>deploy</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-eclipse-plugin</artifactId>
+        <groupId>com.google.appengine</groupId>
+        <artifactId>appengine-maven-plugin</artifactId>
+        <version>${gae.version}</version>
         <configuration>
-          <downloadSources>true</downloadSources>
-          <downloadJavadocs>false</downloadJavadocs>
-          <additionalBuildcommands>
-            <buildCommand>com.google.gwt.eclipse.core.gwtProjectValidator</buildCommand>
-            <buildcommand>org.eclipse.wst.common.modulecore.ComponentStructuralBuilder</buildcommand>
-            <buildcommand>org.eclipse.jdt.core.javabuilder</buildcommand>
-            <buildcommand>org.eclipse.wst.common.modulecore.ComponentStructuralBuilderDependencyResolver</buildcommand>
-          </additionalBuildcommands>
-          <additionalProjectnatures>
-            <projectnature>com.google.gwt.eclipse.core.gwtNature</projectnature>
-            <projectnature>org.eclipse.jdt.core.javanature</projectnature>
-            <projectnature>org.eclipse.wst.common.modulecore.ModuleCoreNature</projectnature>
-          </additionalProjectnatures>
+          <enableJarClasses>false</enableJarClasses>
+          <!-- Comment in the below snippet to bind to all IPs instead of just localhost -->
+          <!-- address>0.0.0.0</address>
+          <port>8080</port -->
+          <!-- Comment in the below snippet to enable local debugging with a remove debugger
+               like those included with Eclipse or IntelliJ -->
+          <!-- jvmFlags>
+          <jvmFlag>-agentlib:jdwp=transport=dt_socket,address=8000,server=y,suspend=n</jvmFlag>
+          </jvmFlags -->
         </configuration>
       </plugin>
     </plugins>
-  </build>
-
-  <repositories>
-    <repository>
-      <id>maven-gae-plugin-repo</id>
-      <name>maven-gae-plugin repository</name>
-      <url>http://maven-gae-plugin.googlecode.com/svn/repository</url>
-    </repository>
-  </repositories>
-
-  <pluginRepositories>
-    <pluginRepository>
-       <id>maven-gae-plugin-repo</id>
-       <name>maven-gae-plugin repository</name>
-       <url>http://maven-gae-plugin.googlecode.com/svn/repository</url>
-    </pluginRepository>
-  </pluginRepositories>
-
+    </build>
 </project>

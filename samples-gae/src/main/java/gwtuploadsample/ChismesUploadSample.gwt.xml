@@ -1,9 +1,0 @@
-<module>
-  <inherits name="gwtuploadsample.Sample"/>
-  <entry-point class="gwtuploadsample.client.ChismesUploadSample"/>
-  <stylesheet src="GWTCBox.css"/>
-  <stylesheet src="GWTCButton.css"/>
-  <stylesheet src="GWTCTabPanel.css"/>
-  <set-property name="compiler.stackMode" value="strip"/>
-  <extend-property name="locale" values="es,de" />
-</module>

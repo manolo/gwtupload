@@ -10,27 +10,73 @@
     <param-value>2096000</param-value>
     <!-- <param-value>1024000</param-value> -->
   </context-param>
-  
+
+  <context-param>
+    <param-name>corsDomainsRegex</param-name>
+    <param-value>.*</param-value>
+  </context-param>
+
 <!--  <context-param>-->
 <!--    <param-name>slowUploads</param-name>-->
 <!--    <param-value>true</param-value>-->
 <!--  </context-param>-->
 
   <servlet>
-    <servlet-name>uploadServlet</servlet-name>
-<!--  <servlet-class>gwtupload.server.UploadServlet</servlet-class> -->
-<!-- <servlet-class>gwtupload.server.gae.AppEngineUploadAction</servlet-class> -->
-<!-- <servlet-class>gwtupload.server.gae.BlobstoreUploadAction</servlet-class>  -->
-     <servlet-class>gwtupload.server.gae.FilesApiUploadAction</servlet-class>
+    <servlet-name>appEngine</servlet-name>
+    <servlet-class>gwtupload.server.gae.AppEngineUploadAction</servlet-class>
   </servlet>
-  
   <servlet-mapping>
-    <servlet-name>uploadServlet</servlet-name>
-    <url-pattern>*.gupld</url-pattern>
+    <servlet-name>appEngine</servlet-name>
+    <url-pattern>*.appengine</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <servlet-name>blobStore</servlet-name>
+    <servlet-class>gwtupload.server.gae.BlobstoreUploadAction</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>blobStore</servlet-name>
+    <url-pattern>*.blobstore</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <servlet-name>fileStore</servlet-name>
+    <servlet-class>gwtupload.server.gae.FilesApiUploadAction</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>fileStore</servlet-name>
+    <url-pattern>*.filestore</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <servlet-name>uploadServlet</servlet-name>
+    <servlet-class>gwtupload.server.UploadServlet</servlet-class>
+  </servlet>
   <servlet-mapping>
     <servlet-name>uploadServlet</servlet-name>
-    <url-pattern>/upload</url-pattern>
+    <url-pattern>*.filesystem</url-pattern>
   </servlet-mapping>
 
+  <servlet-mapping>
+    <servlet-name>fileStore</servlet-name>
+    <url-pattern>*.gupld</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>Upload</servlet-name>
+    <servlet-class>Upload</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>blobStore</servlet-name>
+    <url-pattern>/upload</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>Upload</servlet-name>
+    <url-pattern>/send</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <servlet-name>Serve</servlet-name>
+    <servlet-class>Serve</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>Serve</servlet-name>
+    <url-pattern>/serve</url-pattern>
+  </servlet-mapping>
 </web-app>
