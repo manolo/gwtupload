@@ -86,6 +86,7 @@ sub fixPath {
   return $p;
 }
 
+
 # Get the sessionId or create a new one
 # do not use CGI here, because we need to handle STDIN in order to update the progress status.
 my $sid = fixPath(new Digest::MD5()->add( $$, time(), rand(time) )->hexdigest());
@@ -107,6 +108,14 @@ my $progress_file = "$user_dir/progress";
 #   POST is used for uploading.
 #   GET is used to get the upload progress or get the content of the uploaded item.
 my $method = $ENV{'REQUEST_METHOD'} || 'GET';
+if ($ENV{'HTTP_ORIGIN'}) {
+      print "Access-Control-Allow-Origin: " . $ENV{'HTTP_ORIGIN'} . "\n";
+      print 'Access-Control-Allow-Credentials: true' . "\n";
+}
+if ($method eq 'OPTIONS') {
+      print "Access-Control-Allow-Methods: GET, POST, OPTIONS\n" if ($ENV{'HTTP_ACCESS_CONTROL_REQUEST_METHOD'});
+      print "Access-Control-Allow-Headers: " . $ENV{'HTTP_ACCESS_CONTROL_REQUEST_HEADERS'} . "\n" if ($ENV{'HTTP_ACCESS_CONTROL_REQUEST_HEADERS'});
+}
 my $cgi;
 if ( $method =~ /POST/i ) {
     doPost();
@@ -121,7 +130,7 @@ if ( $method =~ /POST/i ) {
     } elsif ( $cgi->param('cancel') ) {
         cancelProcess();
     } else {
-        getProgress();
+        getProgress($cgi->param('filename'));
     }
 }
 exit;
@@ -187,14 +196,14 @@ sub doPost {
            $key =~ s/\[\]$//;
             foreach my $fh (@fhs) {
               if ( defined($fh) ) {
-                  $key .= '-' . $cnt++;
+                  my $field .= $key . '-' . $cnt++;
                   # In this variable you can send any information to the client side.
                   my $servermessage = "jsupload version: $version";
 
                   my $type = $cgi->uploadInfo($value)->{'Content-Type'} || 'unknown';
-                  my $name = saveFile( $key, $value, $type, $fh );
+                  my $name = saveFile( $field, $value, $type, $fh );
                   my $size = -s "$name";
-                  $files .= " <file>\n  <field>$key</field>\n  <name>$value</name>"
+                  $files .= " <file>\n  <field>$field</field>\n  <name>$value</name>"
                     . "\n  <size>$size</size>\n  <ctype>$type</ctype>"
                     . "\n  <message>\n<![CDATA[\n$servermessage\n]]>\n  </message>\n </file>";
               } else {
@@ -227,9 +236,10 @@ sub saveFile {
        }
        close(BIN);
     }
+    my $size = -s "$bin_file";
     my $info_file = $user_dir . $key . ".info";
     open( INFO, ">$info_file" ) || return;
-    print INFO "$name\n$type\n";
+    print INFO "$name\n$type\n$size\n";
     close(INFO);
     return $bin_file;
 }
@@ -280,6 +290,7 @@ sub cancelProcess {
 
 ## read the upload progress from the status file
 sub getProgress {
+    my $key = shift;
     if ( -f "$error_file" ) {
         my $error=`cat $error_file`;
         writeResponse("<error>JSUPLOAD: $error</error><finished>true</finished>");
@@ -300,8 +311,34 @@ sub getProgress {
         "<percent>$percent</percent>"
       . "<currentBytes>$done</currentBytes>"
       . "<totalBytes>$total</totalBytes>";
-    $ret .= "<finished>ok</finished>" if ( $percent >= 100 );
+    if ($percent >= 100) {
+        $ret .= "<finished>ok</finished><files>\n" if ( $percent >= 100 );
+        my ($cont, $value, $type, $size);
+        do {
+           my $field = $key . "-" . $cont++;
+           ($value, $type, $size) = readInfo($field);
+           if ($value) {
+              $ret .= "<file><field>$field</field><ctype>$type</ctype><name>$value</name><size>$size</size></file>\n";
+           }
+        } while ($value);
+        $ret .= "</files>";
+    }
     writeResponse($ret);
+}
+
+sub readInfo {
+    my $item = fixPath(shift);
+print STDERR "$user_dir/$item.info\n";
+    if ( open( F, "$user_dir/$item.info" ) ) {
+        my $value = <F>;
+        $value =~ s/[\r\n]+$//g;
+        my $type = <F>;
+        $type =~ s/[\r\n]+$//g;
+        my $size = <F>;
+        $size =~ s/[\r\n]+$//g;
+        close(F);
+        return ($value, $type, $size);
+    }
 }
 
 ## Generates the response when the client asks for an item
@@ -310,23 +347,17 @@ sub getProgress {
 sub writeItemContent {
     select( undef, undef, undef, 0.4 );
     my $item = fixPath(shift);
-    if ( open( F, "$user_dir/$item.info" ) ) {
-        my $value = <F>;
-        $value =~ s/[\r\n]+$//g;
-        my $type = <F>;
-        $type =~ s/[\r\n]+$//g;
-        close(F);
-        if ( open( F, "$user_dir/$item.bin" ) ) {
-            print "Content-type: $type\n\n";
-            while (<F>) {
-                print $_;
-            }
-            close(F);
-        } else {
-            writeResponse("<item name='$item'>$value</item>");
-        }
-    } else {
+    my ($value, $type, $size) = readInfo($item);
+    if (!$value) {
         writeResponse("<error>item not found</error>");
+    } elsif ($value && open( F, "$user_dir/$item.bin" ) ) {
+        print "Content-type: $type\n\n";
+        while (<F>) {
+            print $_;
+        }
+        close(F);
+    } else {
+        writeResponse("<item name='$item'>$value</item>");
     }
 }
 
