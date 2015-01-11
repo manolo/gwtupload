@@ -1,5 +1,6 @@
 package gwtupload.client;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.RequestBuilder.Method;
@@ -18,7 +19,7 @@ import static gwtupload.shared.UConsts.TAG_SESSION_ID;
 
 public interface ISession {
 
-  public static class CORSSession extends Session {
+  public static class CORSSessionParameter extends Session {
     @Override
     protected void setSessionId(String s) {
       super.setSessionId(s);
@@ -26,7 +27,9 @@ public interface ISession {
       servletPath = servletPath.replaceFirst("^(.+)(/[^/\\?;]*)(;[^/\\?]*|)(\\?|/$|$)(.*)", "$1$2" + s + "$4$5");
       System.err.println("CORS Session: " + servletPath);
     }
-    
+  }
+
+  public static class CORSSession extends Session {
     @Override
     protected RequestBuilder createRequest(Method method, int timeout, String... params) {
       RequestBuilder req =  super.createRequest(method, timeout, params);
@@ -40,7 +43,12 @@ public interface ISession {
     String servletPath = "servlet.gupld";
 
     public static ISession createSession(String path, RequestCallback callback) {
-      Session ret = path.startsWith("http") ? new CORSSession() : new Session();
+      Session ret;
+      if (path.startsWith("http")) {
+        ret = GWT.create(CORSSession.class);
+      } else {
+        ret = GWT.create(Session.class);
+      }
       ret.servletPath = path;
       ret.getSession(callback);
       return ret;
