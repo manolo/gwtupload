@@ -1,13 +1,13 @@
 /*
- * Copyright 2010 Manuel Carrasco Moñino. (manolo at apache/org) 
+ * Copyright 2010 Manuel Carrasco Moñino. (manolo at apache/org)
  * http://code.google.com/p/gwtupload
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -24,14 +24,14 @@ import java.util.HashMap;
 
 /**
  * Internationalizable constants.
- * 
+ *
  * @author Manuel Carrasco Moñino
  */
 public class I18nConstants implements UploaderConstants {
-  
+
   UploaderConstants defaultStrs = GWT.create(UploaderConstants.class);
   HashMap<String, String> strs = new HashMap<String, String>();
-  
+
   public I18nConstants(JsProperties prop, String regional) {
     if (prop.defined(regional)) {
       JsProperties reg = prop.getJsProperties(regional);
@@ -40,7 +40,7 @@ public class I18nConstants implements UploaderConstants {
       }
     }
   }
-  
+
   public String or(String...values) {
     for (String val : values) {
       if (val != null) {
@@ -49,7 +49,7 @@ public class I18nConstants implements UploaderConstants {
     }
     return null;
   }
-  
+
   public String uploaderActiveUpload() {
     return or(strs.get(Const.TXT_ACTIVE_UPLOAD), defaultStrs.uploaderActiveUpload());
   }
@@ -83,7 +83,7 @@ public class I18nConstants implements UploaderConstants {
   public String uploaderBlobstoreBilling() {
     return or(strs.get(Const.TXT_BLOBSTORE_BILLING), defaultStrs.uploaderBlobstoreBilling());
   }
-  
+
   public String uploadLabelCancel() {
     return or(strs.get(Const.TXT_CANCEL), defaultStrs.uploadLabelCancel());
   }
@@ -119,5 +119,8 @@ public class I18nConstants implements UploaderConstants {
   }
   public String uploaderDrop() {
     return or(strs.get(Const.TXT_DROP), defaultStrs.uploaderDrop());
+  }
+  public String uploaderBadParsing() {
+    return or(strs.get(Const.TXT_BAD_PARSING), defaultStrs.uploaderBadParsing());
   }
 }
