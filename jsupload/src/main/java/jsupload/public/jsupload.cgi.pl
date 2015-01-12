@@ -61,7 +61,7 @@
 ## *   * The application must create, handle, and clean $tmp_dir files.
 ############################################################################################
 # this script version.
-my $version = "0.6.4";
+my $version = "1.0.2";
 
 use CGI;
 use Digest::MD5;
@@ -183,7 +183,7 @@ sub doPost {
     close(D);
 
     ## Process received data
-    my $msg = "<finished>ok</finished>\n";
+    my $msg = "<finished>ok</finished>\n<message>jsupload.pl $version</message>\n";
     open( STDIN, "$data_file" );
     $cgi = new CGI();
     my $cnt = 0;
@@ -198,14 +198,12 @@ sub doPost {
               if ( defined($fh) ) {
                   my $field .= $key . '-' . $cnt++;
                   # In this variable you can send any information to the client side.
-                  my $servermessage = "jsupload version: $version";
 
                   my $type = $cgi->uploadInfo($value)->{'Content-Type'} || 'unknown';
                   my $name = saveFile( $field, $value, $type, $fh );
                   my $size = -s "$name";
                   $files .= " <file>\n  <field>$field</field>\n  <name>$value</name>"
-                    . "\n  <size>$size</size>\n  <ctype>$type</ctype>"
-                    . "\n  <message>\n<![CDATA[\n$servermessage\n]]>\n  </message>\n </file>";
+                    . "\n  <size>$size</size>\n  <ctype>$type</ctype>\n";
               } else {
                   saveFile($key, $value, "text/plain");
                   $pars .= "<parameter><field>$key</field>"
@@ -312,7 +310,7 @@ sub getProgress {
       . "<currentBytes>$done</currentBytes>"
       . "<totalBytes>$total</totalBytes>";
     if ($percent >= 100) {
-        $ret .= "<finished>ok</finished><files>\n" if ( $percent >= 100 );
+        $ret .= "<finished>ok</finished><files>\n<message>jsupload.pl $version</message>\n" if ( $percent >= 100 );
         my ($cont, $value, $type, $size);
         do {
            my $field = $key . "-" . $cont++;

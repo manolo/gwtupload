@@ -38,7 +38,6 @@ import javax.servlet.http.HttpServletResponse;
 import static gwtupload.shared.UConsts.PARAM_BLOBKEY;
 import static gwtupload.shared.UConsts.PARAM_CANCEL;
 import static gwtupload.shared.UConsts.PARAM_ERROR;
-import static gwtupload.shared.UConsts.PARAM_MESSAGE;
 import static gwtupload.shared.UConsts.PARAM_REDIRECT;
 import static gwtupload.shared.UConsts.RESP_OK;
 import static gwtupload.shared.UConsts.TAG_CANCELED;
@@ -129,23 +128,27 @@ public class BlobstoreUploadAction extends UploadAction {
     } else if (request.getParameter(PARAM_REDIRECT) != null) {
       perThreadRequest.set(request);
       Map<String, String> stat = new HashMap<String, String>();
-      if (request.getParameter(PARAM_MESSAGE) != null) {
-        stat.put(TAG_MESSAGE, request.getParameter(PARAM_MESSAGE));
-      }
       if (request.getParameter(PARAM_ERROR) != null) {
         stat.put(TAG_ERROR, request.getParameter(PARAM_ERROR));
       } else if (request.getParameter(PARAM_CANCEL) != null) {
         stat.put(TAG_CANCELED, request.getParameter(PARAM_CANCEL));
       } else  {
-        getFileItemsSummary(request, stat);
+        try {
+          getFileItemsSummary(request, stat);
+          String message = executeAction(request, getMySessionFileItems(request));
+          stat.put(TAG_MESSAGE, message);
+          stat.put(TAG_FINISHED, RESP_OK);
+        } catch (UploadActionException e) {
+          logger.error("ExecuteUploadActionException: " + e);
+          stat.put(TAG_ERROR, e.getMessage());
+        }
       }
-      stat.put(TAG_FINISHED, RESP_OK);
-
       String ret = statusToString(stat);
       finish(request, ret);
 
       logger.debug("BLOB-STORE-SERVLET: (" + request.getSession().getId() + ") redirect \n" + ret);
       renderXmlResponse(request, response, ret, true);
+
       perThreadRequest.set(null);
     } else {
       super.doGet(request, response);
@@ -155,7 +158,6 @@ public class BlobstoreUploadAction extends UploadAction {
   @Override
   protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
     String error = null;
-    String message = null;
     perThreadRequest.set(request);
     try {
       error = super.parsePostRequest(request, response);
@@ -201,22 +203,11 @@ public class BlobstoreUploadAction extends UploadAction {
         }
       }
       logger.error("BLOB-STORE-SERVLET: putting in sesssion elements -> " + receivedFiles.size());
-      sessionFiles = new ArrayList<FileItem>(receivedFiles);
-
-      request.getSession().setAttribute(getSessionFilesKey(request), receivedFiles);
-      request.getSession().setAttribute(getSessionLastFilesKey(request), sessionFiles);
+      redirect(response, null);
     } else {
-      error = getMessage("no_data");
+      redirect(response, PARAM_ERROR + "=" + getMessage("no_data"));
     }
 
-    try {
-      message = executeAction(request, getMySessionFileItems(request));
-    } catch (UploadActionException e) {
-      logger.error("ExecuteUploadActionException: " + e);
-      error =  e.getMessage();
-    }
-
-    redirect(response, message != null ? PARAM_MESSAGE + "=" + message : null);
     perThreadRequest.set(null);
   }
 
@@ -225,6 +216,8 @@ public class BlobstoreUploadAction extends UploadAction {
    */
   public String executeAction(HttpServletRequest request, List<FileItem> sessionFiles)
       throws UploadActionException {
+    // Let the user whether remove file items overriding this method
+    removeSessionFileItems(request, false);
     return null;
   }
 

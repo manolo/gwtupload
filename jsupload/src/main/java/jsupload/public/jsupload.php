@@ -77,7 +77,7 @@
 session_start();
 
 $uploaddir = '/tmp/php_upload/' . session_id() . "/";
-$version  = '0.6.4';
+$version  = '1.0.2';
 
 function writeResponse($msg, $post) {
   $xml = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>" .
@@ -140,7 +140,7 @@ if($_SERVER['REQUEST_METHOD'] == 'GET') {
         array_push($files, $name . "-" . $cont);
       }
       if (sizeof($files) > 0) {
-        $msg = " <message>$version</message><files>\n";
+        $msg = " <message>jsupload.php $version</message><files>\n";
         foreach($files as $field) {
           $lines = file ($uploaddir . $field . ".info");
           $name = chop($lines[0]);
@@ -203,7 +203,7 @@ if($_SERVER['REQUEST_METHOD'] == 'GET') {
 
   $cnt = 0;
   $fld = str_replace("[]", "", $key);
-  $msg = "<message>\n<![CDATA[\n$version\n]]>\n</message>\n<files>\n";
+  $msg = "<message>jsupload.php $version</message>\n<files>\n";
   foreach ($_FILES[$key]['tmp_name'] as $tmpfile) {
     $size = $_FILES[$key]['size'][$cnt];
     $type = $_FILES[$key]['type'][$cnt];

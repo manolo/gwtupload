@@ -168,8 +168,11 @@
   color: #af6b29;
 }
 
-.GWTUpld .DecoratedFileUpload-disabled {
-  color: grey;
+.GWTUpld .DecoratedFileUpload-disabled,
+.GWTUpld .DecoratedFileUpload-disabled .gwt-Anchor,
+.GWTUpld .DecoratedFileUpload-disabled .gwt-Button,
+.GWTUpld .DecoratedFileUpload-disabled .gwt-Label {
+  color: grey !important;
 }
 
 .GWTUpld input[type="file"] {

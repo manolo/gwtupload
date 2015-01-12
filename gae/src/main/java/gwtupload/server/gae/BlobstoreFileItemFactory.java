@@ -63,7 +63,9 @@ public class BlobstoreFileItemFactory implements FileItemFactory, Serializable {
     }
 
     public void delete() {
-      // We should not remove data from data store, should be done by user.
+      if (key != null) {
+        BlobstoreUploadAction.blobstoreService.delete(key);
+      }
     }
 
     public byte[] get() {

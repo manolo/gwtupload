@@ -172,12 +172,15 @@ public class UploadAction extends UploadServlet {
   protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
     String error = null;
     String message = null;
+    Map<String, String> tags = new HashMap<String, String>();
 
     perThreadRequest.set(request);
     try {
       // Receive the files and form elements, updating the progress status
       error = super.parsePostRequest(request, response);
       if (error == null) {
+        // Fill files status before executing user code which could remove session files
+        getFileItemsSummary(request, tags);
         // Call to the user code
         message = executeAction(request, getMyLastReceivedFileItems(request));
       }
@@ -203,15 +206,12 @@ public class UploadAction extends UploadServlet {
         listener.setException(new RuntimeException(error));
       }
       UploadServlet.removeSessionFileItems(request);
-      request.getSession().removeAttribute(getSessionLastFilesKey(request));
     } else {
-    	Map<String, String> stat = new HashMap<String, String>();
-    	getFileItemsSummary(request, stat);
       if (message != null) {
         // see issue #139
-        stat.put("message", "<![CDATA[" + message + "]]>");
+        tags.put("message", "<![CDATA[" + message + "]]>");
       }
-      postResponse = statusToString(stat);
+      postResponse = statusToString(tags);
       renderXmlResponse(request, response, postResponse, true);
     }
     finish(request, postResponse);

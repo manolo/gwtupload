@@ -335,6 +335,7 @@ public class UploadServlet extends HttpServlet implements Servlet {
    */
   public static void removeSessionFileItems(HttpServletRequest request) {
     removeSessionFileItems(request, SESSION_FILES, true);
+    removeSessionFileItems(request, SESSION_LAST_FILES, true);
   }
 
   /**
@@ -366,6 +367,7 @@ public class UploadServlet extends HttpServlet implements Servlet {
    */
   public static void removeSessionFileItems(HttpServletRequest request, boolean removeData) {
     removeSessionFileItems(request, SESSION_FILES, removeData);
+    removeSessionFileItems(request, SESSION_LAST_FILES, removeData);
   }
 
   /**

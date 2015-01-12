@@ -53,6 +53,14 @@
     <servlet-name>uploadServlet</servlet-name>
     <url-pattern>*.filesystem</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <servlet-name>b64Servlet</servlet-name>
+    <servlet-class>Base64Servlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>b64Servlet</servlet-name>
+    <url-pattern>*.b64</url-pattern>
+  </servlet-mapping>
 
   <servlet-mapping>
     <servlet-name>fileStore</servlet-name>
