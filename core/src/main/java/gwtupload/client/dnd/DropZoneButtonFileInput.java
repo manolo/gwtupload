@@ -75,7 +75,6 @@ public class DropZoneButtonFileInput extends ButtonFileInput implements HasAllDr
     dragAndDropFilesProvider = new DragAndDropFilesProvider(dropZoneWidget);
     dragAndDropFilesProvider.addValueChangeHandler(new ValueChangeHandler<FileList>() {
       public void onValueChange(ValueChangeEvent<FileList> event) {
-        Uploader.log("DZBFI onValueChange", null);
         fireChangeEvent();
       }
     });
@@ -89,7 +88,6 @@ public class DropZoneButtonFileInput extends ButtonFileInput implements HasAllDr
 
   @Override
   public void reset() {
-    Uploader.log("reset ... " + this.hashCode(), null);
     dragAndDropFilesProvider.reset();
     dropZone.removeStyleName(STYLE_DROP_ZONE_SENDING);
   }
@@ -136,23 +134,19 @@ public class DropZoneButtonFileInput extends ButtonFileInput implements HasAllDr
 
   @Override
   public void onAttach() {
-    Uploader.log(">>>>>>>>> onAttach", null);
     super.onAttach();
   }
   @Override
   protected void onDetach() {
-    Uploader.log(">>>>>>>>> onDetach", null);
     super.onDetach();
   }
 
   @Override
   public HandlerRegistration addChangeHandler(ChangeHandler handler) {
-    Uploader.log(">>>>>>>>> Register", null);
     super.addChangeHandler(handler);
      addDomHandler(handler, ChangeEvent.getType());
      return new HandlerRegistration() {
       public void removeHandler() {
-        Uploader.log(">>>>>>>> UNRegister", null);
       }
     };
   }

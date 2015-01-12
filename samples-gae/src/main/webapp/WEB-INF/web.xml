@@ -54,6 +54,15 @@
     <url-pattern>*.filesystem</url-pattern>
   </servlet-mapping>
   <servlet>
+    <servlet-name>b64ServletMemory</servlet-name>
+    <servlet-class>Base64MemoryServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>b64ServletMemory</servlet-name>
+    <url-pattern>*.b64mem</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
     <servlet-name>b64Servlet</servlet-name>
     <servlet-class>Base64Servlet</servlet-class>
   </servlet>
@@ -61,7 +70,7 @@
     <servlet-name>b64Servlet</servlet-name>
     <url-pattern>*.b64</url-pattern>
   </servlet-mapping>
-
+  
   <servlet-mapping>
     <servlet-name>fileStore</servlet-name>
     <url-pattern>*.gupld</url-pattern>

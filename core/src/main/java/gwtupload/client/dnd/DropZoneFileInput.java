@@ -76,7 +76,6 @@ public class DropZoneFileInput extends Label implements HasAllDragAndDropHandler
     dragAndDropFilesProvider = new DragAndDropFilesProvider(dropZoneWidget);
     dragAndDropFilesProvider.addValueChangeHandler(new ValueChangeHandler<FileList>() {
       public void onValueChange(ValueChangeEvent<FileList> event) {
-        Uploader.log("DZFI onValueChange", null);
         fireChangeEvent();
       }
     });

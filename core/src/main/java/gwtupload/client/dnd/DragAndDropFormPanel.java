@@ -75,7 +75,6 @@ public class DragAndDropFormPanel extends FormPanel {
 
   @Override
   public void submit() {
-    Uploader.log("panel submit", null);
     final List<IFileInput> childFileInputs = getChildFileInputs();
     if (childFileInputs == null || childFileInputs.isEmpty()) {
       return;
@@ -107,7 +106,6 @@ public class DragAndDropFormPanel extends FormPanel {
   private XMLHttpRequest request = null;
 
   private void submitDragAndDropFileInputs(ArrayList<IDragAndDropFileInput> dndFileInputs) {
-    Uploader.log("panel submitDragAndDropFileInputs", null);
 
     // Fire the onSubmit event, because javascript's form.submit() does not
     // fire the built-in onsubmit event.
@@ -136,7 +134,6 @@ public class DragAndDropFormPanel extends FormPanel {
    * @return true to continue, false if canceled
    */
   private boolean fireSubmitEvent() {
-    Uploader.log("fireSubmitEvent ", null);
     FormPanel.SubmitEvent event = new FormPanel.SubmitEvent();
     fireEvent(event);
     return !event.isCanceled();
@@ -183,7 +180,6 @@ public class DragAndDropFormPanel extends FormPanel {
 
   // This is invoked from jsSubmit():
   private void onSubmitComplete(String resultsHtml, int status, ArrayList<IDragAndDropFileInput> dndFileInputs) {
-    Uploader.log("DnD panel complete. " + dndFileInputs.size() + " " + status, null);
     currentInstance = null;
     if (dndFileInputs != null) {
       for (IDragAndDropFileInput fileInput : dndFileInputs) {

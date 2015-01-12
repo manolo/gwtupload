@@ -277,9 +277,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
       if (text.contains(bpath)) {
         try {
           document = XMLParser.parse(text);
-          log("document=" + document + " " + TAG_BLOBSTORE_PATH, null);
           url = Utils.getXmlNodeValue(document, TAG_BLOBSTORE_PATH);
-          log("url=" + url, null);
         } catch (Exception e) {
           cancelUpload(i18nStrs.uploaderBlobstoreError() + "\n>>>\n" + e.getMessage() + "\n>>>>\n" + e);
           return;
@@ -440,16 +438,15 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
         serverRawResponse = serverRawResponse.replaceFirst(".*" + TAG_MSG_START + "([\\s\\S]*?)" + TAG_MSG_END + ".*", "$1");
         serverRawResponse = serverRawResponse.replace(TAG_MSG_LT, "<").replace(TAG_MSG_GT, ">").replace("&lt;", "<").replaceAll("&gt;", ">").replaceAll("&nbsp;", " ");
       }
-      log("onSubmitComplete: " + serverRawResponse, null);
       try {
         // Parse the xml and extract UploadedInfos
         Document doc = XMLParser.parse(serverRawResponse);
         // If the server response is a valid xml
         parseAjaxResponse(serverRawResponse);
       } catch (Exception e) {
-    	  log("onSubmitComplete exception parsing response: ", e);
-    	  // Otherwise force an ajax request so as we have not to wait to the timer schedule
-    	  updateStatusTimer.run();
+        log("onSubmitComplete exception parsing response (Check CORS and XML syntax): ", e);
+        // Otherwise force an ajax request so as we have not to wait to the timer schedule
+        updateStatusTimer.run();
       }
     }
   };
@@ -770,7 +767,6 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
 
     canceled = true;
     automaticUploadTimer.cancel();
-    log("cancelling " +  uploading, null);
     if (uploading) {
       updateStatusTimer.cancel();
       try {
@@ -1169,7 +1165,6 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
     Document doc = null;
     try {
       doc = XMLParser.parse(responseTxt);
-      log("responseText " + responseTxt + " ", null);
       error = Utils.getXmlNodeValue(doc, "error");
       if (error == null) {
         // Response brings uploaded files info in either:
@@ -1197,7 +1192,6 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
           if (size != null) {
             info.setSize(Integer.parseInt(size));
           }
-          log(info.toString(), null);
           serverMessage.getUploadedInfos().add(info);
         }
       }
