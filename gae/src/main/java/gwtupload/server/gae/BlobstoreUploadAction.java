@@ -178,31 +178,32 @@ public class BlobstoreUploadAction extends UploadAction {
       return;
     }
 
-    List<FileItem> sessionFiles = getMySessionFileItems(request);
+    List<FileItem> sessionFiles = getLastReceivedFileItems(request);
+    if (sessionFiles == null) {
+      sessionFiles = new ArrayList<FileItem>();
+      request.setAttribute(getSessionLastFilesKey(request), sessionFiles);
+    }
     Map<String, List<BlobKey>> blobs = blobstoreService.getUploads(request);
     if (blobs != null && blobs.size() > 0) {
-      List<FileItem> receivedFiles = new ArrayList<FileItem>();
       for (Entry<String, List<BlobKey>> e: blobs.entrySet()) {
         for (BlobKey blob: e.getValue()) {
-          logger.error("Entry .... " + e.getKey() + " " + blob.getKeyString() + " " + blob);
-          String type = "unknown";
-          String name = e.getKey();
+          BlobstoreFileItem bfi = null;
           if (sessionFiles != null) {
             for (FileItem i : sessionFiles) {
               if (i.getFieldName().replaceFirst("-\\d+$", "").equals(e.getKey().replace(UConsts.MULTI_SUFFIX, ""))) {
-                type = i.getContentType().replaceAll(";.*$", "");
-                name = i.getFieldName();
+                bfi = (BlobstoreFileItem) i;
                 break;
               }
             }
           }
-          BlobstoreFileItem i = new BlobstoreFileItem(name, type, false, "");
-          i.setKey(blob);
-          receivedFiles.add(i);
-          logger.info("BLOB-STORE-SERVLET: received file: " + e.getKey() + " " + i);
+          if (bfi == null) {
+            bfi = new BlobstoreFileItem(e.getKey(), "unknown", false, "");
+            sessionFiles.add(bfi);
+          }
+          bfi.setKey(blob);
+          logger.info("BLOB-STORE-SERVLET: received file: " + e.getKey() + " " + bfi);
         }
       }
-      logger.error("BLOB-STORE-SERVLET: putting in sesssion elements -> " + receivedFiles.size());
       redirect(response, null);
     } else {
       redirect(response, PARAM_ERROR + "=" + getMessage("no_data"));
@@ -216,7 +217,7 @@ public class BlobstoreUploadAction extends UploadAction {
    */
   public String executeAction(HttpServletRequest request, List<FileItem> sessionFiles)
       throws UploadActionException {
-    // Let the user whether remove file items overriding this method
+    // Let the user whether remove or not file items overriding this method
     removeSessionFileItems(request, false);
     return null;
   }
