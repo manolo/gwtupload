@@ -10,17 +10,14 @@
       <excludes>
         <exclude>**/GWTC*css</exclude>
         <exclude>**/*cache.png</exclude>
+        <exclude>**/*cache.jpg</exclude>
+        <exclude>**/*devmode.js</exclude>
+        <exclude>**/compilation-mappings.txt</exclude>
         <exclude>**/Upload.css</exclude>
         <exclude>**/JsUpload.wiki.txt</exclude>
         <exclude>**/jsupload.cgi.pl</exclude>
+        <exclude>**/images/**</exclude>
       </excludes>
-    </fileSet>
-    <fileSet>
-      <directory>target/${project.build.finalName}/jsupload</directory>
-      <outputDirectory>/jsupload</outputDirectory>
-      <includes>
-        <include>**/GWTC-compressed.css</include>
-      </includes>
     </fileSet>
     <fileSet>
       <directory>target/${project.build.finalName}/jsupload</directory>

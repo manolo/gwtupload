@@ -33,12 +33,6 @@
          <gwt.enableClosureCompiler>true</gwt.enableClosureCompiler>
        </properties>
      </profile>
-     <profile>
-       <id>xs</id>
-       <properties>
-         <gwt.module.suffix>Xs</gwt.module.suffix>
-       </properties>
-     </profile>
   </profiles>
 
   <dependencies>
