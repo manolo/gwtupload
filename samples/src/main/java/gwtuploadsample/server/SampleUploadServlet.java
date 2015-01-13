@@ -110,7 +110,7 @@ public class SampleUploadServlet extends UploadAction {
       FileInputStream is = new FileInputStream(f);
       copyFromInputStreamToOutputStream(is, response.getOutputStream());
     } else {
-      renderXmlResponse(request, response, XML_ERROR_ITEM_NOT_FOUND);
+      super.getUploadedFile(request, response);
    }
   }
 
@@ -127,5 +127,4 @@ public class SampleUploadServlet extends UploadAction {
       logger.info("SAMPLE-SERVLET (" + request.getSession().getId() + ") removed file " + file.getAbsolutePath());
     }
   }
-
 }

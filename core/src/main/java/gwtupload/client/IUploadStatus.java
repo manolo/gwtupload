@@ -20,6 +20,9 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
+import gwtupload.client.IUploadStatus.CancelBehavior;
+
+import com.google.appengine.api.datastore.Link;
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.i18n.client.Constants;
@@ -89,9 +92,9 @@ public interface IUploadStatus extends HasProgress, IsWidget {
     String uploadStatusSuccess();
   }
 
-  Set<CancelBehavior> DEFAULT_CANCEL_CFG = EnumSet.of(CancelBehavior.REMOVE_REMOTE, CancelBehavior.STOP_CURRENT);
-  Set<CancelBehavior> DEFAULT_MULTI_CFG = EnumSet.of(CancelBehavior.STOP_CURRENT, CancelBehavior.REMOVE_REMOTE, CancelBehavior.REMOVE_INVALID, CancelBehavior.REMOVE_CANCELLED_FROM_LIST);
-  Set<CancelBehavior> GMAIL_MULTI_CFG = EnumSet.of(CancelBehavior.STOP_CURRENT, CancelBehavior.REMOVE_REMOTE, CancelBehavior.REMOVE_INVALID, CancelBehavior.REMOVE_CANCELLED_FROM_LIST);
+  public Set<CancelBehavior> DEFAULT_CANCEL_CFG = EnumSet.of(CancelBehavior.REMOVE_REMOTE, CancelBehavior.STOP_CURRENT);
+  public Set<CancelBehavior> DEFAULT_MULTI_CFG = EnumSet.of(CancelBehavior.STOP_CURRENT, CancelBehavior.REMOVE_REMOTE, CancelBehavior.REMOVE_INVALID, CancelBehavior.REMOVE_CANCELLED_FROM_LIST);
+  public Set<CancelBehavior> GMAIL_MULTI_CFG = EnumSet.of(CancelBehavior.STOP_CURRENT, CancelBehavior.REMOVE_REMOTE, CancelBehavior.REMOVE_INVALID, CancelBehavior.REMOVE_CANCELLED_FROM_LIST);
 
   /**
    * Add a new  handler which will be fired when the user clicks on the cancel button.
@@ -121,6 +124,8 @@ public interface IUploadStatus extends HasProgress, IsWidget {
    * @param config
    *   Set of configuration parameters.
    *   TIP: Use EnumSet.of() to fill them.
+   *   You have a set of predefined configurations predefined:
+   *   IUploadStatus.DEFAULT_CANCEL_CFG IUploadStatus.DEFAULT_MULTI_CFG IUploadStatus.GMAIL_MULTI_CFG
    */
   void setCancelConfiguration(Set<IUploadStatus.CancelBehavior> config);
 
@@ -153,4 +158,6 @@ public interface IUploadStatus extends HasProgress, IsWidget {
    * show/hide the widget.
    */
   void setVisible(boolean b);
+
+  Set<CancelBehavior> getCancelConfiguration();
 }

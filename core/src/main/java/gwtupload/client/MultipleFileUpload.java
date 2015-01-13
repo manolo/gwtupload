@@ -42,36 +42,14 @@ public class MultipleFileUpload extends FileUpload {
   public void enableMultiple(boolean b) {
     String attr = "multiple";
     if (b) {
-      DOM.setElementAttribute(getElement(), attr, attr);
+      getElement().setAttribute(attr, attr);
     } else {
-      DOM.removeElementAttribute(getElement(), attr);
+      getElement().removeAttribute(attr);
     }
   }
 
   public void setAccept(String accept) {
-    DOM.setElementAttribute(getElement(), "accept", accept);
+    getElement().setAttribute("accept", accept);
   }
-
-
 }
 
-// ST: moved this to public level
-//class FileList extends JavaScriptObject {
-//  protected FileList() {}
-//
-//  public final native File item(int index) /*-{
-//		return this.item(index);
-//	}-*/;
-//
-//  public final native int getLength() /*-{
-//		return this.length;
-//	}-*/;
-//}
-//
-//class File extends JavaScriptObject {
-//  protected File() {}
-//
-//  public final native String getName() /*-{
-//		return this.name;
-//	}-*/;
-//}

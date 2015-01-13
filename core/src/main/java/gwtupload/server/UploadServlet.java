@@ -1042,13 +1042,10 @@ public class UploadServlet extends HttpServlet implements Servlet {
     private HashMap<String, Integer> map = new HashMap<String, Integer>();
 
     @Override
-    public FileItem createItem(String fieldName, String contentType, boolean isFormField,
-        String fileName) {
-      if (fieldName.contains(MULTI_SUFFIX)) {
-        Integer cont = map.get(fieldName) != null ? (map.get(fieldName) + 1): 0;
-        map.put(fieldName, cont);
-        fieldName = fieldName.replace(MULTI_SUFFIX, "") + "-" + cont;
-      }
+    public FileItem createItem(String fieldName, String contentType, boolean isFormField, String fileName) {
+      Integer cont = map.get(fieldName) != null ? (map.get(fieldName) + 1): 0;
+      map.put(fieldName, cont);
+      fieldName = fieldName.replace(MULTI_SUFFIX, "") + "-" + cont;
       return super.createItem(fieldName, contentType, isFormField, fileName);
     }
   }

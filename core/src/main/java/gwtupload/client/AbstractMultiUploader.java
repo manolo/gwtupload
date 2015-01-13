@@ -20,8 +20,12 @@ import gwtupload.client.IFileInput.FileInputType;
 import gwtupload.client.IUploadStatus.Status;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
+
+import gwtupload.client.IUploadStatus.CancelBehavior;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
@@ -163,6 +167,7 @@ public class AbstractMultiUploader<T extends IsWidget & HasWidgets.ForIsWidget> 
   public AbstractMultiUploader(T multiUploaderPanel, FileInputType type, IUploadStatus status) {
     fileInputType = type;
     statusWidget = status;
+    statusWidget.setCancelConfiguration(IUploadStatus.DEFAULT_MULTI_CFG);
     this.multiUploaderPanel = multiUploaderPanel;
     initWidget(multiUploaderPanel.asWidget());
     setStyleName("upld-multiple");
@@ -450,6 +455,12 @@ public class AbstractMultiUploader<T extends IsWidget & HasWidgets.ForIsWidget> 
    */
   public void setEnabled(boolean b) {
     enabled = b;
+    Set<IUploadStatus.CancelBehavior> cancel = b && uploaders.size() > 0 ? currentUploader.getStatusWidget().getCancelConfiguration() :  EnumSet.of(CancelBehavior.DISABLED);
+    for (IUploader u : uploaders) {
+      if (!u.equals(currentUploader)) {
+        u.getStatusWidget().setCancelConfiguration(cancel);
+      }
+    }
     currentUploader.setEnabled(b);
   }
 
@@ -557,6 +568,7 @@ public class AbstractMultiUploader<T extends IsWidget & HasWidgets.ForIsWidget> 
       // Save the last uploader, create a new statusWidget and fire onStart events
       lastUploader = currentUploader;
       statusWidget = lastUploader.getStatusWidget().newInstance();
+      statusWidget.setCancelConfiguration(lastUploader.getStatusWidget().getCancelConfiguration());
       if (onStartHandler != null) {
         onStartHandler.onStart(lastUploader);
       }
@@ -564,7 +576,6 @@ public class AbstractMultiUploader<T extends IsWidget & HasWidgets.ForIsWidget> 
 
     // Create a new uploader
     currentUploader = getUploaderInstance();
-    statusWidget.setCancelConfiguration(IUploadStatus.DEFAULT_MULTI_CFG);
     uploaders.add(currentUploader);
     currentUploader.setStatusWidget(statusWidget);
     if (lastUploader != null) {

@@ -88,4 +88,14 @@ h2, p, ul {
   padding: 10px;
 }
 
+.gwt-FileUpload  {
+  margin-left: -5px;
+  height: 12px;
+}
+.gwt-Button, .gwt-FileUpload {
+  border: none;
+  cursor: pointer;
+  margin-top: 5px;
+}
+
 

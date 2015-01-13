@@ -27,6 +27,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+
+import static gwtupload.shared.UConsts.MULTI_SUFFIX;
 
 /**
  * <p>
@@ -76,6 +79,8 @@ public class MemoryFileItemFactory implements FileItemFactory, Serializable {
 
   int requestSize;
 
+  private HashMap<String, Integer> map = new HashMap<String, Integer>();
+
   public MemoryFileItemFactory() {
     this(DEFAULT_REQUEST_SIZE);
   }
@@ -84,7 +89,12 @@ public class MemoryFileItemFactory implements FileItemFactory, Serializable {
     this.requestSize = requestSize;
   }
 
-  public FileItem createItem(final String fieldName, final String contentType, final boolean isFormField, final String fileName) {
+  public FileItem createItem(String fieldName, final String contentType, final boolean isFormField, final String fileName) {
+
+    Integer cont = map.get(fieldName) != null ? (map.get(fieldName) + 1): 0;
+    map.put(fieldName, cont);
+    final String fName = fieldName.replace(MULTI_SUFFIX, "") + "-" + cont;
+
     return new FileItem() {
 
       private static final long serialVersionUID = 1L;
@@ -97,7 +107,7 @@ public class MemoryFileItemFactory implements FileItemFactory, Serializable {
       String name;
       {
         ctype = contentType;
-        fname = fieldName;
+        fname = fName;
         name = fileName;
         formfield = isFormField;
       };

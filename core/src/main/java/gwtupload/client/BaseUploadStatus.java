@@ -168,14 +168,12 @@ public class BaseUploadStatus implements IUploadStatus {
   public Widget asWidget() {
     return panel;
   }
-
+  
   /* (non-Javadoc)
    * @see gwtupload.client.IUploadStatus#newInstance()
    */
   public IUploadStatus newInstance() {
-    IUploadStatus ret = new BaseUploadStatus();
-    ret.setCancelConfiguration(cancelCfg);
-    return ret;
+    return new BaseUploadStatus();
   }
 
   /* (non-Javadoc)
@@ -183,6 +181,7 @@ public class BaseUploadStatus implements IUploadStatus {
    */
   public void setCancelConfiguration(Set<CancelBehavior> config) {
     cancelCfg = config;
+    cancelLabel.setVisible(hasCancelActions && !cancelCfg.contains(CancelBehavior.DISABLED));
   }
 
   /* (non-Javadoc)
@@ -338,4 +337,8 @@ public class BaseUploadStatus implements IUploadStatus {
     cancelLabel.setVisible(hasCancelActions && !cancelCfg.contains(CancelBehavior.DISABLED));
   }
 
+  @Override
+  public Set<CancelBehavior> getCancelConfiguration() {
+    return cancelCfg;
+  }
 }

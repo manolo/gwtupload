@@ -64,7 +64,6 @@ public class IncubatorUploadProgress extends BaseUploadStatus {
   @Override
   protected void updateStatusPanel(boolean showProgress, String statusMessage) {
     super.updateStatusPanel(showProgress, statusMessage);
-    fileNameLabel.setVisible(false);
+    fileNameLabel.setVisible(getStatus().equals(Status.INPROGRESS));
   }
-
 }

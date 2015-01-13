@@ -19,6 +19,8 @@ package gwtuploadsample.client;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Hidden;
@@ -26,8 +28,10 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-import gwtupload.client.dnd.IDropZone;
+import java.util.EnumSet;
 
+import gwtupload.client.IUploadStatus.CancelBehavior;
+import gwtupload.client.dnd.IDropZone;
 import gwtupload.client.IFileInput.FileInputType;
 import gwtupload.client.IUploadStatus.Status;
 import gwtupload.client.IUploader;
@@ -75,8 +79,16 @@ public class MultipleUploadSample implements EntryPoint {
     RootPanel.get("thumbnails").add(panelImages);
 
     // Create a new uploader panel and attach it to the document
-    MultiUploader defaultUploader = new MultiUploader();
+    final MultiUploader defaultUploader = new MultiUploader();
+    Button disable = new Button("Disable/Enable", new ClickHandler() {
+      boolean b;
+      public void onClick(ClickEvent event) {
+        defaultUploader.setEnabled(b);
+        b = !b;
+      }
+    });
     RootPanel.get("default").add(defaultUploader);
+    RootPanel.get("default").add(disable);
 
 
     // Add a finish handler which will load the image once the upload finishes
@@ -98,6 +110,7 @@ public class MultipleUploadSample implements EntryPoint {
     MultiUploader chismesUploader = new MultiUploader(FileInputType.BUTTON, new ChismesUploadProgress(false));
     chismesUploader.addOnFinishUploadHandler(onFinishUploaderHandler);
     RootPanel.get("chismes").add(chismesUploader);
+    chismesUploader.getStatusWidget().setCancelConfiguration(EnumSet.of(CancelBehavior.DISABLED));
 
     // UiBinder
     MUpld m = new MUpld();
