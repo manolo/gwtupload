@@ -104,8 +104,21 @@ public class CloudStorageFileItemFactory implements FileItemFactory, Serializabl
       options = new GcsFileOptions.Builder().mimeType(contentType).build();
       formField = isFormField;
       name = fileName;
+      
       String bucketNameProperty = System.getProperty("upload.gcs.bucket.name");
-      bucket = (bucketNameProperty == null ? ApiProxy.getCurrentEnvironment().getAppId() : bucketNameProperty);
+      boolean useDefaultBucket = bucketNameProperty == null || bucketNameProperty.length() == 0;
+      
+      if (useDefaultBucket) {
+        String appId = ApiProxy.getCurrentEnvironment().getAppId();
+
+        if (appId.startsWith("s~")) {
+          appId = appId.substring(2);
+        }
+
+        bucket = appId + ".appspot.com";
+      } else {
+        bucket = bucketNameProperty;
+      }
       file = new GcsFilename(bucket, fileName);
     }
 
