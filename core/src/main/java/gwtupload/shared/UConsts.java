@@ -51,4 +51,5 @@ public class UConsts {
   public static final String MULTI_SUFFIX = "[]";
 
   public static final String RESP_OK = "ok";
+  public static final String PARAM_MAX_FILE_SIZE = "maxFileSize";
 }

@@ -48,6 +48,7 @@ import javax.servlet.http.HttpSession;
 
 import static gwtupload.shared.UConsts.MULTI_SUFFIX;
 import static gwtupload.shared.UConsts.PARAM_DELAY;
+import static gwtupload.shared.UConsts.PARAM_MAX_FILE_SIZE;
 import static gwtupload.shared.UConsts.TAG_BLOBSTORE;
 import static gwtupload.shared.UConsts.TAG_BLOBSTORE_PATH;
 import static gwtupload.shared.UConsts.TAG_CANCELED;
@@ -904,6 +905,8 @@ public class UploadServlet extends HttpServlet implements Servlet {
 
     try {
       String delay = request.getParameter(PARAM_DELAY);
+      String maxFilesize = request.getParameter(PARAM_MAX_FILE_SIZE);
+      maxSize = maxFilesize != null && maxFilesize.matches("[0-9]*") ? Long.parseLong(maxFilesize) : maxSize;
       uploadDelay = Integer.parseInt(delay);
     } catch (Exception e) { }
 
