@@ -19,7 +19,6 @@ package gwtupload.client;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
-import com.google.gwt.dom.client.AnchorElement;
 import com.google.gwt.dom.client.FormElement;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
@@ -48,7 +47,12 @@ import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Node;
 import com.google.gwt.xml.client.NodeList;
 import com.google.gwt.xml.client.XMLParser;
-import com.google.gwt.xml.client.impl.DOMParseException;
+import gwtupload.client.IFileInput.FileInputType;
+import gwtupload.client.ISession.Session;
+import gwtupload.client.IUploadStatus.Status;
+import gwtupload.client.bundle.UploadCss;
+import gwtupload.client.dnd.DragAndDropFormPanel;
+import gwtupload.client.dnd.IDragAndDropFileInput;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -58,42 +62,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
 
-import gwtupload.client.dnd.DragAndDropFormPanel;
-import gwtupload.client.dnd.IDragAndDropFileInput;
-import static gwtupload.shared.UConsts.ATTR_BLOBSTORE_PARAM_NAME;
-import static gwtupload.shared.UConsts.MULTI_SUFFIX;
-import static gwtupload.shared.UConsts.PARAM_BLOBKEY;
-import static gwtupload.shared.UConsts.PARAM_BLOBSTORE;
-import static gwtupload.shared.UConsts.PARAM_CANCEL;
-import static gwtupload.shared.UConsts.PARAM_FILENAME;
-import static gwtupload.shared.UConsts.PARAM_NAME;
-import static gwtupload.shared.UConsts.PARAM_REMOVE;
-import static gwtupload.shared.UConsts.PARAM_SHOW;
-import static gwtupload.shared.UConsts.TAG_BLOBSTORE;
-import static gwtupload.shared.UConsts.TAG_BLOBSTORE_NAME;
-import static gwtupload.shared.UConsts.TAG_BLOBSTORE_PARAM;
-import static gwtupload.shared.UConsts.TAG_BLOBSTORE_PATH;
-import static gwtupload.shared.UConsts.TAG_CANCELED;
-import static gwtupload.shared.UConsts.TAG_CTYPE;
-import static gwtupload.shared.UConsts.TAG_CURRENT_BYTES;
-import static gwtupload.shared.UConsts.TAG_FIELD;
-import static gwtupload.shared.UConsts.TAG_FILE;
-import static gwtupload.shared.UConsts.TAG_FINISHED;
-import static gwtupload.shared.UConsts.TAG_KEY;
-import static gwtupload.shared.UConsts.TAG_MESSAGE;
-import static gwtupload.shared.UConsts.TAG_MSG_END;
-import static gwtupload.shared.UConsts.TAG_MSG_GT;
-import static gwtupload.shared.UConsts.TAG_MSG_LT;
-import static gwtupload.shared.UConsts.TAG_MSG_START;
-import static gwtupload.shared.UConsts.TAG_NAME;
-import static gwtupload.shared.UConsts.TAG_PERCENT;
-import static gwtupload.shared.UConsts.TAG_SIZE;
-import static gwtupload.shared.UConsts.TAG_TOTAL_BYTES;
-import static gwtupload.shared.UConsts.TAG_WAIT;
-import gwtupload.client.IFileInput.FileInputType;
-import gwtupload.client.ISession.Session;
-import gwtupload.client.IUploadStatus.Status;
-import gwtupload.client.bundle.UploadCss;
+import static gwtupload.shared.UConsts.*;
 
 /**
  * <p>
@@ -431,6 +400,11 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
 
   private SubmitCompleteHandler onSubmitCompleteHandler = new SubmitCompleteHandler() {
     public void onSubmitComplete(SubmitCompleteEvent event) {
+      if (event.getResults() == null || event.getResults().isEmpty()) {
+          // https://github.com/manolo/gwtupload/issues/11
+          log("Ignoring empty message in onSubmitComplete", null);
+          return;
+      }
       updateStatusTimer.cancel();
       onSubmitComplete = true;
       serverRawResponse = event.getResults();
@@ -1314,7 +1288,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
       statusWidget.setStatus(IUploadStatus.Status.ERROR);
     }
     onFinishUpload();
-    reatachIframe(uploadForm.getElement().getAttribute("target"));
+    //reatachIframe(uploadForm.getElement().getAttribute("target"));
   }
 
   // Fix for issue http://stackoverflow.com/questions/27711821
