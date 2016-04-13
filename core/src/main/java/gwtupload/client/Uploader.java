@@ -431,6 +431,11 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
 
   private SubmitCompleteHandler onSubmitCompleteHandler = new SubmitCompleteHandler() {
     public void onSubmitComplete(SubmitCompleteEvent event) {
+      if (event.getResults() == null || event.getResults().isEmpty()) {
+          // https://github.com/manolo/gwtupload/issues/11
+          log("Ignoring empty message in onSubmitComplete", null);
+          return;
+      }
       updateStatusTimer.cancel();
       onSubmitComplete = true;
       serverRawResponse = event.getResults();
@@ -1314,7 +1319,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
       statusWidget.setStatus(IUploadStatus.Status.ERROR);
     }
     onFinishUpload();
-    reatachIframe(uploadForm.getElement().getAttribute("target"));
+    //reatachIframe(uploadForm.getElement().getAttribute("target"));
   }
 
   // Fix for issue http://stackoverflow.com/questions/27711821
