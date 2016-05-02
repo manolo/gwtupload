@@ -1144,7 +1144,8 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
        getDataImpl(info.fileUrl, info.field, info.name, Utils.basename(info.name), serverRawResponse, info.message, getStatus().toString(), info.size);
   }
 
-  private native JavaScriptObject getDataImpl(String url, String inputName, String fileName, String baseName, String serverResponse, String serverMessage, String status, int size) /*-{
+  @com.google.gwt.core.client.UnsafeNativeLong
+  private native JavaScriptObject getDataImpl(String url, String inputName, String fileName, String baseName, String serverResponse, String serverMessage, String status, long size) /*-{
     return {
        url: url,
        name: inputName,
@@ -1195,15 +1196,15 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
 
           String size = Utils.getXmlNodeValue(doc, TAG_SIZE, i);
           if (size != null) {
-            info.setSize(Integer.parseInt(size));
+            info.setSize(Long.parseLong(size));
           }
           serverMessage.getUploadedInfos().add(info);
         }
       }
     } catch (Exception e) {
-      if (responseTxt.toLowerCase().matches("error")) {
+      // if (responseTxt.toLowerCase().matches("error")) {
         error = i18nStrs.uploaderServerError() + "\nAction: " + getServletPath() + "\nException: " + e.getMessage() + responseTxt;
-      }
+      // }
     }
 
     if (error != null) {
