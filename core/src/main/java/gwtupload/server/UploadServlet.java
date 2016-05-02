@@ -541,7 +541,7 @@ public class UploadServlet extends HttpServlet implements Servlet {
     String parameter = request.getParameter(UConsts.PARAM_SHOW);
     FileItem item = findFileItem(getMySessionFileItems(request), parameter);
     if (item != null) {
-      logger.error("UPLOAD-SERVLET (" + request.getSession().getId() + ") getUploadedFile: " + parameter + " returning: " + item.getContentType() + ", " + item.getName() + ", " + item.getSize()
+      logger.info("UPLOAD-SERVLET (" + request.getSession().getId() + ") getUploadedFile: " + parameter + " returning: " + item.getContentType() + ", " + item.getName() + ", " + item.getSize()
             + " bytes");
       response.setContentType(item.getContentType());
       copyFromInputStreamToOutputStream(item.getInputStream(), response.getOutputStream());
@@ -943,10 +943,10 @@ public class UploadServlet extends HttpServlet implements Servlet {
       uploader.setProgressListener(listener);
 
       // Receive the files
-      logger.error("UPLOAD-SERVLET (" + session.getId() + ") parsing HTTP POST request ");
+      logger.info("UPLOAD-SERVLET (" + session.getId() + ") parsing HTTP POST request ");
       uploadedItems = uploader.parseRequest(request);
       session.removeAttribute(getSessionLastFilesKey(request));
-      logger.error("UPLOAD-SERVLET (" + session.getId() + ") parsed request, " + uploadedItems.size() + " items received.");
+      logger.info("UPLOAD-SERVLET (" + session.getId() + ") parsed request, " + uploadedItems.size() + " items received.");
 
       // Received files are put in session
       List<FileItem> sessionFiles = getMySessionFileItems(request);
