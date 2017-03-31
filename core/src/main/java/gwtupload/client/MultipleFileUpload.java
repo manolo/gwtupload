@@ -5,7 +5,6 @@ import java.util.List;
 
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.dom.client.InputElement;
-import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.FileUpload;
 
 /**

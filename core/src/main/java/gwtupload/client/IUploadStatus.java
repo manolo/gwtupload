@@ -20,9 +20,6 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
-import gwtupload.client.IUploadStatus.CancelBehavior;
-
-import com.google.appengine.api.datastore.Link;
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.i18n.client.Constants;
