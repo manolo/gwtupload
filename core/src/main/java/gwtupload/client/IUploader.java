@@ -112,7 +112,7 @@ public interface IUploader extends HasJsData, HasWidgets, IsWidget {
     /**
      * Size in bytes calculated in the server
      */
-    public int size = 0;
+    public long size = 0;
 
     /**
      * Used when the server sends a special key to identify the file.
@@ -143,7 +143,7 @@ public interface IUploader extends HasJsData, HasWidgets, IsWidget {
       return ctype;
     }
 
-    public int getSize() {
+    public long getSize() {
       return size;
     }
 
@@ -163,7 +163,7 @@ public interface IUploader extends HasJsData, HasWidgets, IsWidget {
       this.ctype = ctype;
     }
 
-    public void setSize(int size) {
+    public void setSize(long size) {
       this.size = size;
     }
 

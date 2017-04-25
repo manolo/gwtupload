@@ -1,5 +1,6 @@
 /*
  * Copyright 2010 Manuel Carrasco Moñino. (manolo at apache/org)
+ * Copyright 2017 Sven Strickroth <email@cs-ware.de>
  * http://code.google.com/p/gwtupload
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -24,9 +25,7 @@ import gwtupload.shared.UConsts;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -148,6 +147,7 @@ public class UploadAction extends UploadServlet {
   }
 
   protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException  {
+    XMLResponse xmlResponse = new XMLResponse();
     String parameter = request.getParameter(UConsts.PARAM_REMOVE);
     if (parameter != null) {
       try {
@@ -159,7 +159,8 @@ public class UploadAction extends UploadServlet {
           removeItem(request, item);
         }
       } catch (Exception e) {
-        renderXmlResponse(request, response, "<" + TAG_ERROR + ">" + e.getMessage() + "</" + TAG_ERROR + ">");
+        xmlResponse.addResponseTag(TAG_ERROR, e.getMessage());
+        renderXmlResponse(request, response, xmlResponse);
         return;
       }
       // Remove the item saved in session in the case it was not removed yet
@@ -172,20 +173,20 @@ public class UploadAction extends UploadServlet {
   protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
     String error = null;
     String message = null;
-    Map<String, String> tags = new HashMap<String, String>();
-
+    XMLResponse xmlResponse = new XMLResponse();
     perThreadRequest.set(request);
     try {
       // Receive the files and form elements, updating the progress status
       error = super.parsePostRequest(request, response);
       if (error == null) {
         // Fill files status before executing user code which could remove session files
-        getFileItemsSummary(request, tags);
+        getFileItemsSummary(request, xmlResponse);
         // Call to the user code
         message = executeAction(request, getMyLastReceivedFileItems(request));
       }
     } catch (UploadCanceledException e) {
-      renderXmlResponse(request, response, "<" + TAG_CANCELED + ">true</" + TAG_CANCELED + ">");
+      xmlResponse.addResponseTag(TAG_CANCELED, "true");
+      renderXmlResponse(request, response, xmlResponse);
       return;
     } catch (UploadActionException e) {
       logger.info("ExecuteUploadActionException when receiving a file.", e);
@@ -197,24 +198,24 @@ public class UploadAction extends UploadServlet {
       perThreadRequest.set(null);
     }
 
-    String postResponse = null;
     AbstractUploadListener listener = getCurrentListener(request);
     if (error != null) {
-      postResponse = "<" + TAG_ERROR + ">" + error + "</" + TAG_ERROR + ">";
-      renderXmlResponse(request, response, postResponse);
+      xmlResponse.addResponseTag(TAG_ERROR, error);
+      renderXmlResponse(request, response, xmlResponse);
       if (listener != null) {
         listener.setException(new RuntimeException(error));
       }
       UploadServlet.removeSessionFileItems(request);
     } else {
       if (message != null) {
-        // see issue #139
-        tags.put("message", "<![CDATA[" + message + "]]>");
+        xmlResponse.addResponseTag("message", message);
       }
-      postResponse = statusToString(tags);
-      renderXmlResponse(request, response, postResponse, true);
+      renderXmlResponse(request, response, xmlResponse, true);
     }
-    finish(request, postResponse);
+    finish(request, xmlResponse);
+    if(listener != null && listener.isFinished()) {
+      removeCurrentListener(request);
+    }
 
     if (removeSessionFiles) {
       removeSessionFileItems(request, removeData);
