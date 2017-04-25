@@ -9,13 +9,19 @@
   <parent>
     <groupId>com.googlecode.gwtupload</groupId>
     <artifactId>gwtupload-project</artifactId>
-    <version>1.0.4-SNAPSHOT</version>
+    <version>1.0.4-p1</version>
   </parent>
 
   <dependencies>
     <dependency>
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-user</artifactId>
+      <version>${gwtVersion}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.google.gwt</groupId>
+      <artifactId>gwt-dev</artifactId>
       <version>${gwtVersion}</version>
       <scope>provided</scope>
     </dependency>

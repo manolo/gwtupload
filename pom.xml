@@ -5,13 +5,13 @@
   <artifactId>gwtupload-project</artifactId>
   <name>GwtUpload project</name>
   <packaging>pom</packaging>
-  <version>1.0.4-SNAPSHOT</version>
+  <version>1.0.4-p1</version>
 
   <modules>
     <module>core</module>
-    <module>gae</module>
-    <module>jsupload</module>
-    <module>samples</module>
+    <!--<module>gae</module>-->
+    <!--<module>jsupload</module>-->
+    <!--<module>samples</module>-->
   </modules>
 
   <parent>
@@ -22,11 +22,11 @@
 
   <properties>
     <main.basedir>${project.parent.basedir}</main.basedir>
-    <maven.compiler.source>1.6</maven.compiler.source>
-    <maven.compiler.target>1.6</maven.compiler.target>
+    <maven.compiler.source>1.7</maven.compiler.source>
+    <maven.compiler.target>1.7</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <gwtVersion>2.7.0</gwtVersion>
-    <gwtMaven>2.7.0</gwtMaven>
+    <gwtVersion>2.8.0</gwtVersion>
+    <gwtMaven>2.8.0</gwtMaven>
     <commonsFileuploadVersion>1.3.1</commonsFileuploadVersion>
     <commonsIoVersion>2.3</commonsIoVersion>
     <gwtChismesVersion>0.9.7</gwtChismesVersion>
@@ -107,6 +107,7 @@
       <artifactId>commons-io</artifactId>
       <version>${commonsIoVersion}</version>
     </dependency>
+<!--
     <dependency>
       <groupId>gwtchismes</groupId>
       <artifactId>gwtchismes</artifactId>
@@ -131,6 +132,7 @@
       <version>${gae.version}</version>
       <scope>provided</scope>
     </dependency>
+-->
   </dependencies>
 
   <description>
