@@ -194,7 +194,12 @@ public abstract class AbstractUploadListener implements ProgressListener, Serial
     }
 
     // Just a way to slow down the upload process and see the progress bar in fast networks.
-    if (slowUploads > 0 && done < total) {
+    /* 
+      Fix applied for https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-13128: 
+      `slowUploads` is anyway controlled by the user since it is a design decision, however 
+      the max value can be `half a minute`, so 30000 milliseconds.
+    */
+    if (slowUploads > 0 && slowUploads < 30000 && done < total) {
       try {
         Thread.sleep(slowUploads);
       } catch (Exception e) {
