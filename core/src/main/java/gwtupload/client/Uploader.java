@@ -1,5 +1,6 @@
 /*
  * Copyright 2010 Manuel Carrasco Moñino. (manolo at apache/org)
+ * Copyright 2017 Sven Strickroth <email@cs-ware.de>
  * http://code.google.com/p/gwtupload
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -76,15 +77,10 @@ import static gwtupload.shared.UConsts.TAG_BLOBSTORE_PATH;
 import static gwtupload.shared.UConsts.TAG_CANCELED;
 import static gwtupload.shared.UConsts.TAG_CTYPE;
 import static gwtupload.shared.UConsts.TAG_CURRENT_BYTES;
-import static gwtupload.shared.UConsts.TAG_FIELD;
 import static gwtupload.shared.UConsts.TAG_FILE;
 import static gwtupload.shared.UConsts.TAG_FINISHED;
 import static gwtupload.shared.UConsts.TAG_KEY;
 import static gwtupload.shared.UConsts.TAG_MESSAGE;
-import static gwtupload.shared.UConsts.TAG_MSG_END;
-import static gwtupload.shared.UConsts.TAG_MSG_GT;
-import static gwtupload.shared.UConsts.TAG_MSG_LT;
-import static gwtupload.shared.UConsts.TAG_MSG_START;
 import static gwtupload.shared.UConsts.TAG_NAME;
 import static gwtupload.shared.UConsts.TAG_PERCENT;
 import static gwtupload.shared.UConsts.TAG_SIZE;
@@ -439,13 +435,14 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
       updateStatusTimer.cancel();
       onSubmitComplete = true;
       serverRawResponse = event.getResults();
-      if (serverRawResponse != null) {
-        serverRawResponse = serverRawResponse.replaceFirst(".*" + TAG_MSG_START + "([\\s\\S]*?)" + TAG_MSG_END + ".*", "$1");
-        serverRawResponse = serverRawResponse.replace(TAG_MSG_LT, "<").replace(TAG_MSG_GT, ">").replace("&lt;", "<").replaceAll("&gt;", ">").replaceAll("&nbsp;", " ");
-      }
       try {
         // Parse the xml and extract UploadedInfos
         Document doc = XMLParser.parse(serverRawResponse);
+        // for some reason the response is put inside a "pre" tag
+        if (doc.getDocumentElement().getNodeName().equals("pre")) {
+          serverRawResponse = doc.getFirstChild().getFirstChild().getNodeValue();
+          doc = XMLParser.parse(serverRawResponse);
+        }
         // If the server response is a valid xml
         parseAjaxResponse(serverRawResponse);
       } catch (Exception e) {
@@ -1176,7 +1173,6 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
         // POST response or FINISHED status
         String msg = Utils.getXmlNodeValue(doc, TAG_MESSAGE);
         serverMessage.setMessage(msg);
-        String fld = Utils.getXmlNodeValue(doc, TAG_FIELD);
         NodeList list = doc.getElementsByTagName(TAG_FILE);
         for (int i = 0, l = list.getLength(); i < l; i++) {
           UploadedInfo info = new UploadedInfo();
