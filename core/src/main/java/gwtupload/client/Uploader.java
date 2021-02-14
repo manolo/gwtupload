@@ -29,6 +29,7 @@ import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.RequestTimeoutException;
 import com.google.gwt.http.client.Response;
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
@@ -191,7 +192,7 @@ public class Uploader extends Composite implements IsUpdateable, IUploader, HasJ
         GWT.log(msg, e);
       }
     } else {
-      String html = (msg + "\n" + (e != null ? e.getMessage() :"")).replaceAll("\n", "<br/>");
+      String html = SafeHtmlUtils.fromString(msg + "\n" + (e != null ? e.getMessage() :"")).asString().replaceAll("\n", "<br/>");
       mlog.setHTML(mlog.getHTML() + html);
     }
   }

@@ -199,9 +199,9 @@ public class BaseUploadStatus implements IUploadStatus {
    */
   public void setFileNames(List<String> names) {
     fileNames = names;
-    fileNameLabel.setHTML(Utils.convertCollectionToString(names, "<br/>"));
+    fileNameLabel.setHTML(Utils.convertCollectionToString(names, "<br/>", true));
     if (prg instanceof HasText) {
-      ((HasText) prg).setText(Utils.convertCollectionToString(names, ","));
+      ((HasText) prg).setText(Utils.convertCollectionToString(names, ",", false));
     }
   }
 
