@@ -3,6 +3,7 @@ package gwtupload.client;
 import java.util.Collection;
 import java.util.List;
 
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Node;
 import com.google.gwt.xml.client.NodeList;
@@ -102,15 +103,19 @@ public final class Utils {
     return valid;
   }
 
-  public static String convertCollectionToString(Collection<String> strings, String separator) {
+  public static String convertCollectionToString(Collection<String> strings, String separator, boolean escape) {
     String result = "";
     boolean first = true;
     for (String s : strings) {
       if (first) {
-        result += s;
         first = false;
       } else {
-        result += separator + s;
+        result += separator;
+      }
+      if (escape) {
+        result += SafeHtmlUtils.fromString(s).asString();
+      } else {
+        result += s;
       }
     }
     return result;
