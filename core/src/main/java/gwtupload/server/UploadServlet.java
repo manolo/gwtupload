@@ -843,11 +843,16 @@ public class UploadServlet extends HttpServlet implements Servlet {
    *
    */
   protected String parsePostRequest(HttpServletRequest request, HttpServletResponse response) {
-
+    long maxUploadSize = maxSize;
     try {
       String delay = request.getParameter(PARAM_DELAY);
-      String maxFilesize = request.getParameter(PARAM_MAX_FILE_SIZE);
-      maxSize = maxFilesize != null && maxFilesize.matches("[0-9]*") ? Long.parseLong(maxFilesize) : maxSize;
+      String maxFilesize = request.getParameter(PARAM_MAX_FILE_SIZE); // the parameter name is misleading as it indicates the filesize and not the whole upload size
+      if (maxFilesize != null && maxFilesize.matches("[0-9]*")) {
+        long parsedSize = Long.parseLong(maxFilesize);
+        if (maxUploadSize != -1 && parsedSize < maxUploadSize) {
+          maxUploadSize = parsedSize;
+        }
+      }
       uploadDelay = Integer.parseInt(delay);
     } catch (Exception e) { }
 
@@ -879,7 +884,7 @@ public class UploadServlet extends HttpServlet implements Servlet {
       // Create the factory used for uploading files,
       FileItemFactory factory = getFileItemFactory(getContentLength(request));
       ServletFileUpload uploader = new ServletFileUpload(factory);
-      uploader.setSizeMax(maxSize);
+      uploader.setSizeMax(maxUploadSize);
       uploader.setFileSizeMax(maxFileSize);
       uploader.setProgressListener(listener);
 
